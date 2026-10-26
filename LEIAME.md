@@ -1,4 +1,6 @@
-# ACIDI · site demonstrativo
+# ACIDI · site demonstrativo · versão "Ponto de encontro"
+
+> Cópia separada com a nova direção de arte e movimento (branch `direcao-de-arte`). A versão anterior continua intacta em `ACIDI-site-demonstracao`. Brief, storyboard, regras de movimento e entrega: [`docs/DIRECAO.md`](docs/DIRECAO.md).
 
 Versão local e independente do site da Associação Empresarial de Indaial, para apresentação ao cliente. Não altera nem publica nada no site oficial.
 
@@ -9,11 +11,11 @@ Versão local e independente do site da Associação Empresarial de Indaial, par
 **Opção 2, com servidor local** (recomendado para apresentar, endereço igual ao de um site real):
 
 ```bash
-cd "C:\Users\willian.guerra\Desktop\ACIDI-site-demonstracao"
-python -m http.server 8766 --bind 127.0.0.1
+cd "C:\Users\willian.guerra\Desktop\ACIDI-site-direcao-de-arte"
+python -m http.server 8767 --bind 127.0.0.1
 ```
 
-Depois abra `http://127.0.0.1:8766/` no navegador. Para encerrar, pressione `Ctrl+C` no terminal.
+Depois abra `http://127.0.0.1:8767/` no navegador. Para encerrar, pressione `Ctrl+C` no terminal.
 
 O site funciona sem internet: as fontes Archivo e Public Sans estão embutidas em `assets/fonts` (licença SIL OFL 1.1). Só os links externos (WhatsApp, redes sociais, mapa e sistemas de parceiros) precisam de conexão.
 
@@ -55,7 +57,9 @@ Para editar textos, altere `ferramentas/gerar_site.py` e rode `python ferramenta
 ```bash
 node testes/logica.test.js
 python testes/verificar_links.py
-python testes/jornadas.py
+BASE=http://127.0.0.1:8767/ PYTHONIOENCODING=utf-8 python testes/jornadas.py
+python testes/comparar.py depois http://127.0.0.1:8767/
+python testes/movimento.py http://127.0.0.1:8767/
 ```
 
 O último exige o servidor local da opção 2 rodando, o pacote Python `playwright` e o Microsoft Edge instalado.

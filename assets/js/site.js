@@ -136,4 +136,103 @@
       e.preventDefault(); var t = doc.getElementById(a.getAttribute('href').slice(1)); if (t) t.focus();
     });
   });
+
+  var reduzido = root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var IO = root.IntersectionObserver;
+
+  // Composições que se desenham uma vez ao entrar na tela (atuação, fechamento). Sem IO ou com movimento reduzido: estado final.
+  var anims = [].slice.call(doc.querySelectorAll('[data-anim]'));
+  if (reduzido || !IO) anims.forEach(function (el) { el.classList.add('on'); });
+  else {
+    var io = new IO(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, { threshold: 0.35 });
+    anims.forEach(function (el) { io.observe(el); });
+  }
+
+  // Barra fixa do celular: escondida enquanto uma chamada de associação [data-cta] está visível
+  var ctas = [].slice.call(doc.querySelectorAll('[data-cta]'));
+  if (ctas.length && IO) {
+    var vis = new Set();
+    var ioc = new IO(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) vis.add(e.target); else vis.delete(e.target); });
+      doc.body.classList.toggle('cta-vis', vis.size > 0);
+    });
+    ctas.forEach(function (el) { ioc.observe(el); });
+  }
+
+  // Serviços da home: desktop = lista + painel único; celular = lista expansível (um aberto por vez)
+  var estreito = root.matchMedia('(max-width: 760px)');
+  [].forEach.call(doc.querySelectorAll('[data-svx]'), function (box) {
+    var btns = [].slice.call(box.querySelectorAll('.svx-b')), mark = box.querySelector('.svx-mark'), atual = -1;
+    function painel(b) { return doc.getElementById(b.getAttribute('aria-controls')); }
+    function marcar() {
+      if (atual < 0 || estreito.matches) return;
+      var b = btns[atual];
+      box.style.setProperty('--cw', b.offsetWidth + 'px');
+      mark.style.setProperty('--y', b.parentNode.offsetTop + 'px');
+      mark.style.setProperty('--h', b.offsetHeight + 'px');
+    }
+    function escolher(i) {
+      if (i === atual) {
+        if (!estreito.matches) return;
+        i = -1; // no celular, tocar no item aberto fecha
+      }
+      box.setAttribute('data-dir', i < atual ? 'up' : 'down');
+      btns.forEach(function (b, k) {
+        var p = painel(b), on = k === i;
+        b.setAttribute('aria-expanded', String(on));
+        p.classList.toggle('on', on);
+        p.inert = !on;
+      });
+      atual = i;
+      marcar();
+    }
+    btns.forEach(function (b, k) {
+      b.addEventListener('click', function () { escolher(k); });
+      b.addEventListener('keydown', function (e) {
+        var alvo = { ArrowDown: k + 1, ArrowUp: k - 1, Home: 0, End: btns.length - 1 }[e.key];
+        if (alvo === undefined) return;
+        e.preventDefault();
+        btns[(alvo + btns.length) % btns.length].focus();
+      });
+    });
+    function modo() {
+      if (!estreito.matches && atual < 0) escolher(0); else marcar();
+    }
+    escolher(estreito.matches ? -1 : 0);
+    if (estreito.addEventListener) estreito.addEventListener('change', modo);
+    root.addEventListener('resize', marcar);
+    // ativa as transições só depois do primeiro estado, para não animar o carregamento
+    root.requestAnimationFrame(function () { box.classList.add('pronto'); marcar(); });
+  });
+
+  // Galeria do auditório: troca só por ação da pessoa (miniatura, botões ou setas)
+  [].forEach.call(doc.querySelectorAll('[data-gv]'), function (gv) {
+    var main = gv.querySelector('.gv-main img'), th = [].slice.call(gv.querySelectorAll('.gv-th a'));
+    var cont = gv.querySelector('.gv-c b'), txt = gv.querySelector('.gv-t'), nav = gv.querySelector('.gv-nav'), i = 0;
+    function ver(k) {
+      i = (k + th.length) % th.length;
+      var a = th[i], img = a.querySelector('img');
+      th.forEach(function (t) { t.removeAttribute('aria-current'); });
+      a.setAttribute('aria-current', 'true');
+      function trocar() {
+        main.src = a.getAttribute('href'); main.alt = img.alt; main.style.objectPosition = a.getAttribute('data-pos');
+        cont.textContent = i + 1; txt.textContent = img.alt;
+        main.classList.remove('troca');
+      }
+      if (reduzido) return trocar();
+      main.classList.add('troca');
+      setTimeout(trocar, 160);
+    }
+    nav.hidden = false;
+    th.forEach(function (a, k) { a.addEventListener('click', function (e) { e.preventDefault(); ver(k); }); });
+    gv.querySelector('.gv-prev').addEventListener('click', function () { ver(i - 1); });
+    gv.querySelector('.gv-next').addEventListener('click', function () { ver(i + 1); });
+    gv.addEventListener('keydown', function (e) {
+      if (e.target.closest('.gv-th, .gv-nav') && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        e.preventDefault(); ver(i + (e.key === 'ArrowRight' ? 1 : -1));
+      }
+    });
+  });
 })(typeof window !== 'undefined' ? window : this);

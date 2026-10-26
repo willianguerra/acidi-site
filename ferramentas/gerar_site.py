@@ -198,6 +198,7 @@ def head(title, desc):
 <meta name="description" content="{escape(desc)}">
 <meta name="theme-color" content="#0B3D24">
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
+<script>document.documentElement.className += ' js';</script>
 <link rel="stylesheet" href="assets/css/fonts.css">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
@@ -302,12 +303,12 @@ def story(n, cls='story', show_p=True):
 
 def join_box():
     return f'''<section class="join sec" aria-labelledby="h-join"><div class="wrap"><div class="box">
-  <div class="ask on-dark">
-    <span class="disc" aria-hidden="true"></span>
+  <div class="ask on-dark" data-anim>
+    <svg class="liga" viewBox="0 0 700 460" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false"><path pathLength="1" d="M-40 70C200 20 450 80 560 220S610 400 646 420"/><circle cx="672" cy="436" r="32"/></svg>
     <span class="kicker">Associe-se</span>
     <h2 id="h-join" class="hl">Sua empresa <b>na rede da ACIDI</b></h2>
     <p>A rede de relacionamento é o ponto de partida para o crescimento. Conheça os benefícios e fale com a equipe da associação.</p>
-    <div class="ctas"><a class="btn btn-y" href="associe-se.html">Conhecer os benefícios {ico('go', 'ico go')}</a>{ext(WHATS, 'Falar pelo WhatsApp', 'btn btn-w')}</div>
+    <div class="ctas"><a class="btn btn-y" href="associe-se.html" data-cta>Conhecer os benefícios {ico('go', 'ico go')}</a>{ext(WHATS, 'Falar pelo WhatsApp', 'btn btn-w')}</div>
   </div>
   <div class="contact on-dark">
     <h3>Contato</h3>
@@ -347,20 +348,40 @@ paginas = []
 
 # Início
 n0, n1, n2 = NOTICIAS[0], NOTICIAS[1], NOTICIAS[2]
-idx_items = ''.join(f'''<li><a href="para-seu-negocio.html#{s[0]}"><h3>{s[1]}</h3><p>{s[5]}</p>{f'<span class="pt"><img src="assets/img/{s[3]}" alt="" loading="lazy"></span>' if s[3] else f'<span class="tag">{s[4]}</span>'}{ico('go', 'ico arr')}</a></li>''' for s in SERVICOS)
+def svc_marca(s):
+    return f'<span class="svx-logo"><img src="assets/img/{s[3]}" alt="{s[4]}" loading="lazy"></span>' if s[3] else f'<span class="svx-ico">{ico(s[2])}</span>'
+# Serviços da home: botão + painel por serviço. Com JS, desktop vira lista + painel único e celular, lista expansível; sem JS, cartões.
+svx = ''
+for i, s in enumerate(SERVICOS):
+    sid, nome, icn, logo, tag, resumo, paras, link = s
+    sistema = f'<p class="svx-sys">{ext(link[0], link[1], "tlink")}</p>' if link else ''
+    svx += f'''<div class="svx-q" style="--r:{i + 1}"><button type="button" class="svx-b" id="svx-b-{sid}" aria-expanded="false" aria-controls="svx-{sid}"><span class="n" aria-hidden="true">{i + 1:02d}</span><span class="t">{nome}</span><span class="g">{tag}</span>{ico('down', 'ico chev')}</button></div>
+<div class="svx-p" id="svx-{sid}" role="region" aria-labelledby="svx-b-{sid}"><div class="svx-in"><div class="svx-top"><span class="svx-n">{i + 1:02d} / {len(SERVICOS):02d} · {tag}</span>{svc_marca(s)}</div><h3>{nome}</h3><p class="svx-sum">{resumo}</p><p>{paras[0]}</p><div class="ctas"><a class="btn btn-y" href="para-seu-negocio.html#{sid}">Ver detalhes {ico('go', 'ico go')}</a><a class="btn btn-w" href="contato.html?assunto={sid}">Falar com a ACIDI</a></div>{sistema}</div></div>
+'''
+
+def escalas(mun, est, fed):
+    """Frentes de atuação: do nó (municipal) partem ondas até estadual e federal. Geometria em docs/DIRECAO.md."""
+    lv = lambda k, n, itens: f'<section class="lv lv{k}"><h3><span class="rg" aria-hidden="true"></span>{n}</h3><ul>' + ''.join(f'<li>{i}</li>' for i in itens) + '</ul></section>'
+    return f'''<div class="esc" data-anim>
+  <svg class="ondas" viewBox="0 0 1232 190" aria-hidden="true" focusable="false"><path class="base" d="M14 182H1232"/><path class="o1" pathLength="1" d="M14 164A18 18 0 1 0 14 200"/><path class="o2" pathLength="1" d="M14 182A209.35 104 0 0 1 432.7 182"/><path class="o3" pathLength="1" d="M14 182A418.65 172 0 0 1 851.3 182"/></svg>
+  {lv(1, 'Municipal', mun)}{lv(2, 'Estadual', est)}{lv(3, 'Federal', fed)}
+</div>'''
+
 home_events = ''.join(ev_item(e, 'li-home') for e in EVENTOS)
 paginas.append(page('index.html', 'ACIDI – Associação Empresarial de Indaial', 'A ACIDI reúne empresários de Indaial desde 1989: serviços para associados, representatividade, notícias, agenda e auditório.', f'''
-<section class="hero" aria-labelledby="h-hero"><div class="wrap">
-  <span class="kicker">Associação Empresarial de Indaial · desde 1989</span>
-  <h1 id="h-hero" class="hl"><span class="l1">Juntos somos</span><b>mais fortes</b></h1>
-  <div class="txt">
-    <p class="lead">Desde 1989, a ACIDI reúne indústria, comércio, serviços, agricultura, instituições financeiras e profissionais liberais de Indaial para fortalecer as empresas e buscar soluções para a cidade.</p>
-    <div class="ctas"><a class="btn btn-p" href="associe-se.html">Associe sua empresa {ico('go', 'ico go')}</a><a class="btn btn-s" href="para-seu-negocio.html">Ver serviços</a></div>
+<section class="hero" aria-labelledby="h-hero"><div class="wrap hero-g">
+  <div class="hero-t">
+    <span class="kicker"><span class="lg">Associação Empresarial de Indaial · </span>desde 1989</span>
+    <h1 id="h-hero" class="hl"><span class="l1">Juntos somos</span> <b>mais fortes</b></h1>
+    <p class="lead"><span class="lg">Desde 1989, a ACIDI reúne indústria, comércio, serviços, agricultura, instituições financeiras e profissionais liberais de Indaial para fortalecer as empresas e buscar soluções para a cidade.</span><span class="sh">Desde 1989, empresas de Indaial unidas para fortalecer os negócios e buscar soluções para a cidade.</span></p>
+    <div class="ctas"><a class="btn btn-p" href="associe-se.html" data-cta>Associe sua empresa {ico('go', 'ico go')}</a><a class="btn btn-s" href="para-seu-negocio.html">Ver serviços</a></div>
   </div>
-  <div class="media">
-    <span class="disc" aria-hidden="true"></span>
-    <figure class="photo main-ph"><img src="assets/img/feijoada-palco.jpg" alt="Grande grupo de associados reunidos no palco da Feijoada da ACIDI" width="1800" height="1303" fetchpriority="high"><figcaption>Feijoada da ACIDI</figcaption></figure>
-    <a class="side" href="noticia-acidi-35-anos-posse-da-diretoria.html"><div class="photo"><img src="assets/img/posse-2024.jpg" alt="" width="1400" height="939"></div><p><b>ACIDI celebra 35 anos com posse da nova diretoria</b>22 de maio de 2024</p></a>
+  <div class="stage">
+    <svg class="arcs arcs-d" viewBox="0 0 600 680" aria-hidden="true" focusable="false"><path class="halo" pathLength="1" d="M180 195A170 170 0 1 1 10 365"/><path class="a1" pathLength="1" d="M114 262C114 322 132 365 180 365"/><path class="a2" pathLength="1" d="M240 250C204 262 180 302 180 365"/><path class="a3" pathLength="1" d="M236 449C232 402 214 365 180 365"/><circle class="node" cx="180" cy="365" r="15"/></svg>
+    <svg class="arcs arcs-m" viewBox="0 0 360 300" aria-hidden="true" focusable="false"><path class="halo" pathLength="1" d="M146 60A90 90 0 1 1 56 150"/><path class="a1" pathLength="1" d="M65 130C65 143 96 150 146 150"/><path class="a2" pathLength="1" d="M158 70C150 92 146 118 146 150"/><path class="a3" pathLength="1" d="M144 226C154 204 146 178 146 150"/><circle class="node" cx="146" cy="150" r="9"/></svg>
+    <figure class="ph ph1"><img src="assets/img/jogos-2024.jpg" alt="Entrega de troféu durante o encerramento dos 12º Jogos Entre Empresas" width="1400" height="925" fetchpriority="high"><figcaption>12º Jogos Entre Empresas</figcaption></figure>
+    <figure class="ph ph3"><img src="assets/img/voz-unica-2024.jpg" alt="Representantes de entidades de Indaial reunidos diante do logotipo da ACIDI na entrega do Documento Voz Única" width="688" height="676"><figcaption>Voz Única · 2024</figcaption></figure>
+    <figure class="ph ph2"><img src="assets/img/feijoada-pessoas.jpg" alt="Grande grupo de associados reunidos no palco da Feijoada da ACIDI" width="1720" height="570"><figcaption>Feijoada da ACIDI</figcaption></figure>
   </div>
 </div></section>
 
@@ -387,30 +408,14 @@ paginas.append(page('index.html', 'ACIDI – Associação Empresarial de Indaial
   </div>
 </div></section>
 
-<section class="sec alt biz" aria-labelledby="h-biz"><div class="wrap grid12">
-  <div class="head">
-    <span class="kicker">Para seu negócio</span>
-    <h2 id="h-biz" class="hl sec-t">Serviços para a <b>gestão da empresa</b></h2>
-    <p class="lead" style="font-size:1.04rem">Soluções oferecidas aos associados, várias delas em parceria com a FACISC, para tornar a empresa mais competitiva.</p>
-    <div><a class="btn btn-s" href="para-seu-negocio.html">Todos os serviços</a></div>
+<section class="sec alt biz" aria-labelledby="h-biz"><div class="wrap">
+  <div class="biz-h">
+    <div><span class="kicker">Para seu negócio</span><h2 id="h-biz" class="hl sec-t">Serviços para a <b>gestão da empresa</b></h2></div>
+    <p class="lead">Soluções oferecidas aos associados, várias delas em parceria com a FACISC, para tornar a empresa mais competitiva.</p>
   </div>
-  <ul class="idx">{idx_items}</ul>
+  <div class="svx" data-svx>{svx}<span class="svx-mark" aria-hidden="true"></span></div>
+  <p class="biz-all"><a class="tlink" href="para-seu-negocio.html">Ver todos os serviços em detalhe</a></p>
 </div></section>
-
-<section class="sec rep on-dark" aria-labelledby="h-rep">
-  <span class="disc" aria-hidden="true"></span>
-  <div class="wrap">
-    <span class="kicker">Representatividade</span>
-    <h2 id="h-rep" class="hl sec-t">A voz do empresário <b>junto ao poder público</b></h2>
-    <p class="lead">A ACIDI mobiliza lideranças, promove reuniões e debates e reivindica soluções para as empresas e a sociedade de Indaial e região. Alguns pleitos defendidos pela associação:</p>
-    <div class="levels">
-      <section><h3>Federal</h3><ul><li>Duplicação da BR-470</li><li>Aeroporto Internacional de Navegantes</li><li>Prevenção de enchentes: monitoramento e barragens</li></ul></section>
-      <section><h3>Estadual</h3><ul><li>Reforma e revitalização da SC-412 (Jorge Lacerda)</li><li>Anel de Contorno Urbano de Gaspar</li></ul></section>
-      <section><h3>Municipal</h3><ul><li>Segurança pública</li><li>Corpo de Bombeiros Voluntários</li><li>Hospital Beatriz Ramos</li></ul></section>
-    </div>
-    <div class="more"><a class="btn btn-w" href="representatividade.html">Conhecer a atuação {ico('go', 'ico go')}</a></div>
-  </div>
-</section>
 
 <section class="sec" aria-labelledby="h-news"><div class="wrap">
   <div class="sec-h"><div><span class="kicker">Acontece</span><h2 id="h-news" class="hl sec-t">Notícias <b>e agenda</b></h2></div><a class="tlink" href="noticias.html">Todas as notícias</a></div>
@@ -424,6 +429,15 @@ paginas.append(page('index.html', 'ACIDI – Associação Empresarial de Indaial
       <div class="ctas"><a class="tlink" href="agenda.html#arquivo">Arquivo da agenda</a><a class="tlink" href="contato.html">Contato</a></div>
     </aside>
   </div>
+</div></section>
+
+<section class="sec rep on-dark" aria-labelledby="h-rep"><div class="wrap">
+  <div class="rep-h">
+    <div><span class="kicker">Representatividade</span><h2 id="h-rep" class="hl sec-t">A voz do empresário <b>junto ao poder público</b></h2></div>
+    <p class="lead">A ACIDI mobiliza lideranças, promove reuniões e debates e reivindica soluções para as empresas e a sociedade de Indaial e região. Alguns pleitos defendidos pela associação, de Indaial ao país:</p>
+  </div>
+  {escalas(['Segurança pública', 'Corpo de Bombeiros Voluntários', 'Hospital Beatriz Ramos'], ['Reforma e revitalização da SC-412 (Jorge Lacerda)', 'Anel de Contorno Urbano de Gaspar'], ['Duplicação da BR-470', 'Aeroporto Internacional de Navegantes', 'Prevenção de enchentes: monitoramento e barragens'])}
+  <div class="more"><a class="btn btn-w" href="representatividade.html">Conhecer a atuação {ico('go', 'ico go')}</a></div>
 </div></section>
 
 <section class="sec alt tight" aria-labelledby="h-aud"><div class="wrap grid12" style="align-items:center">
@@ -462,6 +476,11 @@ paginas.append(page('historico.html', 'A ACIDI e sua história' + SUF, 'Históri
     </ul>
     <figure style="margin:16px 0 0"><div class="photo" style="border-radius:var(--r);aspect-ratio:3/2"><img src="assets/img/posse-2024.jpg" alt="Diretoria e convidados na cerimônia de posse e comemoração dos 35 anos da ACIDI" loading="lazy"></div><figcaption class="cap">Comemoração dos 35 anos e posse da diretoria, maio de 2024.</figcaption></figure>
   </div>
+</div></section>
+<section class="sec alt faces" aria-labelledby="h-faces"><div class="wrap">
+  <div class="sec-h"><div><span class="kicker">Quem conduziu</span><h2 id="h-faces" class="hl sec-t">Empresários que <b>presidiram a ACIDI</b></h2></div><a class="tlink" href="ex-presidentes.html">Todos os ex-presidentes</a></div>
+  <ul class="strip">{''.join(f'<li><div class="pf"><img src="assets/img/{f}" alt="Retrato de {n}" loading="lazy"></div><span>{n}</span></li>' for f, n in [('p-fey.jpg', 'Adolfo Fey'), ('p-wanke.jpg', 'Artur Wanke'), ('p-schmitt.jpg', 'Wilson Jacob Schmitt'), ('p-hersing.jpg', 'Gunther Hersing'), ('p-schulz.jpg', 'Landolino Schulz'), ('p-cardoso.jpg', 'José Cardoso'), ('p-voss.jpg', 'Osmar Voss'), ('p-benke.jpg', 'Ivo Benke'), ('p-keunecke.jpg', 'Ademar Jacobsen Keunecke'), ('p-howe.jpg', 'Harrybert Howe Junior')])}</ul>
+  <p class="muted strip-n">Retratos disponíveis, na ordem publicada pela ACIDI. Períodos de cada gestão na página de ex-presidentes.</p>
 </div></section>
 {join_box()}'''))
 
@@ -512,13 +531,8 @@ paginas.append(page('representatividade.html', 'Representatividade' + SUF, 'Como
   </div>
 </div></section>
 <section class="sec rep on-dark" style="padding-top:72px" aria-label="Pleitos por esfera">
-  <span class="disc" aria-hidden="true"></span>
   <div class="wrap">
-    <div class="levels" style="margin-top:0">
-      <section><h3>Federal</h3><ul><li>Duplicação da BR-470</li><li>Aeroporto Internacional de Navegantes</li><li>Bacia de Evolução do Porto Itajaí/Navegantes</li><li>Sistema de prevenção de enchentes: monitoramento e barragens</li><li>Pacto Federativo</li></ul></section>
-      <section><h3>Estadual</h3><ul><li>Reforma e revitalização da Rodovia SC-412 (Jorge Lacerda)</li><li>Anel de Contorno Urbano de Gaspar</li></ul></section>
-      <section><h3>Municipal</h3><ul><li>Segurança pública</li><li>Corpo de Bombeiros Voluntários</li><li>Hospital Beatriz Ramos</li><li>Ações sociais</li></ul></section>
-    </div>
+    {escalas(['Segurança pública', 'Corpo de Bombeiros Voluntários', 'Hospital Beatriz Ramos', 'Ações sociais'], ['Reforma e revitalização da Rodovia SC-412 (Jorge Lacerda)', 'Anel de Contorno Urbano de Gaspar'], ['Duplicação da BR-470', 'Aeroporto Internacional de Navegantes', 'Bacia de Evolução do Porto Itajaí/Navegantes', 'Sistema de prevenção de enchentes: monitoramento e barragens', 'Pacto Federativo'])}
     <div class="councils">
       <h3>Participação em <b>conselhos municipais</b></h3>
       <p>Indústria e Comércio · Turismo · Saúde · Educação · Trânsito · Defesa Civil · Direitos da Criança e do Adolescente · Saneamento Ambiental · Administração HBR · Políticas Esportivas</p>
@@ -614,11 +628,19 @@ paginas.append(page('agenda.html', 'Agenda' + SUF, 'Agenda de eventos da ACIDI: 
 </div>'''))
 
 # Auditório
-gal = ''.join(f'<div class="photo"><img src="assets/img/auditorio-{i}.jpg" alt="{a}" loading="lazy"></div>' for i, a in enumerate(['Auditório da ACIDI com cadeiras verdes e telão', 'Auditório visto da lateral, com fileiras de cadeiras', 'Fileiras de cadeiras do auditório', 'Sala com mesa de reunião', 'Sala de reunião com mesa grande e janelas', 'Cadeiras dispostas em sala da ACIDI'], 1))
+# Galeria só com navegação manual. Sem JS, as miniaturas abrem a imagem. (arquivo, alt, enquadramento)
+GAL = [('auditorio-1.jpg', 'Auditório da ACIDI com cadeiras verdes e telão', '50% 70%'), ('auditorio-2.jpg', 'Auditório visto da lateral, com fileiras de cadeiras', '50% 60%'),
+       ('auditorio-3.jpg', 'Sala com mesa de reunião', '50% 55%'), ('auditorio-4.jpg', 'Sala de reunião com mesa grande e janelas', '50% 50%'),
+       ('auditorio-5.jpg', 'Fileiras de cadeiras em sala da ACIDI', '50% 65%'), ('auditorio-6.jpg', 'Cadeiras com apoio para escrita em sala da ACIDI', '50% 60%')]
+gal = f'''<div class="gv" data-gv>
+  <figure class="gv-main"><div class="photo"><img src="assets/img/{GAL[0][0]}" alt="{GAL[0][1]}" style="object-position:{GAL[0][2]}" width="900" height="601"></div>
+    <figcaption><span class="gv-c" aria-live="polite"><b>1</b> / {len(GAL)} · <span class="gv-t">{GAL[0][1]}</span></span><span class="gv-nav" hidden><button type="button" class="gv-prev" aria-label="Foto anterior">{ico('back')}</button><button type="button" class="gv-next" aria-label="Próxima foto">{ico('go')}</button></span></figcaption></figure>
+  <ul class="gv-th">{''.join(f'<li><a href="assets/img/{f}" data-pos="{pos}"{' aria-current="true"' if k == 0 else ''}><img src="assets/img/{f}" alt="{a}" style="object-position:{pos}" loading="lazy"></a></li>' for k, (f, a, pos) in enumerate(GAL))}</ul>
+</div>'''
 paginas.append(page('auditorio.html', 'Auditório e salas' + SUF, 'Auditório para 170 pessoas e salas climatizadas na sede da ACIDI, em Indaial. Solicitação demonstrativa.', crumbs([('index.html', 'Início'), ('para-seu-negocio.html', 'Para seu negócio'), (None, 'Auditório e salas')]) + phead(
  'Para seu negócio · Espaços', 'Realize seu evento <b>na ACIDI</b>', 'Para atender associados e a comunidade, a ACIDI disponibiliza para locação salas para reuniões e treinamentos e seu auditório.') + f'''
 <section class="sec tight"><div class="wrap" style="display:grid;gap:48px">
-  <div class="gallery">{gal}</div>
+  {gal}
   <div class="keyfacts"><div><b>170</b><span>pessoas de capacidade no auditório</span></div><div><b>Salas</b><span>para reuniões, treinamentos e outras atividades</span></div><div><b>Climatizados</b><span>todos os espaços, com valor diferenciado para associados</span></div></div>
 </div></section>
 <section class="sec alt" aria-labelledby="h-sol"><div class="wrap formwrap">
