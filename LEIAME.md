@@ -44,6 +44,8 @@ assets/css/fonts.css    declaração das fontes locais
 assets/fonts/           Archivo e Public Sans (woff2, latin e latin-ext) e licenças OFL
 assets/js/site.js       menus, agenda por data e validação dos formulários
 assets/img/             fotos e logos fornecidos pela ACIDI
+assets/video/           filme "Ponto de encontro" otimizado para a web e pôsteres
+motion/ponto-de-encontro/  fonte HyperFrames do filme (editar e renderizar: ver o LEIAME de lá)
 ferramentas/gerar_site.py  gera os HTML a partir de um cabeçalho/rodapé único e do conteúdo
 testes/                 testes de lógica, links e jornadas em navegador
 docs/DOCUMENTACAO.md    fontes, decisões, testes e pendências

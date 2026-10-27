@@ -32,7 +32,7 @@ def cap(page, nome, full=False):
     if full:  # full_page com emulação móvel repete o topo no fim; janela da altura da página evita isso
         vp = page.viewport_size
         page.set_viewport_size({'width': vp['width'], 'height': page.evaluate('document.documentElement.scrollHeight')})
-        page.wait_for_timeout(400)
+        page.wait_for_timeout(1400)  # deixa a revelação ao rolar terminar
         page.screenshot(path=str(CAPS / f'{nome}.jpg'), type='jpeg', quality=72)
         page.set_viewport_size(vp)
         return
@@ -235,9 +235,29 @@ with sync_playwright() as p:
     pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
     cap(pg, 'celular-00-inicio-pagina-inteira', full=True); ctx.close()
 
+    # ---------------- sistema de movimento: cabeçalho, revelação ao rolar e filme HyperFrames
+    ctx = nav.new_context(viewport={'width': 1440, 'height': 900})
+    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
+    ok('Movimento: nada da primeira dobra espera revelação', pg.evaluate("[...document.querySelectorAll('.rv')].every(e => e.getBoundingClientRect().top >= innerHeight)"))
+    ok('Movimento: cabeçalho muda ao rolar sem mudar de altura', pg.evaluate("(async () => { const h = document.querySelector('header.site').offsetHeight; scrollTo({top: 400, behavior: 'instant'}); await new Promise(r => setTimeout(r, 100)); return document.documentElement.classList.contains('rolou') && document.querySelector('header.site').offsetHeight === h })()"))
+    pg.evaluate("document.querySelector('.film').scrollIntoView({block: 'center', behavior: 'instant'})"); pg.wait_for_timeout(1500)
+    ok('Filme: toca ao entrar na tela, a partir do primeiro quadro', pg.evaluate("(() => { const v = document.querySelector('.film video'); return !v.paused && v.currentTime > 0.3 && v.poster.endsWith('-inicio.jpg') })()"))
+    pg.locator('.film-ctl').click()
+    ok('Filme: botão pausa e informa o estado', pg.evaluate("document.querySelector('.film video').paused && document.querySelector('.film').dataset.estado === 'pausado'") and pg.locator('.film-ctl .f-play').is_visible())
+    pg.locator('.film-ctl').press('Enter')
+    ok('Filme: teclado retoma', pg.evaluate("!document.querySelector('.film video').paused"))
+    for y in range(0, pg.evaluate('document.documentElement.scrollHeight'), 500):
+        pg.evaluate(f"scrollTo({{top: {y}, behavior: 'instant'}})"); pg.wait_for_timeout(120)
+    pg.wait_for_timeout(1300)
+    ok('Movimento: ao rolar até o fim, todo conteúdo revelado', pg.locator('.rv').count() == 0)
+    ctx.close()
+
     # ---------------- movimento reduzido: composição final imediata, funções iguais
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html')
+    ok('Reduzido: nenhum conteúdo oculto para revelação', pg.locator('.rv').count() == 0)
+    pg.evaluate("document.querySelector('.film').scrollIntoView({behavior: 'instant'})"); pg.wait_for_timeout(800)
+    ok('Reduzido: filme parado no quadro final, com botão para tocar', pg.evaluate("(() => { const v = document.querySelector('.film video'); return v.paused && v.currentTime === 0 && v.poster.endsWith('-poster.jpg') })()") and pg.locator('.film-ctl .f-play').is_visible())
     ok('Reduzido: fotos da abertura já no lugar final', pg.evaluate("[...document.querySelectorAll('.ph')].every(f => getComputedStyle(f).opacity === '1' && getComputedStyle(f).transform === 'none')"))
     ok('Reduzido: atuação e fechamento já desenhados', pg.evaluate("[...document.querySelectorAll('[data-anim]')].every(e => e.classList.contains('on'))"))
     pg.locator('#svx-b-xml-empresarial').click()
@@ -250,6 +270,7 @@ with sync_playwright() as p:
     ok('Sem JS: abertura com título, botão e fotos', pg.locator('.hero h1').is_visible() and pg.locator('.hero .btn-p').is_visible() and pg.locator('.ph img').count() == 3)
     ok('Sem JS: os 7 serviços visíveis em cartões', pg.locator('.svx-p:visible').count() == 7 and pg.locator('.svx-b:visible').count() == 0)
     ok('Sem JS: ondas e arco já desenhados', pg.evaluate("getComputedStyle(document.querySelector('.ondas .o3')).strokeDashoffset === '0px'"))
+    ok('Sem JS: filme mostra o quadro final, sem botão inútil', pg.evaluate("document.querySelector('.film video').poster.endsWith('-poster.jpg')") and pg.locator('.film-ctl').is_hidden())
     pg.locator('#h-biz').scroll_into_view_if_needed(); cap(pg, 'desktop-14-sem-js-servicos')
     pg.goto(BASE + 'auditorio.html')
     ok('Sem JS: miniaturas da galeria abrem a imagem', pg.locator('.gv-th a[href$="auditorio-3.jpg"]').count() == 1 and pg.locator('.gv-nav').is_hidden())

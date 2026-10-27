@@ -1,0 +1,11 @@
+{
+  "name": "ponto-de-encontro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.208 preview",
+    "check": "npx --yes hyperframes@0.8.208 check",
+    "render": "npx --yes hyperframes@0.8.208 render --quality delivery --output renders/ponto-de-encontro.mp4",
+    "web": "ffmpeg -v error -y -i renders/ponto-de-encontro.mp4 -an -c:v libx264 -preset slow -crf 26 -pix_fmt yuv420p -profile:v high -movflags +faststart ../../assets/video/ponto-de-encontro.mp4 && ffmpeg -v error -y -i renders/ponto-de-encontro.mp4 -frames:v 1 -q:v 4 ../../assets/video/ponto-de-encontro-inicio.jpg && ffmpeg -v error -y -sseof -0.05 -i renders/ponto-de-encontro.mp4 -frames:v 1 -q:v 3 ../../assets/video/ponto-de-encontro-poster.jpg"
+  }
+}
