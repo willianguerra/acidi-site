@@ -220,7 +220,7 @@ def header(page):
     here_n = ' here' if page in ('para-seu-negocio.html', 'auditorio.html') else ''
     sheet_links = lambda items: ''.join(f'<a href="{h}"{cur(h, page) if "#" not in h else ""}>{t}</a>' for h, t, *_ in items)
     return f'''<div class="util"><div class="wrap">
-  <span>(47) 3333-8786</span><span>comunicacao@acidi.net</span>
+  <span>(47) 3333-8786</span><span>contato@acidi.net</span>
   <span class="r">{ext(INSTA, 'Instagram')}{ext(FACE, 'Facebook')}</span>
 </div></div>
 <header class="site"><div class="wrap">
@@ -716,7 +716,7 @@ paginas.append(page('contato.html', 'Contato' + SUF, 'Telefone, WhatsApp, e-mail
     <dl class="contact-list">
       <div><dt>Telefone e WhatsApp</dt><dd>(47) 3333-8786<small>{ext(WHATS, 'Abrir conversa no WhatsApp', 'tlink')}</small></dd></div>
       <div><dt>E-mail</dt><dd>contato@acidi.net</dd></div>
-      <div><dt>E-mail de comunicação</dt><dd>comunicacao@acidi.net</dd></div>
+      <div><dt>E-mail de comunicação</dt><dd>contato@acidi.net</dd></div>
       <div><dt>Endereço</dt><dd>Rua Ver. Alvin Rauh Júnior, 100<br>Nações, Indaial/SC · CEP 89082-065<small>{ext(MAPA, 'Abrir no mapa', 'tlink')}</small></dd></div>
       <div><dt>Redes sociais</dt><dd><small>{ext(INSTA, 'Instagram', 'tlink')} &nbsp; {ext(FACE, 'Facebook', 'tlink')}</small></dd></div>
     </dl>

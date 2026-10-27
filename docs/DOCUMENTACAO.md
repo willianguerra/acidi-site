@@ -23,7 +23,7 @@ Todo o texto foi relido no site oficial em 26/10/2026 e adaptado com edição le
 | Auditório: 170 pessoas, espaços climatizados, valor diferenciado para associados, agendamento prévio | https://www.acidi.net/reservar-auditorio/ |
 | Agenda (6 registros, o mais recente em 25/02/2026) | https://www.acidi.net/agenda/ |
 | Contato: contato@acidi.net e (47) 3333-8786 | https://www.acidi.net/contato/ |
-| E-mail comunicacao@acidi.net e endereço | cabeçalho e rodapé de https://www.acidi.net/ |
+| E-mail contato@acidi.net e endereço | cabeçalho e rodapé de https://www.acidi.net/ |
 | 10 notícias, com data original de publicação | https://www.acidi.net/blog/ e cada matéria |
 
 Datas originais das notícias (meta `article:published_time`): 11/04/2025 (2), 19/12/2024 (2), 03/12/2024, 19/09/2024, 08/07/2024, 17/06/2024, 23/05/2024, 03/04/2024.
@@ -60,7 +60,7 @@ Não usadas por falta de identificação: diplomação (o nome do arquivo não i
 - **Agenda:** os seis registros oficiais já passaram em 26/10/2026. O navegador separa próximos e arquivo pela data do dia (`assets/js/site.js`); sem eventos futuros, aparece "Nenhum próximo evento publicado", com acesso ao arquivo e ao contato. A classificação foi testada simulando outra data.
 - **Boa Vista SCPC:** os números institucionais do parceiro (anos de atuação, clientes e consultas) foram omitidos por serem dados de terceiros que podem estar desatualizados.
 - **Associe-se:** benefícios tirados apenas do conteúdo publicado. Não há etapas, documentos, valores ou condições inventadas; a orientação é falar com a equipe.
-- **E-mails:** o cabeçalho mantém comunicacao@acidi.net (como no site oficial); Contato e rodapé mantêm contato@acidi.net. A página Contato mostra os dois. A padronização fica como pendência.
+- **E-mails:** o cabeçalho mantém contato@acidi.net (como no site oficial); Contato e rodapé mantêm contato@acidi.net. A página Contato mostra os dois. A padronização fica como pendência.
 - **Política de privacidade:** não há link nem texto, porque nenhum texto aprovado foi fornecido.
 
 ## 4. Formulários
