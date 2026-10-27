@@ -150,6 +150,61 @@
     anims.forEach(function (el) { io.observe(el); });
   }
 
+  // Cabeçalho: sombra e marca compacta depois de rolar
+  var html = doc.documentElement, rolou = false;
+  function cabecalho() {
+    var r = root.scrollY > 8;
+    if (r !== rolou) { rolou = r; html.classList.toggle('rolou', r); }
+  }
+  root.addEventListener('scroll', cabecalho, { passive: true });
+  cabecalho();
+
+  // Revelação discreta ao rolar: só abaixo da primeira dobra, uma vez; grupos (seletor > filhos) entram em stagger leve.
+  // As seções com verbo próprio (serviços, atuação, fechamento, abertura) ficam de fora.
+  var SOLOS = '.sec-h,.biz-h,.rep-h,.about .ph-col,.about .txt,.sec.alt.tight .grid12>*,.part .wrap>div:first-child,.join .box,.block>h2,.councils,.gv,.keyfacts,.formwrap>*,.article-fig,.svc';
+  var GRUPOS = '.rail .wrap,.news-home,.part ul,.news-list,.people,.portraits,.strip,footer .cols';
+  if (!reduzido && IO) {
+    var dobra = root.innerHeight, alvos = [];
+    function pegar(el, i) {
+      if (el.getBoundingClientRect().top < dobra) return;
+      el.style.setProperty('--i', Math.min(i, 5));
+      el.classList.add('rv'); alvos.push(el);
+    }
+    [].forEach.call(doc.querySelectorAll(SOLOS), function (el) { pegar(el, 0); });
+    [].forEach.call(doc.querySelectorAll(GRUPOS), function (g) {
+      [].forEach.call(g.children, function (el, i) { if (!el.classList.contains('rv')) pegar(el, i); });
+    });
+    var iorv = new IO(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        iorv.unobserve(el);
+        el.classList.add('vis');
+        // devolve as transições próprias do elemento (hover etc.) depois da entrada
+        setTimeout(function () { el.classList.remove('rv', 'vis'); el.style.removeProperty('--i'); }, 1100);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    alvos.forEach(function (el) { iorv.observe(el); });
+  }
+
+  // Filme da seção Quem somos (HyperFrames): toca uma vez ao entrar na tela; com movimento reduzido, só o pôster (quadro final).
+  [].forEach.call(doc.querySelectorAll('[data-film]'), function (fig) {
+    var v = fig.querySelector('video'), btn = fig.querySelector('.film-ctl');
+    function estado() { fig.setAttribute('data-estado', v.ended ? 'fim' : v.paused ? 'pausado' : 'tocando'); }
+    function tocar() { var p = v.play(); if (p && p.catch) p.catch(estado); }
+    ['play', 'pause', 'ended'].forEach(function (ev) { v.addEventListener(ev, estado); });
+    btn.addEventListener('click', function () { if (v.paused || v.ended) tocar(); else v.pause(); estado(); });
+    estado();
+    btn.hidden = false;
+    if (reduzido || !IO) return;
+    // com movimento, o pôster passa a ser o primeiro quadro, para o filme não saltar do fim ao início
+    v.poster = v.poster.replace('-poster.jpg', '-inicio.jpg');
+    var iof = new IO(function (es) {
+      if (es[0].isIntersecting) { iof.disconnect(); tocar(); }
+    }, { threshold: 0.6 });
+    iof.observe(fig);
+  });
+
   // Barra fixa do celular: escondida enquanto uma chamada de associação [data-cta] está visível
   var ctas = [].slice.call(doc.querySelectorAll('[data-cta]'));
   if (ctas.length && IO) {

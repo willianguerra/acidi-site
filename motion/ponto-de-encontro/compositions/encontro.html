@@ -1,0 +1,77 @@
+<template>
+  <style>
+    @font-face { font-family: "Archivo"; font-weight: 100 900; font-stretch: 62% 125%; src: url("assets/fonts/archivo-latin.woff2") format("woff2"); }
+    @font-face { font-family: "Public Sans"; font-weight: 100 900; src: url("assets/fonts/public-sans-latin.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; background: #0b3d24; }
+    #enc-cam { position: absolute; inset: 0; transform-origin: 30% 50%; }
+    #enc-cam img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #enc-campo { position: absolute; left: 720px; top: 0; right: 0; bottom: 0; background: var(--campo); }
+    .enc-f { position: absolute; margin: 0; overflow: hidden; border-radius: 6px; background: #0b3d24; box-shadow: 0 24px 40px -24px rgba(11, 61, 36, 0.7); }
+    .enc-f img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    #enc-f1 { left: 610px; top: 70px; width: 340px; height: 226px; }
+    #enc-f1 img { object-position: 55% 45%; }
+    #enc-f2 { left: 948px; top: 130px; width: 240px; height: 142px; }
+    /* recorte acima do título embutido na arte do Networkaffee */
+    #enc-f2 img { width: 130%; height: auto; margin-left: -15%; }
+    #enc-f3 { left: 944px; top: 500px; width: 236px; height: 166px; }
+    #enc-f3 img { object-position: 50% 30%; }
+    #enc-f4 { left: 640px; top: 540px; width: 280px; height: 186px; }
+    #enc-arcos { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    #enc-arcos path { fill: none; stroke: rgba(255, 255, 255, 0.85); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; }
+    #enc-arcos #enc-halo { stroke: rgba(255, 255, 255, 0.4); stroke-width: 1.5; }
+    #enc-no { fill: var(--no); transform-box: fill-box; transform-origin: center; }
+    #enc-tag { position: absolute; left: 48px; bottom: 48px; background: #0b3d24; color: #fff; padding: 22px 28px 24px; border-radius: 6px; }
+    #enc-tag .k { display: block; font: 600 22px/1.2 "Public Sans", sans-serif; letter-spacing: 0.12em; text-transform: uppercase; color: #cfe3d5; margin-bottom: 8px; }
+    #enc-tag .t { display: block; font: 850 40px/1 "Archivo", sans-serif; font-stretch: 118%; letter-spacing: -0.02em; }
+    #enc-tag .t b { color: var(--no); font-weight: 850; }
+    .enc-w { display: inline-block; }
+  </style>
+  <div id="root" data-composition-id="encontro" data-width="1200" data-height="800">
+    <div id="enc-base" class="clip" data-start="0" data-duration="10" data-track-index="0" style="position:absolute;inset:0">
+      <div id="enc-cam"><img src="assets/img/sede.jpg" alt="" /></div>
+    </div>
+    <div id="enc-campo" class="clip" data-start="0" data-duration="10" data-track-index="1"></div>
+    <div id="enc-fotos" class="clip" data-start="0" data-duration="10" data-track-index="2" style="position:absolute;inset:0" data-layout-allow-overlap>
+      <figure class="enc-f" id="enc-f1"><img src="assets/img/posse-2024.jpg" alt="" /></figure>
+      <figure class="enc-f" id="enc-f2" data-layout-allow-overflow><img src="assets/img/networkaffee-2024.jpg" alt="" /></figure>
+      <figure class="enc-f" id="enc-f3"><img src="assets/img/comitiva-2025.jpg" alt="" /></figure>
+      <figure class="enc-f" id="enc-f4"><img src="assets/img/contabilidade-2025.jpg" alt="" /></figure>
+    </div>
+    <svg id="enc-arcos" class="clip" data-start="0" data-duration="10" data-track-index="3" viewBox="0 0 1200 800" data-layout-ignore>
+      <path id="enc-a1" pathLength="1" d="M780 296C780 355 820 410 890 410" />
+      <path id="enc-a2" pathLength="1" d="M948 201C915 240 890 320 890 410" />
+      <path id="enc-a3" pathLength="1" d="M990 500C970 455 940 410 890 410" />
+      <path id="enc-a4" pathLength="1" d="M780 540C783 470 825 410 890 410" />
+      <path id="enc-halo" pathLength="1" d="M890 346A64 64 0 1 1 826 410" />
+      <circle id="enc-no" cx="890" cy="410" r="18" />
+    </svg>
+    <div id="enc-tag" class="clip" data-start="0" data-duration="10" data-track-index="4">
+      <span class="k"><span class="enc-w">Indaial</span> <span class="enc-w">·</span> <span class="enc-w">SC</span></span>
+      <span class="t"><span class="enc-w" data-var-text="linha1">Desde</span> <b class="enc-w" data-var-text="linha2">1989</b></span>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    const S = ""; // ids já têm o prefixo enc-
+    // câmera: um único movimento que abre espaço ao campo
+    tl.fromTo(S + "#enc-cam", { scale: 1.1, x: 0 }, { scale: 1, x: -150, duration: 2.4, ease: "power2.inOut" }, 0);
+    // campo verde entra pela borda direita
+    tl.fromTo(S + "#enc-campo", { clipPath: "inset(0 0 0 100%)" }, { clipPath: "inset(0 0 0 0%)", duration: 0.9, ease: "power3.inOut" }, 1.5);
+    // fotos chegam ao campo vindas de fora, em direção ao nó
+    const fora = [[-24, -24], [28, -18], [28, 22], [-22, 28]];
+    fora.forEach(([dx, dy], i) => {
+      tl.fromTo(S + "#enc-f" + (i + 1), { opacity: 0, x: dx, y: dy, filter: "blur(6px)" },
+        { opacity: 1, x: 0, y: 0, filter: "blur(0px)", duration: 0.8, ease: "expo.out" }, 2.3 + i * 0.32);
+    });
+    // arcos convergem no mesmo ponto
+    [1, 2, 3, 4].forEach((n, i) => {
+      tl.fromTo(S + "#enc-a" + n, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" }, 3.4 + i * 0.2);
+    });
+    tl.fromTo(S + "#enc-no", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.45, ease: "expo.out" }, 5.3);
+    tl.fromTo(S + "#enc-halo", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.1, ease: "power2.inOut" }, 5.5);
+    // etiqueta: bloco abre, palavras entram com blur, sem deslocamento
+    tl.fromTo(S + "#enc-tag", { clipPath: "inset(0 100% 0 0 round 6px)" }, { clipPath: "inset(0 0% 0 0 round 6px)", duration: 0.5, ease: "power3.inOut" }, 6.2);
+    tl.fromTo(S + "#enc-tag .enc-w", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power4.out", stagger: 0.07 }, 6.5);
+    window.__timelines["encontro"] = tl;
+  </script>
+</template>

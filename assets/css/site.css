@@ -34,15 +34,18 @@ p{margin:0}
 .ext-i{width:.85em;height:.85em;display:inline-block;vertical-align:-.05em;margin-left:.25em}
 
 /* botões e links */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 24px;border-radius:var(--r);font:600 1rem/1.1 var(--texto);text-decoration:none;border:1.5px solid transparent;transition:background .2s,border-color .2s,color .2s;cursor:pointer;text-align:center}
-.btn .ico{width:18px;height:18px;transition:transform .2s}
-.btn:hover .ico.go{transform:translateX(3px)}
-.btn-p{background:var(--acao);color:#fff}.btn-p:hover{background:var(--acao-h)}
-.btn-s{border-color:var(--tinta);color:var(--tinta);background:transparent}.btn-s:hover{background:var(--tinta);color:#fff}
-.btn-y{background:var(--amarelo);color:var(--tinta)}.btn-y:hover{background:#fff}
-.btn-w{border-color:#fff;color:#fff;background:transparent}.btn-w:hover{background:#fff;color:var(--mata)}
-.tlink{display:inline-block;padding-block:6px;font-weight:600;color:var(--acao);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px}
-.tlink:hover{color:var(--acao-h)}
+/* hover e foco por teclado respondem igual; resposta de interface em 200 ms */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 24px;border-radius:var(--r);font:600 1rem/1.1 var(--texto);text-decoration:none;border:1.5px solid transparent;transition:background .2s,border-color .2s,color .2s,box-shadow .2s,transform .2s var(--ease);cursor:pointer;text-align:center}
+.btn .ico{width:18px;height:18px;transition:transform .2s var(--ease)}
+.btn:hover,.btn:focus-visible{transform:translateY(-1px)}
+.btn:active{transform:none;transition-duration:.06s}
+.btn:hover .ico.go,.btn:focus-visible .ico.go{transform:translateX(3px)}
+.btn-p{background:var(--acao);color:#fff}.btn-p:hover,.btn-p:focus-visible{background:var(--acao-h);box-shadow:0 12px 20px -14px rgba(0,110,49,.9)}
+.btn-s{border-color:var(--tinta);color:var(--tinta);background:transparent}.btn-s:hover,.btn-s:focus-visible{background:var(--tinta);color:#fff}
+.btn-y{background:var(--amarelo);color:var(--tinta)}.btn-y:hover,.btn-y:focus-visible{background:#fff;box-shadow:0 12px 20px -14px rgba(0,0,0,.6)}
+.btn-w{border-color:#fff;color:#fff;background:transparent}.btn-w:hover,.btn-w:focus-visible{background:#fff;color:var(--mata)}
+.tlink{display:inline-block;padding-block:6px;font-weight:600;color:var(--acao);text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:1.5px;transition:color .2s,text-underline-offset .2s var(--ease),text-decoration-color .2s}
+.tlink:hover,.tlink:focus-visible{color:var(--acao-h);text-underline-offset:3px}
 .on-dark .tlink{color:#fff}
 .ctas{display:flex;gap:12px;flex-wrap:wrap}
 
@@ -51,23 +54,30 @@ p{margin:0}
 .util .wrap{display:flex;gap:24px;align-items:center;min-height:38px;flex-wrap:wrap}
 .util a{text-decoration:none}.util a:hover{color:#fff;text-decoration:underline}
 .util .r{margin-left:auto;display:flex;gap:18px}
-header.site{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--linha)}
+/* ao rolar, o cabeçalho ganha sombra e a marca recua um pouco; a altura não muda (nada pula) */
+header.site{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--linha);transition:box-shadow .25s,border-color .25s}
+.rolou header.site{border-bottom-color:transparent;box-shadow:0 14px 28px -22px rgba(11,61,36,.45)}
 header.site .wrap{display:flex;align-items:center;gap:28px;height:84px}
 .brand{display:block;flex:none}
-.brand img{width:189px;height:50px}
+.brand img{width:189px;height:50px;transform-origin:left center;transition:transform .25s var(--ease)}
+.rolou .brand img{transform:scale(.86)}
 nav.main{display:flex;align-items:center;gap:2px;margin-left:auto}
-nav.main>a,nav.main .dd>button{font:500 .98rem var(--texto);color:var(--tinta);background:none;border:0;padding:10px 13px;border-radius:var(--r);text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
-nav.main>a:hover,nav.main .dd>button:hover,nav.main .dd>button[aria-expanded="true"]{background:var(--nevoa)}
+nav.main>a,nav.main .dd>button{font:500 .98rem var(--texto);color:var(--tinta);background:none;border:0;padding:10px 13px;border-radius:var(--r);text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+nav.main>a:hover,nav.main>a:focus-visible,nav.main .dd>button:hover,nav.main .dd>button:focus-visible,nav.main .dd>button[aria-expanded="true"]{background:var(--nevoa)}
 nav.main [aria-current="page"],nav.main .dd>button.here{box-shadow:inset 0 -2px 0 var(--verde);border-radius:0}
 nav.main .dd{position:relative}
 nav.main .dd>button .ico{width:14px;height:14px;transition:transform .2s}
 nav.main .dd>button[aria-expanded="true"] .ico{transform:rotate(180deg)}
 .panel{position:absolute;top:calc(100% + 14px);left:-12px;width:580px;background:#fff;border:1px solid var(--linha);border-radius:10px;box-shadow:0 24px 48px -24px rgba(11,61,36,.35);padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:2px}
 .panel[hidden]{display:none}
+/* painel abre descendo 6 px (navegadores sem @starting-style abrem direto) */
+.panel{transition:opacity .18s var(--ease),transform .18s var(--ease)}
+@starting-style{.panel{opacity:0;transform:translateY(-6px)}}
 .panel .ph{grid-column:1/-1;font:600 .72rem var(--texto);letter-spacing:.12em;text-transform:uppercase;color:var(--cinza);padding:4px 12px 8px}
-.panel a{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:12px;border-radius:8px;text-decoration:none}
-.panel a:hover{background:var(--nevoa)}
-.panel a .ico{grid-row:span 2;color:var(--acao);margin-top:2px}
+.panel a{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;padding:12px;border-radius:8px;text-decoration:none;transition:background .15s}
+.panel a:hover,.panel a:focus-visible{background:var(--nevoa)}
+.panel a .ico{grid-row:span 2;color:var(--acao);margin-top:2px;transition:transform .2s var(--ease)}
+.panel a:hover .ico,.panel a:focus-visible .ico{transform:translateX(2px)}
 .panel a b{font-weight:600;font-size:.96rem}
 .panel a span{font-size:.84rem;color:var(--cinza);line-height:1.4}
 .panel.wide{width:640px;left:-140px}
@@ -76,6 +86,12 @@ nav.main .dd>button[aria-expanded="true"] .ico{transform:rotate(180deg)}
 /* menu móvel: <dialog> modal (foco contido, Esc e fundo inerte nativos) */
 dialog.sheet{margin:0;width:100%;max-width:100%;height:100%;max-height:100%;border:0;padding:0;background:#fff;color:var(--tinta)}
 dialog.sheet::backdrop{background:rgba(20,26,22,.5)}
+/* abre deslizando da direita e fecha pelo mesmo caminho; os grupos entram em sequência curta */
+dialog.sheet{opacity:0;transform:translateX(28px);transition:opacity .22s var(--ease),transform .3s var(--ease),overlay .3s allow-discrete,display .3s allow-discrete}
+dialog.sheet[open]{opacity:1;transform:none}
+@starting-style{dialog.sheet[open]{opacity:0;transform:translateX(28px)}}
+dialog.sheet[open] .grp,dialog.sheet[open] .in>.btn{animation:sobe .4s var(--ease) both;animation-delay:calc(60ms + var(--i,0) * 45ms)}
+.sheet .grp:nth-child(2){--i:1}.sheet .grp:nth-child(3){--i:2}.sheet .grp:nth-child(4){--i:3}.sheet .in>.btn{--i:4}
 .sheet .in{padding:max(12px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 40px max(20px,env(safe-area-inset-left,0px))}
 .sheet .top{display:flex;justify-content:space-between;align-items:center;height:64px;margin-bottom:8px}
 .sheet .top img{width:151px;height:40px}
@@ -104,6 +120,19 @@ dialog.sheet::backdrop{background:rgba(20,26,22,.5)}
 .phead:not(.photo-head)::after{content:"";position:absolute;right:max(-140px,calc((100vw - var(--max)) / 2 - 150px));top:-170px;width:420px;height:420px;pointer-events:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 420'%3E%3Cg fill='none' stroke='%23009D3D' stroke-width='1.5' opacity='.35'%3E%3Cpath d='M210 40a170 170 0 1 1-170 170'/%3E%3Cpath d='M210 100a110 110 0 1 1-110 110'/%3E%3C/g%3E%3Ccircle cx='210' cy='210' r='12' fill='%23FFED00'/%3E%3C/svg%3E") no-repeat center/contain}
 .phead.photo-head .pic{position:relative}
 .phead.photo-head .pic::before{content:"";position:absolute;left:22px;top:-22px;width:100%;aspect-ratio:3/2;background:var(--verde);border-radius:var(--r)}
+/* páginas internas: a mesma entrada do hero, mais curta; o campo verde sai de trás da foto */
+@media (prefers-reduced-motion:no-preference){
+  .phead .kicker,.phead h1,.phead .lead,.phead .side,.article-head>*{animation:sobe .6s var(--ease) both}
+  .phead h1,.article-head>:nth-child(2){animation-delay:.06s}
+  .phead .lead,.article-head>:nth-child(3){animation-delay:.12s}
+  .phead .side,.article-head>:nth-child(n+4){animation-delay:.18s}
+  .phead .pic .photo{animation:sobe .7s var(--ease) .1s both}
+  .phead.photo-head .pic::before{animation:campo .8s var(--ease) .3s both}
+  .phead:not(.photo-head)::after{animation:giro 1.1s var(--ease) .15s both}
+}
+@keyframes sobe{from{opacity:0;transform:translateY(14px)}}
+@keyframes campo{from{transform:translate(-22px,22px)}}
+@keyframes giro{from{opacity:0;transform:rotate(-30deg)}}
 
 /* utilitários de layout */
 .sec{padding-block:96px}
@@ -125,8 +154,8 @@ dialog.sheet::backdrop{background:rgba(20,26,22,.5)}
 .split{display:grid;grid-template-columns:4fr 8fr;gap:var(--g);align-items:start}
 .split>.aside{position:sticky;top:120px;display:grid;gap:18px}
 .localnav{display:grid;gap:2px;border-left:2px solid var(--linha)}
-.localnav a{padding:8px 0 8px 16px;margin-left:-2px;border-left:2px solid transparent;text-decoration:none;font-size:.95rem;color:var(--cinza)}
-.localnav a:hover{color:var(--tinta);border-left-color:var(--verde)}
+.localnav a{padding:8px 0 8px 16px;margin-left:-2px;border-left:2px solid transparent;text-decoration:none;font-size:.95rem;color:var(--cinza);transition:color .15s,border-color .15s}
+.localnav a:hover,.localnav a:focus-visible{color:var(--tinta);border-left-color:var(--verde)}
 
 /* ---------- home ---------- */
 /* Abertura "ponto de encontro": texto no branco; à direita, campo verde até a borda da tela,
@@ -154,16 +183,22 @@ dialog.sheet::backdrop{background:rgba(20,26,22,.5)}
 .ph3{--x:4%;--y:12%;--w:30%;--ar:1/1}
 .ph3 img{object-position:50% 80%}
 .ph2{--x:-8%;--y:68%;--w:64%;--ar:12/5}
+/* entrada: o texto aparece já no primeiro quadro e assenta em ~0,8 s; as fotos convergem logo depois; repouso em ~1,5 s */
 @media (prefers-reduced-motion:no-preference){
+  .hero .kicker,.hero h1 .l1,.hero h1 b,.hero .lead,.hero .ctas{animation:assenta .7s var(--ease) both}
+  .hero h1 .l1{animation-delay:.05s}.hero h1 b{animation-delay:.12s}
+  .hero .lead{animation-delay:.22s}.hero .ctas{animation-delay:.3s}
   .ph{animation:chega .7s var(--ease) both}
-  .ph1{--dx:18px;--dy:-12px;animation-delay:.08s}
-  .ph3{--dx:-16px;--dy:-14px;animation-delay:.16s}
-  .ph2{--dx:-14px;--dy:18px;animation-delay:.24s}
-  .arcs path{animation:traco .8s var(--ease-io) .3s both}
-  .arcs .halo{animation-duration:1.1s;animation-delay:.2s}
-  .arcs .a2{animation-delay:.4s}.arcs .a3{animation-delay:.5s}
-  .arcs .node{animation:no .36s var(--ease) .9s both}
+  .ph1{--dx:18px;--dy:-12px;animation-delay:.2s}
+  .ph3{--dx:-16px;--dy:-14px;animation-delay:.28s}
+  .ph2{--dx:-14px;--dy:18px;animation-delay:.36s}
+  .arcs path{animation:traco .8s var(--ease-io) .45s both}
+  .arcs .halo{animation-duration:1.1s;animation-delay:.35s}
+  .arcs .a2{animation-delay:.55s}.arcs .a3{animation-delay:.65s}
+  .arcs .node{animation:no .36s var(--ease) 1.05s both}
 }
+/* texto do hero: legível desde o primeiro quadro (e candidato a LCP); só assenta */
+@keyframes assenta{from{opacity:.4;transform:translateY(14px)}}
 @keyframes chega{from{opacity:0;transform:translate(var(--dx),var(--dy))}}
 @keyframes traco{from{stroke-dashoffset:1}}
 @keyframes no{from{opacity:0;transform:scale(.4)}}
@@ -172,13 +207,24 @@ dialog.sheet::backdrop{background:rgba(20,26,22,.5)}
 .rail .wrap{display:grid;grid-template-columns:200px repeat(4,1fr)}
 .rail .lab{padding:26px 0;font:600 .78rem/1.4 var(--texto);letter-spacing:.12em;text-transform:uppercase;color:var(--amarelo);align-self:center}
 .rail a{display:flex;align-items:center;gap:14px;padding:26px 22px;text-decoration:none;border-left:1px solid rgba(255,255,255,.14);transition:background .2s}
-.rail a:hover{background:rgba(255,255,255,.07)}
-.rail a>.ico{width:28px;height:28px;color:var(--amarelo)}
+.rail a:hover,.rail a:focus-visible{background:rgba(255,255,255,.07)}
+.rail a:focus-visible{outline-offset:-3px}
+.rail a>.ico{width:28px;height:28px;color:var(--amarelo);transition:transform .2s var(--ease)}
+.rail a:hover>.ico,.rail a:focus-visible>.ico{transform:translateY(-2px)}
 .rail a b{display:block;font:700 1.06rem/1.2 var(--display);font-stretch:108%}
 .rail a span span{font-size:.84rem;color:#C5DACB}
 
 .about .ph-col{grid-column:1/8;margin:0}
 .about .ph-col .photo{aspect-ratio:3/2;border-radius:var(--r)}
+/* filme HyperFrames (motion/ponto-de-encontro): pôster = quadro final, toca uma vez ao entrar na tela */
+.film video{display:block;width:100%;height:100%;object-fit:cover}
+.film-ctl{position:absolute;right:12px;bottom:12px;z-index:2;display:inline-flex;align-items:center;min-height:40px;padding:0 14px 0 10px;border:1px solid rgba(255,255,255,.28);border-radius:var(--r);background:rgba(11,61,36,.88);color:#fff;font:600 .82rem/1 var(--texto);cursor:pointer;transition:background .2s,transform .2s var(--ease)}
+.film-ctl:hover,.film-ctl:focus-visible{background:var(--mata);transform:translateY(-1px)}
+.film-ctl:focus-visible{outline-color:var(--amarelo)}
+.film-ctl>span{display:none;align-items:center;gap:8px}
+.film-ctl .ico{width:16px;height:16px}
+.film-ctl .f-play .ico{fill:currentColor}
+.film[data-estado="tocando"] .f-pause,.film[data-estado="pausado"] .f-play,.film[data-estado="fim"] .f-replay{display:inline-flex}
 .about .txt{grid-column:8/13;display:grid;gap:22px;align-content:start}
 .facts{display:grid;margin:8px 0 0;border-top:1px solid var(--linha)}
 .facts div{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--linha);font-size:.95rem}
@@ -188,12 +234,12 @@ dialog.sheet::backdrop{background:rgba(20,26,22,.5)}
 /* lista de índice (benefícios do Associe-se) */
 ul.idx{list-style:none;margin:0;padding:0;border-top:1.5px solid var(--tinta)}
 ul.idx li a{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr) 120px 28px;gap:24px;align-items:center;padding:24px 0;border-bottom:1px solid var(--linha);text-decoration:none;transition:padding .25s}
-ul.idx li a:hover{padding-left:12px}
+ul.idx li a:hover,ul.idx li a:focus-visible{padding-left:12px}
 ul.idx h3{font-size:1.45rem;font-weight:750;font-stretch:108%;line-height:1.1}
 ul.idx p{font-size:.95rem;color:var(--cinza);line-height:1.5}
 ul.idx .tag{font:600 .7rem var(--texto);letter-spacing:.1em;text-transform:uppercase;color:var(--cinza);text-align:center}
 ul.idx .arr{color:var(--acao);transition:transform .25s}
-ul.idx li a:hover .arr{transform:translateX(4px)}
+ul.idx li a:hover .arr,ul.idx li a:focus-visible .arr{transform:translateX(4px)}
 
 /* Serviços: lista + painel único. O marcador amarelo liga o item escolhido ao painel. */
 .biz-h{display:grid;grid-template-columns:5fr 7fr;gap:20px 48px;align-items:end;margin-bottom:44px}
@@ -206,7 +252,7 @@ ul.idx li a:hover .arr{transform:translateX(4px)}
 .svx-b .t{font:750 1.2rem/1.15 var(--display);font-stretch:106%}
 .svx-b .g{font:600 .68rem var(--texto);letter-spacing:.1em;text-transform:uppercase;color:var(--cinza)}
 .svx-b .chev{display:none;width:20px;height:20px;transition:transform .2s var(--ease)}
-.svx-b:hover{background:rgba(255,255,255,.75)}
+.svx-b:hover,.svx-b:focus-visible{background:rgba(255,255,255,.75)}
 .svx-b[aria-expanded="true"]{background:#fff}
 .svx-b[aria-expanded="true"] .n{color:var(--acao)}
 .svx-b:focus-visible{outline-offset:-3px;border-radius:0}
@@ -276,9 +322,11 @@ html:not(.js) .svx-p{grid-column:auto;grid-row:auto}
 .sec-h h2{margin-top:16px}
 .story{text-decoration:none;display:grid;gap:12px;align-content:start}
 .story .photo{border-radius:var(--r);aspect-ratio:3/2}
-.story .photo img{transition:transform .6s ease}
-.story:hover .photo img{transform:scale(1.03)}
-.story:hover h3{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:4px}
+.story .photo img{transition:transform .6s var(--ease)}
+.story:hover .photo img,.story:focus-visible .photo img{transform:scale(1.04)}
+.story h3{text-decoration:underline;text-decoration-color:transparent;text-decoration-thickness:1.5px;text-underline-offset:4px;transition:text-decoration-color .2s}
+.story:hover h3,.story:focus-visible h3{text-decoration-color:currentColor}
+.story:focus-visible{outline-offset:6px}
 .story time,.date{font:600 .76rem var(--texto);letter-spacing:.1em;text-transform:uppercase;color:var(--acao)}
 .story h3{font-weight:750;font-stretch:104%;line-height:1.18;font-size:1.25rem}
 .story p{color:var(--cinza);font-size:.96rem}
@@ -375,11 +423,11 @@ table.res th{font-weight:600;color:var(--cinza);font-size:.8rem;letter-spacing:.
 .gv-c b{color:var(--tinta)}
 .gv-nav{display:flex;gap:8px;flex:none}
 .gv-nav button{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--tinta);background:#fff;color:var(--tinta);display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s}
-.gv-nav button:hover{background:var(--tinta);color:#fff}
+.gv-nav button:hover,.gv-nav button:focus-visible{background:var(--tinta);color:#fff}
 .gv-th{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .gv-th a{position:relative;display:block;aspect-ratio:3/2;border-radius:4px;overflow:hidden}
 .gv-th img{width:100%;height:100%;object-fit:cover;opacity:.62;transition:opacity .2s}
-.gv-th a:hover img,.gv-th a[aria-current] img{opacity:1}
+.gv-th a:hover img,.gv-th a:focus-visible img,.gv-th a[aria-current] img{opacity:1}
 .gv-th a[aria-current]::after{content:"";position:absolute;inset:0;border:3px solid var(--amarelo);border-radius:4px}
 .keyfacts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--tinta)}
 .keyfacts div{padding:22px 24px 22px 0;border-right:1px solid var(--linha)}
@@ -442,7 +490,8 @@ fieldset.field{border:0;margin:0;padding:0}
 .join .contact dt{font-size:.8rem;color:#B5CFBD}
 .join .contact dd{margin:2px 0 0;font-size:1.05rem;color:#fff}
 .part ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:var(--g)}
-.part li{height:96px;display:grid;place-items:center;border:1px solid var(--linha);border-radius:var(--r);background:#fff}
+.part li{height:96px;display:grid;place-items:center;border:1px solid var(--linha);border-radius:var(--r);background:#fff;transition:border-color .2s,box-shadow .2s}
+.part li:hover{border-color:#B7C2B9;box-shadow:0 16px 28px -24px rgba(11,61,36,.5)}
 .part li img{max-height:52px;max-width:70%;width:auto}
 .part .wrap{display:grid;grid-template-columns:3fr 9fr;gap:var(--g);align-items:center}
 
@@ -451,7 +500,7 @@ footer .cols{display:grid;grid-template-columns:4fr 2fr 2fr 2fr 2fr;gap:var(--g)
 footer h2{font:600 .74rem var(--texto);letter-spacing:.12em;text-transform:uppercase;color:#fff;margin:0 0 16px}
 footer ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 footer ul a{display:inline-block;padding-block:4px}
-footer a{text-decoration:none}footer a:hover{color:#fff;text-decoration:underline;text-underline-offset:4px}
+footer a{text-decoration:none;transition:color .15s}footer a:hover,footer a:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:4px}
 footer .logo-w{display:inline-block;background:#fff;padding:10px 12px;border-radius:4px}
 footer .logo-w img{width:151px;height:40px}
 footer .big{font-family:var(--display);font-size:clamp(1.6rem,7.6vw,7rem);line-height:.9;color:#fff;padding-block:28px 40px;border-top:1px solid #2C352F;white-space:nowrap;font-weight:200;font-stretch:70%;letter-spacing:-.03em;margin:0}
@@ -459,6 +508,11 @@ footer .big b{font-weight:850;font-stretch:118%;color:var(--amarelo)}
 footer .base{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:20px 28px;border-top:1px solid #2C352F;font-size:.82rem}
 .mbar{display:none;transition:transform .2s var(--ease),visibility .2s}
 .cta-vis .mbar{transform:translateY(110%);visibility:hidden}
+
+/* revelação ao rolar: só o JS aplica .rv, e só abaixo da primeira dobra; sem JS, sem IO ou com movimento reduzido, nada fica oculto */
+.rv{opacity:0;transform:translateY(14px)}
+.rv.vis{opacity:1;transform:none;transition:opacity .5s var(--ease) calc(var(--i,0) * 70ms),transform .6s var(--ease) calc(var(--i,0) * 70ms)}
+@media print{.rv{opacity:1!important;transform:none!important}}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 

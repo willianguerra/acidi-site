@@ -44,10 +44,20 @@ Nenhum código, texto ou marca de terceiros foi incorporado.
 1. **Hierarquia.** Um gesto principal na abertura. Interações respondem rápido. Leitura fica em repouso: parágrafos, notícias, formulários e listas não se animam.
 2. **Durações.** Resposta de interface 150–250 ms (marcador 240 ms, botões 200 ms). Composição 500–900 ms (fotos 700, arcos 700–900). Nada atrasa uma tarefa: nenhum conteúdo espera a animação.
 3. **Curvas.** Saída `cubic-bezier(.22,.7,.18,1)` (chega rápido, assenta devagar); traços `cubic-bezier(.6,0,.2,1)`. Sem quique, sem squash/stretch, nunca no logo, em rostos ou em texto institucional.
-4. **Cada seção tem um verbo próprio:** abertura *converge*, serviços *troca*, atuação *expande*, fechamento *liga*. Não há revelação genérica de seções com o mesmo fade.
+4. **Cada seção tem um verbo próprio:** abertura *converge*, serviços *troca*, atuação *expande*, fechamento *liga*, quem somos *encontra* (filme HyperFrames). O resto do conteúdo só *chega*: revelação discreta ao rolar (14 px, 500–600 ms, stagger de 70 ms em grupos), aplicada pelo JS apenas abaixo da primeira dobra e nunca às seções com verbo próprio.
 5. **Rolagem nativa.** Nada captura ou força rolagem; nada impõe sequência. Animações por visibilidade disparam uma vez.
 6. **Sem som, cursor próprio ou partículas.** Galeria só por navegação manual.
 7. **Movimento reduzido:** composição final, todas as funções iguais. **Sem JavaScript:** composição final, serviços em cartões, galeria em links para as imagens.
+
+## Evolução de acabamento e movimento (27/10/2026)
+
+- **Abertura:** kicker, título (duas linhas), texto e botões assentam em sequência (0–300 ms, 700 ms cada), partindo de opacidade 0,4: legíveis desde o primeiro quadro. As fotos, os arcos e o nó vêm logo depois; repouso em ~1,5 s.
+- **Quem somos:** a foto estática da sede virou o filme "Ponto de encontro", feito com HyperFrames (`motion/ponto-de-encontro`, ver o LEIAME de lá). O site usa só o MP4 de 0,8 MB, com `preload="none"`: toca uma vez ao entrar na tela, com botão Pausar/Reproduzir/Rever. Sem JS ou com movimento reduzido, mostra o quadro final como pôster.
+- **Cabeçalho:** ao rolar, ganha sombra e a marca recua para 86% (transform); a altura não muda, então nada pula.
+- **Menus:** o painel suspenso desce 6 px ao abrir; o menu do celular desliza da direita e fecha pelo mesmo caminho, com os grupos entrando em 45 ms de intervalo (`@starting-style`; navegadores sem suporte abrem direto).
+- **Páginas internas:** o cabeçalho de página entra como a abertura, mais curto; o campo verde sai de trás da foto e o arco decorativo gira até o lugar.
+- **Interação:** botões sobem 1 px com sombra da própria cor, setas avançam, sublinhados se aproximam do texto; hover e foco por teclado têm a mesma resposta em todos os componentes (menus, atalhos, notícias, índice, galeria, rodapé).
+- **Movimento reduzido:** nenhuma revelação, entrada ou autoplay; tudo no estado final, funções iguais.
 
 ## Entrega
 

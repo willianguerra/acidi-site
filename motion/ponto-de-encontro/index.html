@@ -1,0 +1,34 @@
+<!doctype html>
+<html
+  lang="pt-BR"
+  data-composition-variables='[{"id":"campo","type":"color","label":"Campo verde","default":"#009D3D"},{"id":"no","type":"color","label":"Nó amarelo","default":"#FFED00"},{"id":"linha1","type":"string","label":"Etiqueta: palavra","default":"Desde"},{"id":"linha2","type":"string","label":"Etiqueta: destaque","default":"1989"}]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1200, height=800" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root { --campo: #009d3d; --no: #ffed00; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1200px; height: 800px; overflow: hidden; background: #0b3d24; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1200" data-height="800">
+      <div
+        id="encontro"
+        data-composition-id="encontro"
+        data-composition-src="compositions/encontro.html"
+        data-start="0"
+        data-duration="10"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1200"
+        data-height="800"
+      ></div>
+    </div>
+    <script>
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

@@ -3,3 +3,8 @@ __pycache__/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# HyperFrames: estado local e render bruto (o vídeo otimizado fica em assets/video)
+motion/*/.hyperframes/
+motion/*/renders/
+motion/*/node_modules/

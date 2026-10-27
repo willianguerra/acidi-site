@@ -31,6 +31,9 @@ P = {
  'cal': '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/>',
  'info': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
  'check': '<path d="M20 6L9 17l-5-5"/>',
+ 'pause': '<path d="M9 6v12M15 6v12"/>',
+ 'play': '<path d="M8 5.5v13l10-6.5z"/>',
+ 'replay': '<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/>',
 }
 def ico(n, cls='ico'):
     return f'<svg class="{cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">{P[n]}</svg>'
@@ -394,7 +397,11 @@ paginas.append(page('index.html', 'ACIDI – Associação Empresarial de Indaial
 </div></nav>
 
 <section class="sec about" aria-labelledby="h-about"><div class="wrap grid12">
-  <figure class="ph-col"><div class="photo"><img src="assets/img/sede.jpg" alt="Sede da ACIDI em Indaial, prédio em estilo enxaimel com o logotipo na fachada" width="1181" height="788" loading="lazy"></div><figcaption class="cap"><b>Sede da ACIDI</b> · {ENDERECO}</figcaption></figure>
+  <figure class="ph-col film" data-film>
+    <div class="photo"><video muted playsinline preload="none" width="1200" height="800" poster="assets/video/ponto-de-encontro-poster.jpg" aria-label="Animação de 10 segundos: a sede da ACIDI, em estilo enxaimel, e fotos de eventos da associação ligadas por arcos a um ponto de encontro amarelo"><source src="assets/video/ponto-de-encontro.mp4" type="video/mp4"></video>
+    <button type="button" class="film-ctl" hidden><span class="f-pause">{ico('pause')}Pausar animação</span><span class="f-play">{ico('play')}Reproduzir animação</span><span class="f-replay">{ico('replay')}Rever animação</span></button></div>
+    <figcaption class="cap"><b>Sede da ACIDI</b> · {ENDERECO}</figcaption>
+  </figure>
   <div class="txt">
     <span class="kicker">Quem somos</span>
     <h2 id="h-about" class="hl sec-t">Empresários unidos <b>por Indaial</b></h2>
