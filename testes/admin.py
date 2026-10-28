@@ -7,12 +7,23 @@ Uso:  python testes/admin.py
 Cada execução cria um editor e um revisor com e-mails novos; a notícia e o evento de teste
 são apagados no fim, e o editor fica desativado.
 """
-import os, sys, time, urllib.request, urllib.error
+import os, sys, time, struct, zlib, tempfile, urllib.request, urllib.error
 from playwright.sync_api import sync_playwright
 
 BASE = os.environ.get('BASE', 'http://localhost:3000/').rstrip('/')
 ADMIN = (os.environ.get('ADMIN_EMAIL', 'admin@acidi.test'), os.environ.get('ADMIN_SENHA', 'admin-local-123'))
-FOTO = os.path.join(os.path.dirname(__file__), '..', 'public', 'assets', 'img', 'sede.jpg')
+
+def foto_grande():
+    # PNG de ruído 1200x1000 (~3,6 MB, incompressível): do tamanho de uma foto de celular
+    w, h = 1200, 1000
+    bruto = b''.join(bytes(1) + os.urandom(w * 3) for _ in range(h))
+    bloco = lambda t, d: struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d))
+    png = bytes([137, 80, 78, 71, 13, 10, 26, 10]) + bloco(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + bloco(b'IDAT', zlib.compress(bruto, 0)) + bloco(b'IEND', b'')
+    caminho = os.path.join(tempfile.gettempdir(), 'acidi-foto-grande.png')
+    with open(caminho, 'wb') as f: f.write(png)
+    return caminho
+
+FOTO = foto_grande()
 SUFIXO = str(int(time.time()))
 SENHA_PROV, SENHA_NOVA = 'provisoria-' + SUFIXO, 'definitiva-' + SUFIXO
 TITULO, EVENTO = f'Notícia de teste {SUFIXO}', f'Evento de teste {SUFIXO}'
