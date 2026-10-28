@@ -19,7 +19,15 @@ export function evId(e: Evento): string {
   return 'evento-' + e.data + '-' + ascii.split(/\s+/).slice(-2).map(w => w.replace(/[^a-z0-9]/g, '')).join('-');
 }
 
-// Data local AAAA-MM-DD (igual a isoLocal do site.js)
+// Data AAAA-MM-DD em Brasília: o build pode rodar em UTC (Vercel, CI) e a agenda é de Indaial
 export function hojeIso(d = new Date()): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(d);
+}
+
+// Mesma regra do splitEvents do site.js: próximos em ordem crescente, arquivo em ordem decrescente.
+export function separarEventos(eventos: Evento[], hoje: string): { prox: Evento[]; arquivo: Evento[] } {
+  return {
+    prox: eventos.filter(e => e.data >= hoje).sort((a, b) => (a.data < b.data ? -1 : 1)),
+    arquivo: eventos.filter(e => e.data < hoje).sort((a, b) => (a.data > b.data ? -1 : 1)),
+  };
 }

@@ -2,7 +2,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { EventItem } from '@/components/blocos';
 import { getEventos } from '@/lib/content';
-import { evId, hojeIso } from '@/lib/datas';
+import { evId, hojeIso, separarEventos } from '@/lib/datas';
 import { SUF } from '@/lib/meta';
 
 export const metadata = {
@@ -13,8 +13,7 @@ export const metadata = {
 export default async function Page() {
   const eventos = await getEventos();
   const hoje = hojeIso(); // data do build; o site.js reordena no navegador
-  const prox = eventos.filter(e => e.data >= hoje).sort((x, y) => (x.data < y.data ? -1 : 1));
-  const arquivo = eventos.filter(e => e.data < hoje).sort((x, y) => (x.data > y.data ? -1 : 1));
+  const { prox, arquivo } = separarEventos(eventos, hoje);
   return (<>
     <Header page="agenda" />
     <main id="conteudo">

@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer';
 import { Story, EventItem } from '@/components/blocos';
 import { Ico } from '@/components/Ico';
 import { getNoticias, getEventos } from '@/lib/content';
-import { dshort, evId, hojeIso } from '@/lib/datas';
+import { dshort, evId, hojeIso, separarEventos } from '@/lib/datas';
 
 export const metadata = {
   title: 'ACIDI – Associação Empresarial de Indaial',
@@ -14,7 +14,8 @@ export default async function Page() {
   const [n0, ...resto] = (await getNoticias()).slice(0, 3);
   const eventos = await getEventos();
   const hoje = hojeIso(); // data do build; o site.js recalcula no navegador
-  const temProximos = eventos.some(e => e.data >= hoje);
+  const { prox, arquivo } = separarEventos(eventos, hoje);
+  const temProximos = prox.length > 0;
   return (<>
     <Header page="index" />
     <main id="conteudo">
@@ -67,7 +68,7 @@ export default async function Page() {
 <div className="sec-h"><div><span className="kicker">Acontece na ACIDI</span><h2 id="h-news" className="hl sec-t">Notícias <b>e agenda</b></h2><p className="lead">Informação e encontros que aproximam o empresariado de Indaial.</p></div><a className="btn btn-o" href="/noticias">Todas as notícias <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
 <div className="news-home">{' '}<a className="story lead-s" href={'/noticias/' + n0.slug}><div className="photo"><span className="pill">Em destaque</span><img src={'/assets/img/' + n0.imagem} alt={n0.alt} loading="lazy" /></div><div><time dateTime={n0.data}>{dshort(n0.data)}</time><h3>{n0.titulo}</h3><p>{n0.resumo}</p><span className="tlink go">Ler notícia <Ico n="go" cls="ico go" /></span></div></a>{' '}<div className="rest">{resto.map(n => <Story key={n.slug} n={n} cls="story small" showP={false} />)}</div>
 <aside className="agenda-box" aria-labelledby="h-ag" data-agenda="">{' '}<span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span><span className="kicker">Agenda</span><h3 id="h-ag">Próximos encontros</h3>
-<ul className="evlist" data-upcoming="" hidden={!temProximos} style={{ borderTop: "0" }}>{eventos.map(e => <EventItem key={evId(e)} e={e} home hoje={hoje} />)}</ul>
+<ul className="evlist" data-upcoming="" hidden={!temProximos} style={{ borderTop: "0" }}>{[...prox, ...arquivo].map(e => <EventItem key={evId(e)} e={e} home hoje={hoje} />)}</ul>
 <div className="empty" data-empty="" hidden={temProximos}><b>Nenhum evento publicado no momento.</b><span>Consulte os encontros anteriores ou fale com a nossa equipe.</span></div>
 <div className="ctas"><a className="btn btn-p" href="/agenda">Explorar agenda <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><a className="tlink go" href="/contato">Falar com a ACIDI <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
 </aside>
