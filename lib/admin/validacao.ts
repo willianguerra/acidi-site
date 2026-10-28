@@ -36,3 +36,11 @@ export function validar<S extends z.ZodType>(esquema: S, dados: unknown): Valida
   for (const i of r.error.issues) erros[String(i.path[0] ?? '_')] ??= i.message;
   return { ok: false, erros };
 }
+
+export const esquemaSenha = z.string().min(10, 'A senha precisa ter ao menos 10 caracteres.');
+export const esquemaUsuario = z.object({
+  nome: texto(),
+  email: z.string().trim().toLowerCase().pipe(z.email('E-mail inválido')),
+  papel: z.enum(['admin', 'revisor', 'editor'], { error: 'Escolha um papel' }),
+  senha: esquemaSenha,
+});
