@@ -37,7 +37,7 @@ export default async function Page() {
 </div></section>
 <section className="sec alt faces" aria-labelledby="h-faces"><div className="wrap">
 <div className="sec-h"><div><span className="kicker">Quem conduziu</span><h2 id="h-faces" className="hl sec-t">Empresários que <b>presidiram a ACIDI</b></h2></div><a className="tlink" href="/ex-presidentes">Todos os ex-presidentes</a></div>
-<ul className="strip">{retratos.map(p => <li key={p.nome}><div className="pf"><img src={'/assets/img/' + p.foto} alt={'Retrato de ' + p.nome} loading="lazy" /></div><span>{p.nome}</span></li>)}</ul>
+<ul className="strip">{retratos.map(p => <li key={p.nome}><div className="pf"><img src={p.foto!} alt={'Retrato de ' + p.nome} loading="lazy" /></div><span>{p.nome}</span></li>)}</ul>
 <p className="muted strip-n">Retratos disponíveis, na ordem publicada pela ACIDI. Períodos de cada gestão na página de ex-presidentes.</p>
 </div></section>
 <JoinBox />

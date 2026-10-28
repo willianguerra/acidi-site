@@ -1,4 +1,4 @@
-// Conteúdo migrado de ferramentas/gerar_site.py. Na Fase 2 passa para o banco.
+// Conteúdo inicial carregado no banco por scripts/carga.ts (npm run db:carga).
 import type { ExPresidente } from '@/lib/types';
 
 export const EX_PRESIDENTES: ExPresidente[] = [

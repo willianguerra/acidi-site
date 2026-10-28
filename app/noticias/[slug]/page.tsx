@@ -10,7 +10,7 @@ import { SUF } from '@/lib/meta';
 
 type Props = { params: Promise<{ slug: string }> };
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export async function generateStaticParams() {
   return (await getNoticias()).map(n => ({ slug: n.slug }));
@@ -42,7 +42,7 @@ export default async function Page({ params }: Props) {
       <Crumbs items={[['/', 'Início'], ['/noticias', 'Notícias'], [null, n.titulo]]} />
       <article>
         <header className="article-head wrap"><time className="date" dateTime={n.data}>Publicado em {dlong(n.data)}</time><h1>{n.titulo}</h1><p className="lead">{n.resumo}</p></header>
-        <figure className="article-fig wrap"><div className="photo"><img src={'/assets/img/' + n.imagem} alt={n.alt} /></div></figure>
+        <figure className="article-fig wrap"><div className="photo"><img src={n.imagem} alt={n.alt} /></div></figure>
         <div className="wrap article-body">
           <div className="prose"><Corpo blocos={n.corpo} /></div>
           <aside className="meta"><div><b style={{ color: 'var(--tinta)' }}>Publicação original</b><br />{dlong(n.data)}</div><div><a className="btn btn-s" href="/noticias"><Ico n="back" /> Voltar às notícias</a></div></aside>

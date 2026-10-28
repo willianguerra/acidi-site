@@ -22,7 +22,7 @@ export default async function Page() {
       <section className="sec"><div className="wrap"><ul className="portraits">
         {lista.map(p => (
           <li key={p.nome}>
-            {p.foto ? <div className="pf"><img src={'/assets/img/' + p.foto} alt={'Retrato de ' + p.nome} loading="lazy" /></div> : <div className="pf" aria-hidden="true">{ini(p.nome)}</div>}
+            {p.foto ? <div className="pf"><img src={p.foto} alt={'Retrato de ' + p.nome} loading="lazy" /></div> : <div className="pf" aria-hidden="true">{ini(p.nome)}</div>}
             <b>{p.nome}</b>{p.gestao && <span>{p.gestao}</span>}
           </li>
         ))}

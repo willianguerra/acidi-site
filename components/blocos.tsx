@@ -46,7 +46,7 @@ export function EventItem({ e, home = false, hoje }: { e: Evento; home?: boolean
 export function Story({ n, cls = 'story', showP = true }: { n: Noticia; cls?: string; showP?: boolean }) {
   return (
     <a className={cls} href={'/noticias/' + n.slug}>
-      <div className="photo"><img src={'/assets/img/' + n.imagem} alt={n.alt} loading="lazy" /></div>
+      <div className="photo"><img src={n.imagem} alt={n.alt} loading="lazy" /></div>
       <div><time dateTime={n.data}>{dshort(n.data)}</time><h3>{n.titulo}</h3>{showP && <p>{n.resumo}</p>}</div>
     </a>
   );

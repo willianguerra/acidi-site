@@ -12,7 +12,8 @@
     "test": "node --test \"lib/**/*.test.ts\"",
     "db:gerar": "drizzle-kit generate",
     "db:migrar": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs migrate",
-    "test:db": "node --env-file=.env.test --test --test-concurrency=1 \"lib/**/*.db-test.ts\""
+    "test:db": "node --env-file=.env.test --test --test-concurrency=1 \"lib/**/*.db-test.ts\"",
+    "db:carga": "node --env-file=.env scripts/carga.ts"
   },
   "repository": {
     "type": "git",
