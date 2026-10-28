@@ -8,6 +8,13 @@
       "when": 1793210541524,
       "tag": "0000_tricky_onslaught",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793211465692,
+      "tag": "0001_quiet_grandmaster",
+      "breakpoints": true
     }
   ]
 }

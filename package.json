@@ -13,7 +13,8 @@
     "db:gerar": "drizzle-kit generate",
     "db:migrar": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs migrate",
     "test:db": "node --env-file=.env.test --test --test-concurrency=1 \"lib/**/*.db-test.ts\"",
-    "db:carga": "node --env-file=.env scripts/carga.ts"
+    "db:carga": "node --env-file=.env scripts/carga.ts",
+    "criar-admin": "node --env-file=.env scripts/criar-admin.ts"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "postgres": "^3.4.9",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "server-only": "^0.0.1",
     "sharp": "^0.35.5",
     "zod": "^4.6.7"
   },

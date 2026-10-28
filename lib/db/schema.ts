@@ -1,5 +1,7 @@
 import { pgTable, uuid, text, date, jsonb, timestamp, boolean, integer } from 'drizzle-orm/pg-core';
 import type { Bloco } from '../types.ts';
+import { user } from './auth-schema.ts';
+export * from './auth-schema.ts';
 
 const agora = () => timestamp({ withTimezone: true }).notNull().defaultNow();
 
@@ -14,8 +16,8 @@ export const noticias = pgTable('noticias', {
   corpo: jsonb().$type<Bloco[]>().notNull(),
   situacao: text().$type<'rascunho' | 'revisao' | 'publicada' | 'devolvida'>().notNull().default('rascunho'),
   comentarioRevisao: text(),
-  autorId: text(),
-  publicadaPorId: text(),
+  autorId: text().references(() => user.id, { onDelete: 'set null' }),
+  publicadaPorId: text().references(() => user.id, { onDelete: 'set null' }),
   publicadaEm: timestamp({ withTimezone: true }),
   criadaEm: agora(),
   atualizadaEm: agora(),
