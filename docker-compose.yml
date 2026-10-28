@@ -1,0 +1,15 @@
+# PostgreSQL de desenvolvimento e testes: banco acidi (site/admin) e acidi_teste (npm run test:db)
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: acidi
+      POSTGRES_PASSWORD: acidi
+      POSTGRES_DB: acidi
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdados:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+volumes:
+  pgdados:
