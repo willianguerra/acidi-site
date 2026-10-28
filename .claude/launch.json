@@ -3,6 +3,7 @@
   "configurations": [
     { "name": "site", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "8123"], "port": 8123 },
     { "name": "ref", "runtimeExecutable": "python", "runtimeArgs": ["-m", "http.server", "8766", "--bind", "127.0.0.1", "-d", "../acidi-site-ref"], "port": 8766 },
-    { "name": "next", "runtimeExecutable": "npm", "runtimeArgs": ["start"], "port": 3000 }
+    { "name": "next", "runtimeExecutable": "npm", "runtimeArgs": ["start"], "port": 3000 },
+    { "name": "next-dev", "runtimeExecutable": "npm", "runtimeArgs": ["run", "dev"], "port": 3000 }
   ]
 }

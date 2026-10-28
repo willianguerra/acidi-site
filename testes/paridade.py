@@ -31,8 +31,8 @@ def antigo_para_novo(html):
     def troca(m):
         attr, q, url = m.group(1), m.group(2), m.group(3)
         if url.startswith('assets/'): return f'{attr}={q}/{url}{q}'
-        arq, _, ancora = url.partition('#')
-        if arq in ROTAS: return f'{attr}={q}{ROTAS[arq]}{"#" + ancora if ancora else ""}{q}'
+        m2 = re.match(r'([^?#]*)(.*)', url)
+        if m2.group(1) in ROTAS: return f'{attr}={q}{ROTAS[m2.group(1)]}{m2.group(2)}{q}'
         return m.group(0)
     html = re.sub(r'\b(href|src|poster)=(["\'])([^"\']*)\2', troca, html)
     return re.sub(r'srcset="([^"]*)"', lambda m: 'srcset="' + re.sub(r'(^|,\s*)assets/', r'\1/assets/', m.group(1)) + '"', html)

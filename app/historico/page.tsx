@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { getExPresidentes } from '@/lib/content';
 import { SUF } from '@/lib/meta';
 
 export const metadata = {
@@ -7,7 +8,8 @@ export const metadata = {
   description: 'História da Associação Empresarial de Indaial, fundada em 22 de maio de 1989.',
 };
 
-export default function Page() {
+export default async function Page() {
+  const retratos = (await getExPresidentes()).filter(p => p.foto);
   return (<>
     <Header page="historico" />
     <main id="conteudo">
@@ -34,7 +36,7 @@ export default function Page() {
 </div></section>
 <section className="sec alt faces" aria-labelledby="h-faces"><div className="wrap">
 <div className="sec-h"><div><span className="kicker">Quem conduziu</span><h2 id="h-faces" className="hl sec-t">Empresários que <b>presidiram a ACIDI</b></h2></div><a className="tlink" href="/ex-presidentes">Todos os ex-presidentes</a></div>
-<ul className="strip"><li><div className="pf"><img src="/assets/img/p-fey.jpg" alt="Retrato de Adolfo Fey" loading="lazy" /></div><span>Adolfo Fey</span></li><li><div className="pf"><img src="/assets/img/p-wanke.jpg" alt="Retrato de Artur Wanke" loading="lazy" /></div><span>Artur Wanke</span></li><li><div className="pf"><img src="/assets/img/p-schmitt.jpg" alt="Retrato de Wilson Jacob Schmitt" loading="lazy" /></div><span>Wilson Jacob Schmitt</span></li><li><div className="pf"><img src="/assets/img/p-hersing.jpg" alt="Retrato de Gunther Hersing" loading="lazy" /></div><span>Gunther Hersing</span></li><li><div className="pf"><img src="/assets/img/p-schulz.jpg" alt="Retrato de Landolino Schulz" loading="lazy" /></div><span>Landolino Schulz</span></li><li><div className="pf"><img src="/assets/img/p-cardoso.jpg" alt="Retrato de José Cardoso" loading="lazy" /></div><span>José Cardoso</span></li><li><div className="pf"><img src="/assets/img/p-voss.jpg" alt="Retrato de Osmar Voss" loading="lazy" /></div><span>Osmar Voss</span></li><li><div className="pf"><img src="/assets/img/p-benke.jpg" alt="Retrato de Ivo Benke" loading="lazy" /></div><span>Ivo Benke</span></li><li><div className="pf"><img src="/assets/img/p-keunecke.jpg" alt="Retrato de Ademar Jacobsen Keunecke" loading="lazy" /></div><span>Ademar Jacobsen Keunecke</span></li><li><div className="pf"><img src="/assets/img/p-howe.jpg" alt="Retrato de Harrybert Howe Junior" loading="lazy" /></div><span>Harrybert Howe Junior</span></li></ul>
+<ul className="strip">{retratos.map(p => <li key={p.nome}><div className="pf"><img src={'/assets/img/' + p.foto} alt={'Retrato de ' + p.nome} loading="lazy" /></div><span>{p.nome}</span></li>)}</ul>
 <p className="muted strip-n">Retratos disponíveis, na ordem publicada pela ACIDI. Períodos de cada gestão na página de ex-presidentes.</p>
 </div></section>
 <section className="join sec" aria-labelledby="h-join"><div className="wrap"><div className="box">

@@ -2,6 +2,19 @@
 import type { Diretoria } from '@/lib/types';
 
 export const DIRETORIA: Diretoria = {
+  "executiva": [
+    { "cargo": "Diretor presidente", "nome": "Marcondes Aurélio Moser" },
+    { "cargo": "Diretor vice-presidente", "nome": "Rogério Isnar Patricio" },
+    { "cargo": "Diretor tesoureiro", "nome": "Almir Malkowski" },
+    { "cargo": "Diretor secretário", "nome": "Rogério Artur Ehrat" }
+  ],
+  "fiscal": [
+    { "nome": "Marildo Paul", "suplente": false },
+    { "nome": "Simão Baldoino Weber", "suplente": false },
+    { "nome": "Lindolfo Brey Junior", "suplente": false },
+    { "nome": "Marcos José Dallabona", "suplente": true },
+    { "nome": "José Renato Leite", "suplente": true }
+  ],
   "vps": [
     {
       "area": "Indústria",
