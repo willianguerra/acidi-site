@@ -32,7 +32,7 @@ Em `/admin`, quem tem conta edita o conteúdo sem mexer em código. Cada papel v
 
 Não há cadastro público: o admin cria cada conta com uma senha provisória, que a pessoa troca no primeiro acesso. Ao publicar, a página afetada do site é regerada na hora, sem novo build.
 
-Fotos enviadas são reduzidas para 1600 px e gravadas em `UPLOAD_DIR` (padrão `dados/uploads`, servidas em `/uploads/...`) ou num bucket compatível com S3 com `STORAGE=s3` e as variáveis `S3_*` do `.env.example` (necessário na Vercel, que não tem disco persistente).
+Fotos enviadas são reduzidas para 1600 px e gravadas em `UPLOAD_DIR` (padrão `dados/uploads`, servidas em `/uploads/...`) ou num bucket compatível com S3 com `STORAGE=s3` e as variáveis `S3_*` do `.env.example` (necessário na Vercel, que não tem disco persistente; o Supabase Storage serve, com um bucket público).
 
 O site funciona sem internet: as fontes Archivo e Public Sans estão embutidas em `public/assets/fonts` (licença SIL OFL 1.1). Só os links externos (WhatsApp, redes sociais, mapa e sistemas de parceiros) precisam de conexão.
 

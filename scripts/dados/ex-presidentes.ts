@@ -33,7 +33,7 @@ export const EX_PRESIDENTES: ExPresidente[] = [
     "gestao": "Maio de 2002 a maio de 2004"
   },
   {
-    "foto": null,
+    "foto": "p-jacobsen-retrato.jpg",
     "nome": "Jorge Alberto Jacobsen",
     "gestao": null
   },
@@ -58,12 +58,12 @@ export const EX_PRESIDENTES: ExPresidente[] = [
     "gestao": "Julho de 2016 a junho de 2018"
   },
   {
-    "foto": null,
+    "foto": "p-tomio.jpg",
     "nome": "Renato Tomio",
     "gestao": null
   },
   {
-    "foto": null,
+    "foto": "p-patricio.jpg",
     "nome": "Rogério Isnar Patricio",
     "gestao": "Maio de 2022 a maio de 2024"
   }

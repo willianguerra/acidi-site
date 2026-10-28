@@ -27,7 +27,7 @@ export default async function Page() {
         <section className="block" aria-labelledby="h-vp"><h2 id="h-vp">Vice-presidências <b>por área</b></h2><ul className="namelist">{d.vps.map(v => <li key={v.area}>{v.nome}<small>{v.area}</small></li>)}</ul></section>
         <section className="block" aria-labelledby="h-cc"><h2 id="h-cc">Conselho <b>consultivo</b></h2>{nomes(d.consultivo)}</section>
         <section className="block" aria-labelledby="h-cf"><h2 id="h-cf">Conselho <b>fiscal</b></h2><ul className="namelist">{d.fiscal.map(p => <li key={p.nome}>{p.nome}{p.suplente && <small>Suplente</small>}</li>)}</ul></section>
-        <section className="block" aria-labelledby="h-cd"><h2 id="h-cd">Conselho <b>deliberativo</b></h2>{nomes(d.deliberativo)}<h3 style={{ font: '600 .78rem var(--texto)', letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--cinza)', margin: '32px 0 8px' }}>Suplentes</h3>{nomes(d.deliberativoSuplentes)}</section>
+        <section className="block" aria-labelledby="h-cd"><h2 id="h-cd">Conselho <b>deliberativo</b></h2>{nomes(d.deliberativo)}<h3 className="sub-h">Suplentes</h3>{nomes(d.deliberativoSuplentes)}</section>
       </div>
     </main>
     <Footer />

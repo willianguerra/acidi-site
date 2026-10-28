@@ -17,7 +17,7 @@ export default async function Page() {
 
 <nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">A ACIDI · Histórico</li></ol></nav><header className="phead photo-head"><div className="wrap grid12">
 <div className="t"><span className="kicker">A ACIDI · Histórico</span><h1 className="hl">Uma entidade de empresários <b>para Indaial</b></h1><p className="lead">A Associação Empresarial de Indaial foi fundada por um grupo de empresários em 22 de maio de 1989.</p></div>
-<figure className="pic" style={{ margin: "0" }}><div className="photo"><img src="/assets/img/sede.jpg" alt="Sede da ACIDI em Indaial, prédio em estilo enxaimel" /></div><figcaption className="cap"><b>Sede da ACIDI</b> · Rua Ver. Alvin Rauh Júnior, 100, Nações, Indaial/SC · CEP 89082-065</figcaption></figure>
+<figure className="pic" style={{ margin: "0" }}><div className="photo"><img src="/assets/img/sede-viva.jpg" alt="Sede da ACIDI em Indaial, prédio em estilo enxaimel" /></div><figcaption className="cap"><b>Sede da ACIDI</b> · Rua Ver. Alvin Rauh Júnior, 100, Nações, Indaial/SC · CEP 89082-065</figcaption></figure>
 </div></header>
 <section className="sec"><div className="wrap split">
 <div className="aside"><nav className="localnav" aria-label="Nesta seção"><a href="/diretoria">Diretoria</a><a href="/ex-presidentes">Ex-Presidentes</a><a href="/representatividade">Representatividade</a><a href="/nucleos">Núcleos</a></nav></div>

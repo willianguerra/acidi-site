@@ -107,7 +107,7 @@ Não verificado: leitores de tela reais (NVDA, VoiceOver), aparelhos físicos, S
 2. **Fontes (resolvido).** Archivo e Public Sans foram baixadas do Google Fonts em 26/10/2026 e embutidas em `assets/fonts` (woff2, subconjuntos latin e latin-ext, cerca de 215 KB), com as licenças SIL OFL 1.1 (`OFL-archivo.txt`, `OFL-public-sans.txt`, obtidas do repositório google/fonts). A OFL permite uso, embutimento e redistribuição com o site, mantidos os avisos de licença. Ao migrar para o WordPress, carregar os mesmos arquivos pelo tema.
 3. **E-mail oficial.** Definir se comunicacao@ e contato@ devem coexistir e com que finalidade.
 4. **Diretoria vigente.** Confirmar se a gestão 2024/2026 continua e a composição correta nos três pontos divergentes.
-5. **Ex-presidentes.** Corrigir os períodos sobrepostos e fornecer retratos de Jorge Alberto Jacobsen, Renato Tomio e Rogério Isnar Patricio.
+5. **Ex-presidentes.** Corrigir os períodos sobrepostos. Os retratos de Jorge Alberto Jacobsen, Renato Tomio e Rogério Isnar Patricio foram fornecidos em 28/10/2026.
 6. **Núcleos ativos** e forma de participação.
 7. **Agenda e notícias.** Não há evento futuro publicado e a notícia mais recente é de abril de 2025.
 8. **Associe-se.** Condições, valores e etapas reais, se a ACIDI quiser publicá-los.
