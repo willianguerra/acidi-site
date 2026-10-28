@@ -1,5 +1,6 @@
 import { Ico, Ext, type IconName } from './Ico';
 import { INSTA, FACE } from '@/content/links';
+import { getServicos } from '@/lib/content';
 
 export type PageKey = 'index' | 'historico' | 'diretoria' | 'ex-presidentes' | 'representatividade' | 'nucleos'
   | 'para-seu-negocio' | 'noticias' | 'noticia' | 'agenda' | 'auditorio' | 'associe-se' | 'contato';
@@ -13,19 +14,14 @@ const NAV_ACIDI: Item[] = [
   ['/representatividade', 'Representatividade', 'gov', 'Pleitos e conselhos municipais'],
   ['/nucleos', 'Núcleos', 'grid', 'Grupos de trabalho por setor'],
 ];
-// shortcut: os 5 serviços estão fixos aqui; trocar por getServicos() na Task 2
-const NAV_NEG: Item[] = [
-  ['/para-seu-negocio#util-card', 'Família Util Card', 'card', 'Vale-refeição'],
-  ['/para-seu-negocio#uniodonto', 'Uniodonto', 'tooth', 'Assistência odontológica para colaboradores'],
-  ['/para-seu-negocio#boa-vista-scpc', 'Consulta Boa Vista SCPC', 'search', 'Informações de crédito rápidas e integradas para todas as etapas do negócio'],
-  ['/para-seu-negocio#certificado-de-origem', 'Certificado de Origem', 'doc', 'Comprova a procedência do produto e reduz ou isenta o imposto de importação no país comprador'],
-  ['/para-seu-negocio#treinamentos-e-palestras', 'Treinamentos e Palestras', 'screen', 'Qualificação aberta à comunidade'],
-  ['/auditorio', 'Auditório e salas', 'cal', 'Auditório para 170 pessoas'],
-];
 
 const rota = (p: PageKey) => (p === 'index' ? '/' : p === 'noticia' ? '/noticias' : '/' + p);
 
-export function Header({ page }: { page: PageKey }) {
+export async function Header({ page }: { page: PageKey }) {
+  const NAV_NEG: Item[] = [
+    ...(await getServicos()).slice(0, 5).map((s): Item => ['/para-seu-negocio#' + s.slug, s.titulo, s.icone, s.resumo.split(',')[0].split('.')[0]]),
+    ['/auditorio', 'Auditório e salas', 'cal', 'Auditório para 170 pessoas'],
+  ];
   const atual = rota(page);
   // âncoras (#servico) nunca marcam a página atual, como no gerador antigo
   const cur = (href: string) => (!href.includes('#') && href === atual ? 'page' as const : undefined);

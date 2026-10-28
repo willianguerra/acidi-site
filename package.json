@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test lib/"
+    "test": "node --test \"lib/**/*.test.ts\""
   },
   "repository": {
     "type": "git",
