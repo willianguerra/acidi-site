@@ -32,6 +32,7 @@ export const eventos = pgTable('eventos', {
   local: text().notNull(),
   descricao: text().notNull(),
   atualizadoEm: agora(),
+  atualizadoPorId: text().references(() => user.id, { onDelete: 'set null' }),
 });
 
 export const diretoria = pgTable('diretoria', {
