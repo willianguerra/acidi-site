@@ -22,6 +22,11 @@ EXTRAIR = """() => {
   while (w.nextNode()) cs.push(w.currentNode);
   cs.forEach(c => c.remove());
   document.querySelectorAll('body > div[hidden]').forEach(d => { if (!d.innerHTML.trim()) d.remove(); });
+  // a ordem dos atributos não muda nada; o React 19 põe name= por último nos campos
+  document.body.querySelectorAll('*').forEach(el => {
+    const at = [...el.attributes].map(a => [a.name, a.value]).sort((x, y) => x[0] < y[0] ? -1 : 1);
+    at.forEach(([n]) => el.removeAttribute(n)); at.forEach(([n, v]) => el.setAttribute(n, v));
+  });
   const d = document.querySelector('meta[name=description]');
   return { title: document.title, desc: d ? d.content : null, lang: document.documentElement.lang,
            bodyAttrs: [...document.body.attributes].map(a => a.name + '=' + a.value).join(' '), body: document.body.innerHTML };
