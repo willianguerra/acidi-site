@@ -6,7 +6,7 @@ Documento interno: não faz parte da interface apresentada ao cliente. Data da v
 
 - Base visual: `acidi-home.html` (home com fotografias reais) da etapa anterior. O `index.html` em `Desktop\Nova pasta` é o mesmo conteúdo com um invólucro HTML; ambas as pastas foram preservadas sem alteração.
 - Não aproveitado: `acidi-proposta.html` (documento com esboço em iframes, outra família tipográfica e botões em pílula) e a barra "Prévia", as marcações "a confirmar" e a janela "Sobre a proposta" da home anterior.
-- Tecnologia: Next.js (App Router, TypeScript), com todas as páginas geradas estaticamente e sem requisições externas para exibi-las (fontes embutidas). Cabeçalho e rodapé únicos em `components/`; conteúdo em `content/`, lido só por `lib/content.ts`. O `site.js` original continua cuidando de menus, agenda e formulários. Até 28/10/2026 as páginas eram HTML estático gerado por `ferramentas/gerar_site.py` (removido; ver o histórico do git). Não há relação com o WordPress de produção.
+- Tecnologia: Next.js (App Router, TypeScript), com as páginas públicas pré-geradas e sem requisições externas para exibi-las (fontes embutidas). Cabeçalho e rodapé únicos em `components/`; conteúdo lido só por `lib/content.ts`: notícias, agenda, diretoria e ex-presidentes vêm do PostgreSQL (Drizzle) e são editados no `/admin` (Better Auth, papéis admin/revisor/editor); o resto ainda está em `content/`. Publicar algo regera as páginas afetadas na hora. O `site.js` original continua cuidando de menus, agenda e formulários. Até 28/10/2026 as páginas eram HTML estático gerado por `ferramentas/gerar_site.py` (removido; ver o histórico do git). Não há relação com o WordPress de produção.
 
 ## 2. Fontes do conteúdo
 
