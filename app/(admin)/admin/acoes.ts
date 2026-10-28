@@ -7,17 +7,27 @@ import { auth, exigirUsuario } from '@/lib/auth-servidor';
 import { db } from '@/lib/db';
 import { user } from '@/lib/db/schema';
 import type { Estado } from '@/lib/admin/estado';
+import { criarLimitador } from '@/lib/admin/limite';
+
+// O rate limit do Better Auth só vale nas rotas HTTP dele; chamado daqui (auth.api) não se aplica.
+// Por isso o limite fica aqui: 5 falhas por e-mail e 30 por IP a cada 15 minutos. O de e-mail não depende
+// do IP porque o X-Forwarded-For pode ser forjado quando não há proxy na frente.
+const porConta = criarLimitador({ max: 5, janelaMs: 15 * 60_000 });
+const porIp = criarLimitador({ max: 30, janelaMs: 15 * 60_000 });
 
 export async function entrar(_: Estado, f: FormData): Promise<Estado> {
-  const email = String(f.get('email') ?? '').trim(), senha = String(f.get('senha') ?? '');
+  const email = String(f.get('email') ?? '').trim().toLowerCase(), senha = String(f.get('senha') ?? '');
+  const h = await headers();
+  const ip = h.get('x-forwarded-for')?.split(',')[0].trim() || h.get('x-real-ip') || 'local';
+  if (porConta.bloqueado(email) || porIp.bloqueado(ip)) return { erro: 'Muitas tentativas. Aguarde 15 minutos e tente de novo.', valores: { email } };
   try {
-    await auth.api.signInEmail({ body: { email, password: senha }, headers: await headers() });
+    await auth.api.signInEmail({ body: { email, password: senha }, headers: h });
   } catch (e) {
-    const erro = e instanceof APIError
-      ? (e.status === 'TOO_MANY_REQUESTS' ? 'Muitas tentativas. Aguarde um pouco e tente de novo.' : 'E-mail ou senha incorretos.')
-      : 'Não foi possível entrar agora. Tente de novo.';
-    return { erro, valores: { email } };
+    if (!(e instanceof APIError)) return { erro: 'Não foi possível entrar agora. Tente de novo.', valores: { email } };
+    porConta.falhou(email); porIp.falhou(ip);
+    return { erro: 'E-mail ou senha incorretos.', valores: { email } };
   }
+  porConta.limpar(email);
   redirect('/admin');
 }
 

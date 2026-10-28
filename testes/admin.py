@@ -142,6 +142,12 @@ with sync_playwright() as p:
     ed.wait_for_selector('.aviso')
     ok('Editor desativado não entra de novo', ed.url.endswith('/admin/entrar'), ed.inner_text('.aviso'))
 
+    # 10. tentativas repetidas de senha são barradas (e-mail próprio do teste, para não travar contas reais)
+    alvo = f'ninguem{SUFIXO}@acidi.test'
+    for _ in range(6):
+        ed.goto(BASE + '/admin/entrar'); ed.fill('#email', alvo); ed.fill('#senha', 'senha-errada-123'); ed.click('button[type=submit]'); ed.wait_for_selector('.aviso')
+    ok('Senha errada repetida é barrada', 'Muitas tentativas' in ed.inner_text('.aviso'), ed.inner_text('.aviso'))
+
     ok('Nenhum erro de console', not erros_console, '; '.join(erros_console[:3]))
     nav.close()
 
