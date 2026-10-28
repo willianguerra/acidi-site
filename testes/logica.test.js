@@ -1,6 +1,6 @@
 // Executar na pasta do site:  node testes/logica.test.js
 const assert = require('assert');
-const { validate, splitEvents } = require('../assets/js/site.js');
+const { validate, splitEvents } = require('../public/assets/js/site.js');
 const hoje = '2026-10-26';
 
 assert.strictEqual(validate('required', '  ', hoje, 'Nome'), 'Preencha o campo Nome.');

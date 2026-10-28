@@ -9,7 +9,7 @@ import os, sys, datetime, pathlib
 from playwright.sync_api import sync_playwright, expect
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-BASE = os.environ.get('BASE', 'http://127.0.0.1:8766/')
+BASE = os.environ.get('BASE', 'http://127.0.0.1:3000/')
 CAPS = RAIZ / 'docs' / 'capturas'
 CAPS.mkdir(parents=True, exist_ok=True)
 resultados, erros_console, falhas_rede, envios = [], [], [], []
@@ -44,12 +44,12 @@ with sync_playwright() as p:
     # ---------------- desktop 1440
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, locale='pt-BR')
     pg = ctx.new_page(); vigiar(pg)
-    pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
+    pg.goto(BASE); pg.wait_for_load_state('networkidle')
     cap(pg, 'desktop-01-inicio'); cap(pg, 'desktop-00-inicio-pagina-inteira', full=True)
 
     # Jornada 1: Home -> Associe-se -> validação -> conclusão
-    pg.locator('.hero .btn-p').click(); pg.wait_for_url('**/associe-se.html')
-    ok('Home → Associe-se', pg.url.endswith('associe-se.html'))
+    pg.locator('.hero .btn-p').click(); pg.wait_for_url('**/associe-se')
+    ok('Home → Associe-se', pg.url.endswith('/associe-se'))
     form = pg.locator('form.demo')
     ok('Associe-se: aviso demonstrativo visível antes do envio', form.locator('.demo-notice').is_visible())
     form.locator('button[type=submit]').click()
@@ -70,11 +70,11 @@ with sync_playwright() as p:
     cap(pg, 'desktop-06-associe-se-concluido')
 
     # Jornada 2: menu A ACIDI -> páginas institucionais -> volta à home (mouse e teclado)
-    pg.goto(BASE + 'index.html')
+    pg.goto(BASE)
     pg.locator('button[aria-controls=m-acidi]').click()
     ok('Menu A ACIDI abre por clique', pg.locator('#m-acidi').is_visible())
     cap(pg, 'desktop-02-menu-a-acidi')
-    pg.locator('#m-acidi a[href="diretoria.html"]').click(); pg.wait_for_url('**/diretoria.html')
+    pg.locator('#m-acidi a[href="/diretoria"]').click(); pg.wait_for_url('**/diretoria')
     ok('Menu → Diretoria', 'Gestão' in pg.inner_text('h1'))
     cap(pg, 'desktop-03-diretoria')
     btn = pg.locator('button[aria-controls=m-acidi]'); btn.focus(); pg.keyboard.press('Enter')
@@ -83,14 +83,14 @@ with sync_playwright() as p:
     ok('Tab entra no painel', pg.evaluate("!!document.activeElement.closest('#m-acidi')"))
     pg.keyboard.press('Escape')
     ok('Escape fecha e devolve o foco ao botão', pg.locator('#m-acidi').is_hidden() and pg.evaluate("document.activeElement.getAttribute('aria-controls')") == 'm-acidi')
-    for href in ['historico.html', 'ex-presidentes.html', 'representatividade.html', 'nucleos.html']:
-        pg.locator('button[aria-controls=m-acidi]').click(); pg.locator(f'#m-acidi a[href="{href}"]').click(); pg.wait_for_url('**/' + href)
+    for href in ['/historico', '/ex-presidentes', '/representatividade', '/nucleos']:
+        pg.locator('button[aria-controls=m-acidi]').click(); pg.locator(f'#m-acidi a[href="{href}"]').click(); pg.wait_for_url('**' + href)
         ok(f'Menu → {href}', pg.locator('h1').is_visible() and pg.locator('[aria-current=page]').count() >= 1)
-    pg.locator('a.brand').click(); pg.wait_for_url('**/index.html')
-    ok('Logo volta à home', pg.url.endswith('index.html'))
+    pg.locator('a.brand').click(); pg.wait_for_url(BASE)
+    ok('Logo volta à home', pg.url == BASE)
 
     # Jornada 3: serviços -> detalhe -> contato com assunto preenchido
-    pg.goto(BASE + 'index.html')
+    pg.goto(BASE)
     svx = pg.locator('[data-svx]')
     ok('Serviços: primeiro serviço selecionado no início', svx.locator('#svx-b-util-card').get_attribute('aria-expanded') == 'true' and pg.locator('#svx-util-card').is_visible())
     alt0 = pg.evaluate("document.querySelector('.biz').offsetHeight")
@@ -104,10 +104,10 @@ with sync_playwright() as p:
     ok('Serviços: teclado (seta + Enter) seleciona', pg.evaluate("document.activeElement.id") == 'svx-b-boa-vista-scpc' and pg.locator('#svx-boa-vista-scpc').is_visible())
     pg.keyboard.press('End'); ok('Serviços: End leva ao último', pg.evaluate("document.activeElement.id") == 'svx-b-xml-empresarial')
     svx.locator('#svx-b-uniodonto').click(); pg.wait_for_timeout(400)
-    pg.locator('#svx-uniodonto a[href$="#uniodonto"]').click(); pg.wait_for_url('**/para-seu-negocio.html#uniodonto')
+    pg.locator('#svx-uniodonto a[href$="#uniodonto"]').click(); pg.wait_for_url('**/para-seu-negocio#uniodonto')
     ok('Serviço na home → detalhe com âncora', pg.locator('#uniodonto').is_visible())
     cap(pg, 'desktop-07-para-seu-negocio')
-    pg.locator('#uniodonto a[href*="contato.html"]').click(); pg.wait_for_url('**/contato.html?assunto=uniodonto')
+    pg.locator('#uniodonto a[href*="/contato"]').click(); pg.wait_for_url('**/contato?assunto=uniodonto')
     ok('Detalhe → contato com assunto selecionado', pg.input_value('#ct-assunto') == 'uniodonto')
 
     # Jornada 7: contato com erros e conclusão
@@ -125,25 +125,31 @@ with sync_playwright() as p:
     ok('Contato: conclusão demonstrativa', pg.locator('form.demo .done').is_visible())
 
     # Jornada 4: notícias -> matéria -> volta
-    pg.goto(BASE + 'noticias.html'); cap(pg, 'desktop-09-noticias')
+    pg.goto(BASE + 'noticias'); cap(pg, 'desktop-09-noticias')
     first = pg.locator('.news-list .story').first; titulo = first.locator('h3').inner_text()
-    first.click(); pg.wait_for_url('**/noticia-*.html')
+    first.click(); pg.wait_for_url('**/noticias/*')
     h1, n_p, data = pg.inner_text('article h1'), pg.locator('.prose p').count(), pg.inner_text('time.date')
     ok('Notícias → matéria completa', h1.strip() == titulo.strip() and n_p >= 3 and 'publicado em' in data.lower(), f'{h1!r} | {titulo!r} | {n_p} parágrafos | {data}')
     cap(pg, 'desktop-10-noticia')
-    pg.locator('.article-body .meta a[href="noticias.html"]').click(); pg.wait_for_url('**/noticias.html')
-    ok('Matéria → volta à listagem', pg.url.endswith('noticias.html'))
+    pg.locator('.article-body .meta a[href="/noticias"]').click(); pg.wait_for_url('**/noticias')
+    ok('Matéria → volta à listagem', pg.url.endswith('/noticias'))
 
     # Jornada 5: agenda na data real
-    pg.goto(BASE + 'agenda.html')
+    pg.goto(BASE + 'agenda')
     ok('Agenda: sem eventos vencidos em Próximos', pg.locator('[data-upcoming] .ev:visible').count() == 0 and pg.locator('[data-empty]').is_visible())
     ok('Agenda: arquivo com 6 registros', pg.locator('[data-past] .ev').count() == 6 and pg.inner_text('[data-past-count]') == '6')
     cap(pg, 'desktop-11-agenda')
-    pg.goto(BASE + 'nucleos.html'); pg.locator('a[href^="agenda.html#evento-2022-05-18"]').first.click()
+    pg.goto(BASE + 'nucleos'); pg.locator('a[href^="/agenda#evento-2022-05-18"]').first.click()
     ok('Núcleos → detalhe do evento no arquivo', pg.evaluate("location.hash.startsWith('#evento-2022-05-18') && !!document.querySelector(location.hash)"))
 
+    # Links antigos .html: redirect 301 que preserva a âncora
+    for antigo, novo in [('agenda.html#evento-2022-05-18-do-dnitsc', 'agenda#evento-2022-05-18-do-dnitsc'), ('para-seu-negocio.html#util-card', 'para-seu-negocio#util-card')]:
+        r = pg.request.get(BASE + antigo.split('#')[0], max_redirects=0)
+        pg.goto(BASE + antigo)
+        ok(f'Redirect {antigo}', r.status == 301 and pg.url == BASE + novo, f'{r.status} {pg.url}')
+
     # Jornada 6: auditório
-    pg.goto(BASE + 'auditorio.html'); cap(pg, 'desktop-12-auditorio')
+    pg.goto(BASE + 'auditorio'); cap(pg, 'desktop-12-auditorio')
     ontem = (datetime.date.today() - datetime.timedelta(days=1)).isoformat()
     pg.fill('#aud-nome', 'Ana'); pg.fill('#aud-email', 'ana@empresa.com'); pg.fill('#aud-tel', '(47) 99999-0000')
     pg.select_option('#aud-espaco', 'Auditório'); pg.select_option('#aud-associado', 'Sim'); pg.fill('#aud-data', ontem)
@@ -155,7 +161,7 @@ with sync_playwright() as p:
     ok('Auditório: conclusão sem reserva', 'Nenhum dado foi enviado' in t and 'Nenhuma reserva foi realizada' in t and 'confirmad' not in t.lower())
     cap(pg, 'desktop-13-auditorio-concluido')
     # Galeria: só navegação manual
-    pg.goto(BASE + 'auditorio.html'); src0 = pg.get_attribute('.gv-main img', 'src')
+    pg.goto(BASE + 'auditorio'); src0 = pg.get_attribute('.gv-main img', 'src')
     pg.wait_for_timeout(5000)
     ok('Galeria: não troca sozinha', pg.get_attribute('.gv-main img', 'src') == src0)
     pg.locator('.gv-next').click(); pg.wait_for_timeout(400)
@@ -166,8 +172,8 @@ with sync_playwright() as p:
     ok('Galeria: seta do teclado avança', pg.get_attribute('.gv-main img', 'src').endswith('auditorio-6.jpg'))
 
     # Recarregar páginas internas diretamente
-    for f in ['diretoria.html', 'noticia-acidi-itinerante.html', 'contato.html']:
-        pg.goto(BASE + f); pg.reload(); pg.wait_for_load_state('networkidle')
+    for f in ['/diretoria', '/noticias/acidi-itinerante', '/contato']:
+        pg.goto(BASE + f[1:]); pg.reload(); pg.wait_for_load_state('networkidle')
         ok(f'Recarga direta de {f}', pg.locator('img.brand, a.brand img').first.evaluate('i => i.naturalWidth > 0'))
     ctx.close()
 
@@ -175,11 +181,11 @@ with sync_playwright() as p:
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900})
     pg = ctx.new_page(); vigiar(pg)
     pg.clock.set_fixed_time(datetime.datetime(2022, 5, 20, 12, 0))
-    pg.goto(BASE + 'agenda.html')
+    pg.goto(BASE + 'agenda')
     datas = pg.eval_on_selector_all('[data-upcoming] .ev', 'els => els.map(e => e.dataset.date)')
     ok('Agenda recalcula pela data do navegador (simulando 20/05/2022)', datas == ['2022-05-31', '2026-02-25'], str(datas))
     ok('Agenda: aviso "nenhum evento" oculto quando há próximos', pg.locator('[data-empty]').is_hidden() and pg.locator('[data-upcoming]').is_visible())
-    pg.goto(BASE + 'index.html')
+    pg.goto(BASE)
     ok('Home: próximos eventos aparecem quando existem', pg.locator('.agenda-box [data-upcoming] .ev:visible').count() == 2 and pg.locator('.agenda-box [data-empty]').is_hidden())
     ctx.close()
 
@@ -187,7 +193,7 @@ with sync_playwright() as p:
     for w, h, nome in [(768, 1024, 'tablet'), (390, 844, 'celular'), (320, 640, 'celular320')]:
         ctx = nav.new_context(viewport={'width': w, 'height': h}, is_mobile=w < 700, has_touch=w < 700, device_scale_factor=2 if w < 700 else 1)
         pg = ctx.new_page(); vigiar(pg)
-        pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
+        pg.goto(BASE); pg.wait_for_load_state('networkidle')
         ok(f'{w}px: sem rolagem horizontal na home', pg.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         cap(pg, f'{nome}-01-inicio')
         if w < 700:
@@ -215,29 +221,29 @@ with sync_playwright() as p:
         ok(f'{w}px: fundo inerte (toque cai no menu)', pg.evaluate("document.elementFromPoint(innerWidth/2, innerHeight-30).closest('#menu-movel') !== null"))
         pg.keyboard.press('Escape')
         ok(f'{w}px: Escape fecha e devolve o foco', pg.evaluate("!document.getElementById('menu-movel').open && document.activeElement.classList.contains('burger')"))
-        burger.click(); pg.locator('#menu-movel a[href="noticias.html"]').click(); pg.wait_for_url('**/noticias.html')
-        ok(f'{w}px: navegação pelo menu móvel', pg.url.endswith('noticias.html'))
+        burger.click(); pg.locator('#menu-movel a[href="/noticias"]').click(); pg.wait_for_url('**/noticias')
+        ok(f'{w}px: navegação pelo menu móvel', pg.url.endswith('/noticias'))
         if nome != 'tablet':
             # barra fixa não pode cobrir o fim do conteúdo
             pg.evaluate('scrollTo(0, document.body.scrollHeight)')
             cover = pg.evaluate("(() => { const b = document.querySelector('.mbar').getBoundingClientRect(); const f = document.querySelector('footer .base').getBoundingClientRect(); return f.bottom <= b.top + 1 || f.top >= b.bottom; })()")
             ok(f'{w}px: barra fixa não cobre o rodapé', cover)
-        for f, n in [('diretoria.html', '03-diretoria'), ('noticia-segunda-feijoada-da-acidi.html', '04-noticia'), ('agenda.html', '05-agenda'), ('auditorio.html', '06-auditorio'), ('contato.html', '07-contato')]:
-            pg.goto(BASE + f); pg.wait_for_load_state('networkidle')
+        for f, n in [('/diretoria', '03-diretoria'), ('/noticias/segunda-feijoada-da-acidi', '04-noticia'), ('/agenda', '05-agenda'), ('/auditorio', '06-auditorio'), ('/contato', '07-contato')]:
+            pg.goto(BASE + f[1:]); pg.wait_for_load_state('networkidle')
             ok(f'{w}px: sem rolagem horizontal em {f}', pg.evaluate('document.documentElement.scrollWidth <= innerWidth'))
             if nome == 'celular': cap(pg, f'celular-{n}')
         if nome == 'celular':
-            pg.goto(BASE + 'associe-se.html'); pg.locator('form.demo').scroll_into_view_if_needed()
+            pg.goto(BASE + 'associe-se'); pg.locator('form.demo').scroll_into_view_if_needed()
             pg.locator('form.demo button[type=submit]').tap(); cap(pg, 'celular-08-associe-se-erros')
         ctx.close()
     # página inteira do celular em 1x: em 2x a imagem passa de 16.384 px e o Chromium repete blocos
     ctx = nav.new_context(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True, device_scale_factor=1)
-    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
+    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE); pg.wait_for_load_state('networkidle')
     cap(pg, 'celular-00-inicio-pagina-inteira', full=True); ctx.close()
 
     # ---------------- sistema de movimento: cabeçalho, revelação ao rolar
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900})
-    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
+    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE); pg.wait_for_load_state('networkidle')
     ok('Movimento: nada da primeira dobra espera revelação', pg.evaluate("[...document.querySelectorAll('.rv')].every(e => e.getBoundingClientRect().top >= innerHeight)"))
     ok('Movimento: cabeçalho muda ao rolar sem mudar de altura', pg.evaluate("(async () => { const h = document.querySelector('header.site').offsetHeight; scrollTo({top: 400, behavior: 'instant'}); await new Promise(r => setTimeout(r, 100)); return document.documentElement.classList.contains('rolou') && document.querySelector('header.site').offsetHeight === h })()"))
     for y in range(0, pg.evaluate('document.documentElement.scrollHeight'), 500):
@@ -248,7 +254,7 @@ with sync_playwright() as p:
 
     # ---------------- movimento reduzido: composição final imediata, funções iguais
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
-    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html')
+    pg = ctx.new_page(); vigiar(pg); pg.goto(BASE)
     ok('Reduzido: nenhum conteúdo oculto para revelação', pg.locator('.rv').count() == 0)
     ok('Reduzido: foto da abertura já no lugar final', pg.evaluate("(() => { const f = getComputedStyle(document.querySelector('.stage img')); return f.opacity === '1' && f.translate === 'none'; })()"))
     ok('Reduzido: atuação e fechamento já desenhados', pg.evaluate("[...document.querySelectorAll('[data-anim]')].every(e => e.classList.contains('on'))"))
@@ -258,12 +264,12 @@ with sync_playwright() as p:
 
     # ---------------- sem JavaScript: conteúdo completo e navegável
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, java_script_enabled=False)
-    pg = ctx.new_page(); pg.goto(BASE + 'index.html')
+    pg = ctx.new_page(); pg.goto(BASE)
     ok('Sem JS: abertura com título, botão e foto', pg.locator('.hero h1').is_visible() and pg.locator('.hero .btn-p').is_visible() and pg.locator('.stage img').count() == 1)
     ok('Sem JS: os 7 serviços visíveis em cartões', pg.locator('.svx-p:visible').count() == 7 and pg.locator('.svx-b:visible').count() == 0)
     ok('Sem JS: cartões das esferas visíveis', pg.evaluate("[...document.querySelectorAll('.esc .lv')].every(c => getComputedStyle(c).opacity === '1')"))
     pg.locator('#h-biz').scroll_into_view_if_needed(); cap(pg, 'desktop-14-sem-js-servicos')
-    pg.goto(BASE + 'auditorio.html')
+    pg.goto(BASE + 'auditorio')
     ok('Sem JS: miniaturas da galeria abrem a imagem', pg.locator('.gv-th a[href$="auditorio-3.jpg"]').count() == 1 and pg.locator('.gv-nav').is_hidden())
     ctx.close()
     nav.close()

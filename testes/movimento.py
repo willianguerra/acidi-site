@@ -7,7 +7,7 @@ import sys, pathlib, shutil, subprocess
 from playwright.sync_api import sync_playwright
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
-BASE = sys.argv[1] if len(sys.argv) > 1 else 'http://127.0.0.1:8767/'
+BASE = sys.argv[1] if len(sys.argv) > 1 else 'http://127.0.0.1:3000/'
 QD = RAIZ / 'docs' / 'comparativo' / 'quadros'; QD.mkdir(parents=True, exist_ok=True)
 GR = RAIZ / 'docs' / 'gravacoes'; GR.mkdir(parents=True, exist_ok=True)
 
@@ -25,14 +25,14 @@ with sync_playwright() as p:
         pg = ctx.new_page()
         # abertura: quadros a partir do carregamento
         for t in (0, 250, 500, 800, 1300):
-            pg.goto(BASE + 'index.html', wait_until='domcontentloaded')
+            pg.goto(BASE, wait_until='domcontentloaded')
             pg.evaluate("Promise.all([...document.querySelectorAll('.stage img')].map(i => i.complete ? 0 : new Promise(r => i.onload = i.onerror = r)))")
             congelar(pg, t)
             pg.screenshot(path=str(QD / f'abertura-{t:04d}ms-{w}.jpg'), type='jpeg', quality=78)
         # atuação e fechamento: disparados ao entrar na tela
         for sel, nome in (('#h-rep', 'atuacao'), ('#h-join', 'fechamento')):
             for t in (0, 350, 700, 1400):
-                pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
+                pg.goto(BASE); pg.wait_for_load_state('networkidle')
                 ir_secao(pg, sel)
                 if nome == 'atuacao' and w < 700: break  # no celular as ondas dão lugar aos marcadores em coluna
                 pg.wait_for_function(f"document.querySelector('{sel}').closest('section').querySelector('[data-anim]').classList.contains('on')")
@@ -42,11 +42,11 @@ with sync_playwright() as p:
 
     # serviços: duas seleções e um quadro no meio da troca (desktop)
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, locale='pt-BR')
-    pg = ctx.new_page(); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle'); ir_secao(pg, '#h-biz'); pg.wait_for_timeout(300)
+    pg = ctx.new_page(); pg.goto(BASE); pg.wait_for_load_state('networkidle'); ir_secao(pg, '#h-biz'); pg.wait_for_timeout(300)
     for sid, nome in (('boa-vista-scpc', 'a'), ('treinamentos-e-palestras', 'b')):
         pg.locator(f'#svx-b-{sid}').click(); pg.wait_for_timeout(60); congelar(pg, 120)
         pg.screenshot(path=str(QD / f'servicos-{nome}-meio-1440.jpg'), type='jpeg', quality=78)
-        pg.evaluate("document.getAnimations().forEach(a => a.finish())"); pg.wait_for_timeout(100)
+        pg.evaluate("document.getAnimations().forEach(a => { if (isFinite(a.effect.getComputedTiming().endTime)) a.finish(); })"); pg.wait_for_timeout(100)
         pg.screenshot(path=str(QD / f'servicos-{nome}-{sid}-1440.jpg'), type='jpeg', quality=78)
     ctx.close()
 
@@ -70,7 +70,7 @@ with sync_playwright() as p:
             pg.evaluate(f'scrollTo(0, {ini + (alvo - ini) * k / passos})'); pg.wait_for_timeout(40)
 
     def desktop(pg):
-        pg.goto(BASE + 'index.html'); pg.wait_for_timeout(2200)
+        pg.goto(BASE); pg.wait_for_timeout(2200)
         rolar_ate(pg, '#h-biz'); pg.wait_for_timeout(700)
         for sid in ('uniodonto', 'certificado-de-origem', 'protesto-expresso'):
             pg.locator(f'#svx-b-{sid}').click(); pg.wait_for_timeout(1100)
@@ -81,7 +81,7 @@ with sync_playwright() as p:
         rolar_ate(pg, '#h-join', 18); pg.wait_for_timeout(2000)
 
     def celular(pg):
-        pg.goto(BASE + 'index.html'); pg.wait_for_timeout(2200)
+        pg.goto(BASE); pg.wait_for_timeout(2200)
         rolar_ate(pg, '#h-about', 10); pg.wait_for_timeout(800)
         rolar_ate(pg, '#h-biz', 10); pg.wait_for_timeout(600)
         pg.locator('#svx-b-uniodonto').tap(); pg.wait_for_timeout(1200)
@@ -90,7 +90,7 @@ with sync_playwright() as p:
         rolar_ate(pg, '#h-join', 14); pg.wait_for_timeout(2000)
 
     def galeria(pg):
-        pg.goto(BASE + 'auditorio.html'); pg.wait_for_timeout(800)
+        pg.goto(BASE + 'auditorio'); pg.wait_for_timeout(800)
         pg.evaluate("document.querySelector('.gv').scrollIntoView({block: 'center'})"); pg.wait_for_timeout(600)
         for _ in range(3): pg.locator('.gv-next').click(); pg.wait_for_timeout(900)
         pg.locator('.gv-th a').nth(0).click(); pg.wait_for_timeout(1000)

@@ -15,14 +15,14 @@ OUT.mkdir(parents=True, exist_ok=True)
 TAM = {'1440': (1440, 900), '768': (768, 1024), '390': (390, 844), '320': (320, 640)}
 # (nome, página, seletor a alinhar no topo ou None, larguras)
 CENAS = [
-    ('inicio', 'index.html', None, TAM),
-    ('servicos', 'index.html', '#h-biz', ('1440', '390')),
-    ('atuacao', 'index.html', '#h-rep', ('1440', '390')),
-    ('fechamento', 'index.html', '#h-join', ('1440', '390')),
-    ('historico', 'historico.html', None, ('1440', '390')),
-    ('auditorio', 'auditorio.html', None, ('1440', '390')),
-    ('noticia', 'noticia-acidi-itinerante.html', None, ('1440', '390')),
-    ('para-seu-negocio', 'para-seu-negocio.html', None, ('1440', '390')),
+    ('inicio', '/', None, TAM),
+    ('servicos', '/', '#h-biz', ('1440', '390')),
+    ('atuacao', '/', '#h-rep', ('1440', '390')),
+    ('fechamento', '/', '#h-join', ('1440', '390')),
+    ('historico', '/historico', None, ('1440', '390')),
+    ('auditorio', '/auditorio', None, ('1440', '390')),
+    ('noticia', '/noticias/acidi-itinerante', None, ('1440', '390')),
+    ('para-seu-negocio', '/para-seu-negocio', None, ('1440', '390')),
 ]
 
 def carregar_tudo(pg):
@@ -35,7 +35,7 @@ with sync_playwright() as p:
             vw, vh = TAM[w]
             ctx = nav.new_context(viewport={'width': vw, 'height': vh}, locale='pt-BR', device_scale_factor=1)
             pg = ctx.new_page()
-            pg.goto(BASE + pagina); pg.wait_for_load_state('networkidle'); carregar_tudo(pg)
+            pg.goto(BASE.rstrip('/') + pagina); pg.wait_for_load_state('networkidle'); carregar_tudo(pg)
             if sel:
                 # alinha o título da seção a 90 px do topo; rolagem instantânea
                 pg.evaluate(f"(() => {{ const e = document.querySelector('{sel}'); const s = e.closest('section') || e; window.scrollTo({{top: s.getBoundingClientRect().top + scrollY - document.querySelector('header.site').offsetHeight, behavior: 'instant'}}); }})()")
@@ -46,7 +46,7 @@ with sync_playwright() as p:
     for w in ('1440', '390'):
         vw, vh = TAM[w]
         ctx = nav.new_context(viewport={'width': vw, 'height': vh}, locale='pt-BR')
-        pg = ctx.new_page(); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle'); carregar_tudo(pg)
+        pg = ctx.new_page(); pg.goto(BASE); pg.wait_for_load_state('networkidle'); carregar_tudo(pg)
         # rola até o fim para disparar o que depende de visibilidade, depois volta
         pg.evaluate("(async () => { for (let y = 0; y < document.body.scrollHeight; y += 400) { scrollTo(0, y); await new Promise(r => setTimeout(r, 60)); } scrollTo(0, 0); })()")
         pg.wait_for_timeout(1500)
