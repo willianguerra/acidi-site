@@ -3,7 +3,7 @@ import postgres from 'postgres';
 import * as schema from './schema.ts';
 
 export function criarDb(url: string) {
-  return drizzle(postgres(url), { schema, casing: 'snake_case' });
+  return drizzle(postgres(url, { onnotice: () => {} }), { schema, casing: 'snake_case' });
 }
 export type Db = ReturnType<typeof criarDb>;
 
