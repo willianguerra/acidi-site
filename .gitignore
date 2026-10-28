@@ -14,3 +14,7 @@ motion/*/node_modules/
 node_modules/
 next-env.d.ts
 .superpowers/
+.env
+.env.test
+dados/
+tsconfig.tsbuildinfo

@@ -1,0 +1,2 @@
+ALTER TABLE "noticias" ADD COLUMN "atualizada_por_id" text;--> statement-breakpoint
+ALTER TABLE "noticias" ADD CONSTRAINT "noticias_atualizada_por_id_user_id_fk" FOREIGN KEY ("atualizada_por_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;
