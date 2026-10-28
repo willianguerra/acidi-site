@@ -52,7 +52,8 @@ p{margin:0}
 /* faixa utilitária e cabeçalho */
 .util{background:var(--mata);color:#CFE3D5;font-size:.84rem}
 .util .wrap{display:flex;gap:24px;align-items:center;min-height:38px;flex-wrap:wrap}
-.util a{text-decoration:none}.util a:hover{color:#fff;text-decoration:underline}
+.util a{text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:color .15s}.util a:hover,.util a:focus-visible{color:#fff}
+.util .ico{width:15px;height:15px;opacity:.8}.util .ext-i{display:none}
 .util .r{margin-left:auto;display:flex;gap:18px}
 /* ao rolar, o cabeçalho ganha sombra e a marca recua um pouco; a altura não muda (nada pula) */
 header.site{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--linha);transition:box-shadow .25s,border-color .25s}
@@ -61,10 +62,11 @@ header.site .wrap{display:flex;align-items:center;gap:28px;height:84px}
 .brand{display:block;flex:none}
 .brand img{width:189px;height:50px;transform-origin:left center;transition:transform .25s var(--ease)}
 .rolou .brand img{transform:scale(.86)}
-nav.main{display:flex;align-items:center;gap:2px;margin-left:auto}
-nav.main>a,nav.main .dd>button{font:500 .98rem var(--texto);color:var(--tinta);background:none;border:0;padding:10px 13px;border-radius:var(--r);text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
+nav.main{display:flex;align-items:center;gap:6px;margin-left:auto}
+nav.main>a,nav.main .dd>button{position:relative;font:500 .98rem var(--texto);color:var(--tinta);background:none;border:0;padding:10px 14px;border-radius:var(--r);text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s}
 nav.main>a:hover,nav.main>a:focus-visible,nav.main .dd>button:hover,nav.main .dd>button:focus-visible,nav.main .dd>button[aria-expanded="true"]{background:var(--nevoa)}
-nav.main [aria-current="page"],nav.main .dd>button.here{box-shadow:inset 0 -2px 0 var(--verde);border-radius:0}
+/* página atual: traço curto e arredondado sob o texto, não a borda inteira do botão */
+nav.main [aria-current="page"]::after,nav.main .dd>button.here::after{content:"";position:absolute;left:14px;right:14px;bottom:3px;height:2px;border-radius:2px;background:var(--verde)}
 nav.main .dd{position:relative}
 nav.main .dd>button .ico{width:14px;height:14px;transition:transform .2s}
 nav.main .dd>button[aria-expanded="true"] .ico{transform:rotate(180deg)}
@@ -81,7 +83,7 @@ nav.main .dd>button[aria-expanded="true"] .ico{transform:rotate(180deg)}
 .panel a b{font-weight:600;font-size:.96rem}
 .panel a span{font-size:.84rem;color:var(--cinza);line-height:1.4}
 .panel.wide{width:640px;left:-140px}
-.hd-cta{flex:none;min-height:48px}
+.hd-cta{flex:none;min-height:42px;padding:0 18px;font-size:.9rem}
 .burger{display:none;margin-left:auto;width:48px;height:48px;border-radius:var(--r);border:1.5px solid var(--linha);background:#fff;align-items:center;justify-content:center;cursor:pointer;color:var(--tinta)}
 /* menu móvel: <dialog> modal (foco contido, Esc e fundo inerte nativos) */
 dialog.sheet{margin:0;width:100%;max-width:100%;height:100%;max-height:100%;border:0;padding:0;background:#fff;color:var(--tinta)}
