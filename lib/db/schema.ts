@@ -19,6 +19,7 @@ export const noticias = pgTable('noticias', {
   autorId: text().references(() => user.id, { onDelete: 'set null' }),
   publicadaPorId: text().references(() => user.id, { onDelete: 'set null' }),
   publicadaEm: timestamp({ withTimezone: true }),
+  atualizadaPorId: text().references(() => user.id, { onDelete: 'set null' }),
   criadaEm: agora(),
   atualizadaEm: agora(),
 });
