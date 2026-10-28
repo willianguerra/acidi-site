@@ -26,7 +26,7 @@ with sync_playwright() as p:
         # abertura: quadros a partir do carregamento
         for t in (0, 250, 500, 800, 1300):
             pg.goto(BASE + 'index.html', wait_until='domcontentloaded')
-            pg.evaluate("Promise.all([...document.querySelectorAll('.ph img')].map(i => i.complete ? 0 : new Promise(r => i.onload = i.onerror = r)))")
+            pg.evaluate("Promise.all([...document.querySelectorAll('.stage img')].map(i => i.complete ? 0 : new Promise(r => i.onload = i.onerror = r)))")
             congelar(pg, t)
             pg.screenshot(path=str(QD / f'abertura-{t:04d}ms-{w}.jpg'), type='jpeg', quality=78)
         # atuação e fechamento: disparados ao entrar na tela

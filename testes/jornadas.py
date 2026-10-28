@@ -191,7 +191,7 @@ with sync_playwright() as p:
         ok(f'{w}px: sem rolagem horizontal na home', pg.evaluate('document.documentElement.scrollWidth <= innerWidth'))
         cap(pg, f'{nome}-01-inicio')
         if w < 700:
-            ok(f'{w}px: título vem antes das fotos e as fotos antes do botão', pg.evaluate("(() => { const t = document.querySelector('.hero h1').getBoundingClientRect(), s = document.querySelector('.stage').getBoundingClientRect(), b = document.querySelector('.hero .btn-p').getBoundingClientRect(); return t.bottom <= s.top && s.bottom <= b.top; })()"))
+            ok(f'{w}px: título vem antes da foto e a foto antes do botão', pg.evaluate("(() => { const t = document.querySelector('.hero h1').getBoundingClientRect(), s = document.querySelector('.stage').getBoundingClientRect(), b = document.querySelector('.hero .btn-p').getBoundingClientRect(); return t.bottom <= s.top && s.bottom <= b.top; })()"))
             ok(f'{w}px: barra fixa oculta com o botão da abertura visível', pg.evaluate("getComputedStyle(document.querySelector('.mbar')).visibility") == 'hidden')
             pg.evaluate("document.querySelector('#h-about').scrollIntoView()"); pg.wait_for_timeout(500)
             ok(f'{w}px: barra fixa aparece depois da abertura', pg.evaluate("getComputedStyle(document.querySelector('.mbar')).visibility") == 'visible')
@@ -235,17 +235,11 @@ with sync_playwright() as p:
     pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
     cap(pg, 'celular-00-inicio-pagina-inteira', full=True); ctx.close()
 
-    # ---------------- sistema de movimento: cabeçalho, revelação ao rolar e filme HyperFrames
+    # ---------------- sistema de movimento: cabeçalho, revelação ao rolar
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900})
     pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html'); pg.wait_for_load_state('networkidle')
     ok('Movimento: nada da primeira dobra espera revelação', pg.evaluate("[...document.querySelectorAll('.rv')].every(e => e.getBoundingClientRect().top >= innerHeight)"))
     ok('Movimento: cabeçalho muda ao rolar sem mudar de altura', pg.evaluate("(async () => { const h = document.querySelector('header.site').offsetHeight; scrollTo({top: 400, behavior: 'instant'}); await new Promise(r => setTimeout(r, 100)); return document.documentElement.classList.contains('rolou') && document.querySelector('header.site').offsetHeight === h })()"))
-    pg.evaluate("document.querySelector('.film').scrollIntoView({block: 'center', behavior: 'instant'})"); pg.wait_for_timeout(1500)
-    ok('Filme: toca ao entrar na tela, a partir do primeiro quadro', pg.evaluate("(() => { const v = document.querySelector('.film video'); return !v.paused && v.currentTime > 0.3 && v.poster.endsWith('-inicio.jpg') })()"))
-    pg.locator('.film-ctl').click()
-    ok('Filme: botão pausa e informa o estado', pg.evaluate("document.querySelector('.film video').paused && document.querySelector('.film').dataset.estado === 'pausado'") and pg.locator('.film-ctl .f-play').is_visible())
-    pg.locator('.film-ctl').press('Enter')
-    ok('Filme: teclado retoma', pg.evaluate("!document.querySelector('.film video').paused"))
     for y in range(0, pg.evaluate('document.documentElement.scrollHeight'), 500):
         pg.evaluate(f"scrollTo({{top: {y}, behavior: 'instant'}})"); pg.wait_for_timeout(120)
     pg.wait_for_timeout(1300)
@@ -256,9 +250,7 @@ with sync_playwright() as p:
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, reduced_motion='reduce')
     pg = ctx.new_page(); vigiar(pg); pg.goto(BASE + 'index.html')
     ok('Reduzido: nenhum conteúdo oculto para revelação', pg.locator('.rv').count() == 0)
-    pg.evaluate("document.querySelector('.film').scrollIntoView({behavior: 'instant'})"); pg.wait_for_timeout(800)
-    ok('Reduzido: filme parado no quadro final, com botão para tocar', pg.evaluate("(() => { const v = document.querySelector('.film video'); return v.paused && v.currentTime === 0 && v.poster.endsWith('-poster.jpg') })()") and pg.locator('.film-ctl .f-play').is_visible())
-    ok('Reduzido: fotos da abertura já no lugar final', pg.evaluate("[...document.querySelectorAll('.ph')].every(f => getComputedStyle(f).opacity === '1' && getComputedStyle(f).transform === 'none')"))
+    ok('Reduzido: foto da abertura já no lugar final', pg.evaluate("(() => { const f = getComputedStyle(document.querySelector('.stage img')); return f.opacity === '1' && f.translate === 'none'; })()"))
     ok('Reduzido: atuação e fechamento já desenhados', pg.evaluate("[...document.querySelectorAll('[data-anim]')].every(e => e.classList.contains('on'))"))
     pg.locator('#svx-b-xml-empresarial').click()
     ok('Reduzido: serviços continuam selecionáveis', pg.locator('#svx-xml-empresarial').is_visible())
@@ -267,10 +259,9 @@ with sync_playwright() as p:
     # ---------------- sem JavaScript: conteúdo completo e navegável
     ctx = nav.new_context(viewport={'width': 1440, 'height': 900}, java_script_enabled=False)
     pg = ctx.new_page(); pg.goto(BASE + 'index.html')
-    ok('Sem JS: abertura com título, botão e fotos', pg.locator('.hero h1').is_visible() and pg.locator('.hero .btn-p').is_visible() and pg.locator('.ph img').count() == 3)
+    ok('Sem JS: abertura com título, botão e foto', pg.locator('.hero h1').is_visible() and pg.locator('.hero .btn-p').is_visible() and pg.locator('.stage img').count() == 1)
     ok('Sem JS: os 7 serviços visíveis em cartões', pg.locator('.svx-p:visible').count() == 7 and pg.locator('.svx-b:visible').count() == 0)
-    ok('Sem JS: ondas e arco já desenhados', pg.evaluate("getComputedStyle(document.querySelector('.ondas .o3')).strokeDashoffset === '0px'"))
-    ok('Sem JS: filme mostra o quadro final, sem botão inútil', pg.evaluate("document.querySelector('.film video').poster.endsWith('-poster.jpg')") and pg.locator('.film-ctl').is_hidden())
+    ok('Sem JS: cartões das esferas visíveis', pg.evaluate("[...document.querySelectorAll('.esc .lv')].every(c => getComputedStyle(c).opacity === '1')"))
     pg.locator('#h-biz').scroll_into_view_if_needed(); cap(pg, 'desktop-14-sem-js-servicos')
     pg.goto(BASE + 'auditorio.html')
     ok('Sem JS: miniaturas da galeria abrem a imagem', pg.locator('.gv-th a[href$="auditorio-3.jpg"]').count() == 1 and pg.locator('.gv-nav').is_hidden())
