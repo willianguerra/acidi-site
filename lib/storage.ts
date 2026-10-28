@@ -30,7 +30,7 @@ export async function salvarImagem(arquivo: { bytes: Uint8Array; tamanho: number
   const nome = `${randomUUID()}.${ext}`;
   if (destino.tipo === 'disco') {
     await mkdir(destino.dir, { recursive: true });
-    await writeFile(join(destino.dir, nome), saida);
+    await writeFile(join(/*turbopackIgnore: true*/ destino.dir, nome), saida);
     return { ok: true, caminho: '/uploads/' + nome };
   }
   const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');

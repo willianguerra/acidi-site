@@ -11,3 +11,5 @@ const TRANSICOES: Record<Evento, Partial<Record<Situacao, Situacao>>> = {
 export function proxima(atual: Situacao, evento: Evento): Situacao | null {
   return TRANSICOES[evento][atual] ?? null;
 }
+
+export const SITUACOES: Record<Situacao, string> = { rascunho: 'Rascunho', revisao: 'Em revisão', publicada: 'Publicada', devolvida: 'Devolvida' };

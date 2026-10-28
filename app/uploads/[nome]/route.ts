@@ -9,7 +9,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ nome: stri
   const d = destinoPadrao();
   if (!NOME_UPLOAD.test(nome) || d.tipo !== 'disco') return new Response('Não encontrado', { status: 404 });
   try {
-    const bytes = await readFile(join(d.dir, nome));
+    const bytes = await readFile(join(/*turbopackIgnore: true*/ d.dir, nome));
     return new Response(bytes, { headers: { 'Content-Type': tipoDoArquivo(nome), 'Cache-Control': 'public, max-age=31536000, immutable' } });
   } catch {
     return new Response('Não encontrado', { status: 404 });
