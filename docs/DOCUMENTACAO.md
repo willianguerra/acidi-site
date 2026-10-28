@@ -6,7 +6,7 @@ Documento interno: não faz parte da interface apresentada ao cliente. Data da v
 
 - Base visual: `acidi-home.html` (home com fotografias reais) da etapa anterior. O `index.html` em `Desktop\Nova pasta` é o mesmo conteúdo com um invólucro HTML; ambas as pastas foram preservadas sem alteração.
 - Não aproveitado: `acidi-proposta.html` (documento com esboço em iframes, outra família tipográfica e botões em pílula) e a barra "Prévia", as marcações "a confirmar" e a janela "Sobre a proposta" da home anterior.
-- Tecnologia: HTML, CSS e JavaScript sem dependências e sem requisições externas para exibir as páginas (fontes embutidas). As páginas são estáticas, geradas por `ferramentas/gerar_site.py` a partir de um cabeçalho e um rodapé únicos. Não há React, backend nem relação com o WordPress de produção.
+- Tecnologia: Next.js (App Router, TypeScript), com todas as páginas geradas estaticamente e sem requisições externas para exibi-las (fontes embutidas). Cabeçalho e rodapé únicos em `components/`; conteúdo em `content/`, lido só por `lib/content.ts`. O `site.js` original continua cuidando de menus, agenda e formulários. Até 28/10/2026 as páginas eram HTML estático gerado por `ferramentas/gerar_site.py` (removido; ver o histórico do git). Não há relação com o WordPress de produção.
 
 ## 2. Fontes do conteúdo
 
@@ -75,7 +75,7 @@ Referências da etapa anterior (contexto, não reexaminadas nesta etapa): Resear
 
 ## 6. Testes realizados
 
-Ambiente: Windows 11, Microsoft Edge (Chromium) via Playwright, servidor `python -m http.server`. Larguras emuladas no navegador, não em aparelho físico.
+Ambiente: Windows 11, Microsoft Edge (Chromium) via Playwright, servidor `next start` (antes da migração para Next.js, `python -m http.server`). Larguras emuladas no navegador, não em aparelho físico.
 
 | Jornada / verificação | Resultado |
 |---|---|
