@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import type { Evento, Noticia } from '@/lib/types';
 import { dlong, dshort, evId, MESES } from '@/lib/datas';
+import { Ico, Ext } from './Ico';
+import { WHATS, MAPA } from '@/content/links';
 
 export function Crumbs({ items }: { items: [href: string | null, texto: string][] }) {
   return (
@@ -47,5 +49,27 @@ export function Story({ n, cls = 'story', showP = true }: { n: Noticia; cls?: st
       <div className="photo"><img src={'/assets/img/' + n.imagem} alt={n.alt} loading="lazy" /></div>
       <div><time dateTime={n.data}>{dshort(n.data)}</time><h3>{n.titulo}</h3>{showP && <p>{n.resumo}</p>}</div>
     </a>
+  );
+}
+
+// Chamada de associação usada no fim de Histórico e Para seu negócio (a home tem uma versão própria)
+export function JoinBox() {
+  return (
+<section className="join sec" aria-labelledby="h-join"><div className="wrap"><div className="box">
+<div className="ask on-dark" data-anim="">
+<svg className="liga" viewBox="0 0 700 460" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false"><path pathLength="1" d="M-40 70C200 20 450 80 560 220S610 400 646 420" /><circle cx="672" cy="436" r="32" /></svg>{' '}<span className="kicker">Associe-se</span>{' '}<h2 id="h-join" className="hl">Sua empresa <b>na rede da ACIDI</b></h2>
+<p>A rede de relacionamento é o ponto de partida para o crescimento. Conheça os benefícios e fale com a equipe da associação.</p>
+<div className="ctas"><a className="btn btn-y" href="/associe-se" data-cta="">Conhecer os benefícios <Ico n="go" cls="ico go" /></a><Ext href={WHATS} cls="btn btn-w">Falar pelo WhatsApp</Ext></div>
+</div>
+<div className="contact on-dark">
+<h3>Contato</h3>
+<dl>
+<div><dt>Telefone e WhatsApp</dt><dd>(47) 3333-8786</dd></div>
+<div><dt>E-mail</dt><dd>contato@acidi.net</dd></div>
+<div><dt>Endereço</dt><dd>Rua Ver. Alvin Rauh Júnior, 100<br />Nações, Indaial/SC · CEP 89082-065</dd></div>
+</dl>
+<p><Ext href={MAPA} cls="tlink">Abrir no mapa</Ext></p>
+</div>
+</div></div></section>
   );
 }
