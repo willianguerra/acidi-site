@@ -1,0 +1,35 @@
+{
+  "name": "acidi-site",
+  "version": "1.0.0",
+  "description": "ba",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test lib/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willianguerra/acidi-site.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/willianguerra/acidi-site/issues"
+  },
+  "homepage": "https://github.com/willianguerra/acidi-site#readme",
+  "dependencies": {
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "typescript": "^7.0.2"
+  },
+  "private": true
+}

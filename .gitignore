@@ -8,3 +8,9 @@ desktop.ini
 motion/*/.hyperframes/
 motion/*/renders/
 motion/*/node_modules/
+
+# Next.js
+.next/
+node_modules/
+next-env.d.ts
+.superpowers/
