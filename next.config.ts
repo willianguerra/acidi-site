@@ -8,9 +8,10 @@ const nextConfig: NextConfig = {
   experimental: { serverActions: { bodySizeLimit: '9mb' } },
   async redirects() {
     return [
-      // o app Node responde por todo o acidi.net, então os atalhos do cPanel (cpanel./webmail./whm.) caem aqui; manda para o servidor
+      // cpanel./webmail./whm.acidi.net: o Apache reescreve para /___proxy_subdomain_<nome>, mas o app Node responde antes do proxy do cPanel.
+      // Casa pelo caminho, não pelo host: o proxy do painel não repassa o Host original.
       ...[['cpanel', 2083], ['webmail', 2096], ['whm', 2087]].map(([sub, porta]) => ({
-        source: '/:caminho*', has: [{ type: 'host' as const, value: `${sub}.acidi.net` }],
+        source: `/___proxy_subdomain_${sub}/:caminho*`,
         destination: `https://cpanel09.unifique.cloud:${porta}/`, permanent: false,
       })),
       ...Object.entries(ROTAS).map(([arq, destination]) => ({ source: '/' + arq, destination, statusCode: 301 as const })),
