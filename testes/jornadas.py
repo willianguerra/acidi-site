@@ -51,7 +51,7 @@ with sync_playwright() as p:
     pg.locator('.hero .btn-p').click(); pg.wait_for_url('**/associe-se')
     ok('Home → Associe-se', pg.url.endswith('/associe-se'))
     form = pg.locator('form.demo')
-    ok('Associe-se: aviso demonstrativo visível antes do envio', form.locator('.demo-notice').is_visible())
+    ok('Associe-se: sem aviso de demonstração', form.locator('.demo-notice').count() == 0)
     form.locator('button[type=submit]').click()
     ok('Associe-se: envio vazio mostra resumo de erros focado', pg.evaluate("document.activeElement.classList.contains('err-summary')"))
     ok('Associe-se: campos obrigatórios marcados', pg.locator('#as-nome[aria-invalid=true]').count() == 1 and pg.locator('#as-setor[aria-invalid=true]').count() == 1)
@@ -64,9 +64,9 @@ with sync_playwright() as p:
     pg.fill('#as-email', 'maria@empresa.com.br'); pg.fill('#as-tel', '(47) 3333-8786'); pg.select_option('#as-setor', 'Comércio')
     form.locator('button[type=submit]').click()
     done = form.locator('.done')
-    ok('Associe-se: conclusão demonstrativa', done.is_visible() and 'Demonstração concluída. Nenhum dado foi enviado.' in done.inner_text())
-    ok('Associe-se: sem "enviada com sucesso"', 'sucesso' not in done.inner_text().lower())
-    ok('Associe-se: dados preservados para repetir', pg.input_value('#as-nome') == 'Maria Teste')
+    done.wait_for(state='visible')
+    ok('Associe-se: envio registrado', 'Interesse registrado' in done.inner_text())
+    ok('Associe-se: formulário limpo após o envio', pg.input_value('#as-nome') == '')
     cap(pg, 'desktop-06-associe-se-concluido')
 
     # Jornada 2: menu A ACIDI -> páginas institucionais -> volta à home (mouse e teclado)
@@ -122,7 +122,8 @@ with sync_playwright() as p:
     cap(pg, 'desktop-08-contato-erros')
     pg.fill('#ct-tel', ''); pg.fill('#ct-msg', 'Gostaria de saber mais sobre a ACIDI.')
     pg.locator('form.demo button[type=submit]').click()
-    ok('Contato: conclusão demonstrativa', pg.locator('form.demo .done').is_visible())
+    pg.locator('form.demo .done').wait_for(state='visible')
+    ok('Contato: mensagem enviada', 'Mensagem enviada' in pg.inner_text('form.demo .done'))
 
     # Jornada 4: notícias -> matéria -> volta
     pg.goto(BASE + 'noticias'); cap(pg, 'desktop-09-noticias')
@@ -157,8 +158,8 @@ with sync_playwright() as p:
     ok('Auditório: data passada rejeitada', 'a partir de hoje' in pg.inner_text('#aud-data-erro'))
     pg.fill('#aud-data', (datetime.date.today() + datetime.timedelta(days=20)).isoformat())
     pg.locator('form.demo button[type=submit]').click()
-    t = pg.inner_text('form.demo .done')
-    ok('Auditório: conclusão sem reserva', 'Nenhum dado foi enviado' in t and 'Nenhuma reserva foi realizada' in t and 'confirmad' not in t.lower())
+    pg.locator('form.demo .done').wait_for(state='visible'); t = pg.inner_text('form.demo .done')
+    ok('Auditório: solicitação enviada, reserva depende da equipe', 'Solicitação enviada' in t and 'confirmação da equipe' in t)
     cap(pg, 'desktop-13-auditorio-concluido')
     # Galeria: só navegação manual
     pg.goto(BASE + 'auditorio'); src0 = pg.get_attribute('.gv-main img', 'src')
@@ -276,7 +277,7 @@ with sync_playwright() as p:
 
 ok('Nenhum erro no console', not erros_console, '; '.join(erros_console[:5]))
 ok('Nenhum recurso local quebrado', not falhas_rede, '; '.join(falhas_rede[:5]))
-ok('Nenhum dado transmitido (só GET)', not envios, '; '.join(envios[:5]))
+ok('Formulários enviam só para /api/contato', all(e.endswith('/api/contato') for e in envios) and len(envios) == 3, '; '.join(envios[:5]))
 falhou = [r for r in resultados if not r[1]]
 print(f'\n{len(resultados) - len(falhou)}/{len(resultados)} verificações passaram')
 sys.exit(1 if falhou else 0)

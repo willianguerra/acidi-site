@@ -5,7 +5,7 @@ import { pode, type Usuario, type Acao } from './permissoes.ts';
 const u = (papel: Usuario['papel'], ativo = true): Usuario => ({ id: papel, nome: papel, papel, ativo });
 const minha = (situacao: 'rascunho' | 'revisao' | 'publicada' | 'devolvida') => ({ autorId: 'editor', situacao });
 const deOutro = (situacao: 'rascunho' | 'revisao' | 'publicada' | 'devolvida') => ({ autorId: 'outro', situacao });
-const TODAS: Acao[] = ['noticia.criar', 'noticia.editar', 'noticia.enviar', 'noticia.publicar', 'noticia.devolver', 'noticia.despublicar', 'noticia.apagar', 'agenda.editar', 'diretoria.editar', 'usuarios.gerir'];
+const TODAS: Acao[] = ['noticia.criar', 'noticia.editar', 'noticia.enviar', 'noticia.publicar', 'noticia.devolver', 'noticia.despublicar', 'noticia.apagar', 'agenda.editar', 'diretoria.editar', 'usuarios.gerir', 'contatos.ver'];
 
 test('editor edita e envia só os próprios rascunhos e devolvidas', () => {
   const e = u('editor');
@@ -35,6 +35,7 @@ test('editor cria notícia e mexe na agenda, mas não em diretoria nem usuários
   assert.equal(pode(u('editor'), 'agenda.editar'), true);
   assert.equal(pode(u('editor'), 'diretoria.editar'), false);
   assert.equal(pode(u('editor'), 'usuarios.gerir'), false);
+  assert.equal(pode(u('editor'), 'contatos.ver'), false);
 });
 
 test('revisor faz tudo em notícias e agenda, nada em diretoria e usuários', () => {
@@ -43,6 +44,7 @@ test('revisor faz tudo em notícias e agenda, nada em diretoria e usuários', ()
   assert.equal(pode(u('revisor'), 'agenda.editar'), true);
   assert.equal(pode(u('revisor'), 'diretoria.editar'), false);
   assert.equal(pode(u('revisor'), 'usuarios.gerir'), false);
+  assert.equal(pode(u('revisor'), 'contatos.ver'), false);
 });
 
 test('admin pode tudo', () => {

@@ -1,15 +1,17 @@
-# PostgreSQL de desenvolvimento e testes: banco acidi (site/admin) e acidi_teste (npm run test:db)
+# MySQL de desenvolvimento e testes (o mesmo banco do cPanel): acidi (site/admin) e acidi_teste (npm run test:db)
 services:
-  postgres:
-    image: postgres:17
+  mysql:
+    image: mysql:8.0
     environment:
-      POSTGRES_USER: acidi
-      POSTGRES_PASSWORD: acidi
-      POSTGRES_DB: acidi
+      MYSQL_ROOT_PASSWORD: acidi
+      MYSQL_USER: acidi
+      MYSQL_PASSWORD: acidi
+      MYSQL_DATABASE: acidi
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
-      - "5432:5432"
+      - "3307:3306"  # 3306 costuma estar ocupada por outro MySQL local
     volumes:
-      - pgdados:/var/lib/postgresql/data
+      - mysqldados:/var/lib/mysql
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 volumes:
-  pgdados:
+  mysqldados:

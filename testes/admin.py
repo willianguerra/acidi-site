@@ -64,7 +64,7 @@ def criar_conta(pg, nome, email, papel):
     return pg.url.split('/admin/usuarios/')[1].split('?')[0]
 
 def abrir_noticia(pg):
-    pg.goto(BASE + '/admin/noticias?busca=' + SUFIXO); pg.click(f'text={TITULO}'); pg.wait_for_selector('form')
+    pg.goto(BASE + '/admin/noticias?busca=' + SUFIXO); pg.click(f'text={TITULO}'); pg.wait_for_selector('main form'); pg.wait_for_load_state('networkidle')
 
 with sync_playwright() as p:
     nav = p.chromium.launch(channel='msedge')

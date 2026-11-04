@@ -1,6 +1,7 @@
 // Regras das notícias no admin. Cada função confere pode() antes de agir; as Server Actions só
 // obtêm o usuário da sessão, chamam estas funções e revalidam as páginas públicas.
-import { and, desc, eq, ilike, like, ne, or, type SQL } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
+import { and, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
 import type { Db } from '../db/index.ts';
 import { noticias, user } from '../db/schema.ts';
 import { pode, type Acao, type Usuario } from './permissoes.ts';
@@ -34,7 +35,7 @@ export async function listarNoticias(db: Db, u: Usuario, filtro: { situacao?: Si
   const conds: (SQL | undefined)[] = [];
   if (u.papel === 'editor') conds.push(or(eq(noticias.autorId, u.id), eq(noticias.situacao, 'publicada')));
   if (filtro.situacao) conds.push(eq(noticias.situacao, filtro.situacao));
-  if (filtro.busca?.trim()) conds.push(ilike(noticias.titulo, `%${filtro.busca.trim().replace(/[%_\\]/g, '\\$&')}%`));
+  if (filtro.busca?.trim()) conds.push(like(noticias.titulo, `%${filtro.busca.trim().replace(/[%_\\]/g, '\\$&')}%`));
   const linhas = await db.select({
     id: noticias.id, slug: noticias.slug, titulo: noticias.titulo, data: noticias.data, situacao: noticias.situacao,
     autorId: noticias.autorId, atualizadaEm: noticias.atualizadaEm, comentarioRevisao: noticias.comentarioRevisao, autor: user.name,
@@ -55,8 +56,9 @@ export async function criarNoticia(db: Db, u: Usuario, dados: unknown): Promise<
   if (!v.ok) return falha('invalida', { erros: v.erros });
   const { slug: pedido, ...campos } = v.valor;
   const slug = await slugLivre(db, slugDe(pedido || campos.titulo) || 'noticia');
-  const [n] = await db.insert(noticias).values({ ...campos, slug, autorId: u.id, atualizadaPorId: u.id }).returning({ id: noticias.id, slug: noticias.slug });
-  return ok(n);
+  const id = randomUUID();
+  await db.insert(noticias).values({ ...campos, id, slug, autorId: u.id, atualizadaPorId: u.id });
+  return ok({ id, slug });
 }
 
 export async function salvarNoticia(db: Db, u: Usuario, id: string, dados: unknown, lidaEm: string): Promise<Resultado<{ slug: string; publicada: boolean }>> {

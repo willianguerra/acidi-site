@@ -2,12 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Ico } from '@/components/Ico';
 import { getGaleriaAuditorio } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Auditório e salas' + SUF,
-  description: "Auditório para 170 pessoas e salas climatizadas na sede da ACIDI, em Indaial. Solicitação demonstrativa.",
-};
+export const metadata = pagina('/auditorio', 'Auditório e salas', 'Alugue o auditório para 170 pessoas ou salas de reunião climatizadas na sede da ACIDI, em Indaial (SC). Valor diferenciado para associados.');
 
 export default async function Page() {
   const fotos = await getGaleriaAuditorio(), g0 = fotos[0];
@@ -29,19 +26,19 @@ export default async function Page() {
 <section className="sec alt" aria-labelledby="h-sol"><div className="wrap formwrap stack">
 <div style={{ display: "grid", gap: "18px", alignContent: "start" }}>{' '}<span className="kicker">Solicitação</span>{' '}<h2 id="h-sol" className="hl sec-t">Solicite o uso <b>do espaço</b></h2>
 <p>O uso dos espaços depende de agendamento prévio. Associados têm valor diferenciado.</p>
-<p className="muted">Para reservar de fato, fale com a equipe pelo telefone ou WhatsApp (47) 3333-8786.</p>
+<p className="muted">Se preferir, fale com a equipe pelo telefone ou WhatsApp (47) 3333-8786.</p>
 <div><a className="btn btn-s" href="https://api.whatsapp.com/send?phone=554733338786" target="_blank" rel="noopener">Falar pelo WhatsApp<svg className="ico ext-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M8 7h9v9" /></svg><span className="sr"> (abre em nova aba)</span></a></div>
 </div>
 <form className="demo" noValidate aria-labelledby="h-sol">
-<p className="demo-notice"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5v.5" /></svg><span><b>Formulário demonstrativo.</b> Os dados não são enviados nem armazenados. Nenhuma reserva é realizada.</span></p>
 <div className="row2"><div className="field"><label htmlFor="aud-nome">Nome</label><input type="text" id="aud-nome" name="aud-nome" data-rules="required" data-label="Nome" aria-describedby="aud-nome-erro" autoComplete="name" /><p className="err" id="aud-nome-erro"></p></div><div className="field"><label htmlFor="aud-empresa">Empresa <span className="opt">(opcional)</span></label><input type="text" id="aud-empresa" name="aud-empresa" data-rules="" data-label="Empresa" aria-describedby="aud-empresa-erro" autoComplete="organization" /><p className="err" id="aud-empresa-erro"></p></div></div>
 <div className="row2"><div className="field"><label htmlFor="aud-email">E-mail</label><input type="email" id="aud-email" name="aud-email" data-rules="required email" data-label="E-mail" aria-describedby="aud-email-erro" autoComplete="email" /><p className="err" id="aud-email-erro"></p></div><div className="field"><label htmlFor="aud-tel">Telefone</label><input type="tel" id="aud-tel" name="aud-tel" data-rules="required phone" data-label="Telefone" aria-describedby="aud-tel-erro aud-tel-dica" autoComplete="tel" /><p className="hint" id="aud-tel-dica">Com DDD.</p><p className="err" id="aud-tel-erro"></p></div></div>
 <div className="row2"><div className="field"><label htmlFor="aud-espaco">Espaço</label><select id="aud-espaco" name="aud-espaco" data-rules="required" data-label="Espaço" aria-describedby="aud-espaco-erro"><option value="">Selecione</option><option>Auditório</option><option>Sala de reunião</option><option>Ainda não sei</option></select><p className="err" id="aud-espaco-erro"></p></div><div className="field"><label htmlFor="aud-associado">Empresa associada?</label><select id="aud-associado" name="aud-associado" data-rules="required" data-label="Empresa associada?" aria-describedby="aud-associado-erro"><option value="">Selecione</option><option>Sim</option><option>Não</option><option>Não sei</option></select><p className="err" id="aud-associado-erro"></p></div></div>
-<div className="row2"><div className="field"><label htmlFor="aud-data">Data desejada</label><input type="date" id="aud-data" name="aud-data" data-rules="required date-future" data-label="Data desejada" aria-describedby="aud-data-erro aud-data-dica" /><p className="hint" id="aud-data-dica">A partir de hoje. A disponibilidade não é verificada nesta demonstração.</p><p className="err" id="aud-data-erro"></p></div><div className="field"><label htmlFor="aud-pessoas">Número estimado de pessoas <span className="opt">(opcional)</span></label><input type="number" id="aud-pessoas" name="aud-pessoas" data-rules="" data-label="Número estimado de pessoas" aria-describedby="aud-pessoas-erro aud-pessoas-dica" min="1" max="170" inputMode="numeric" /><p className="hint" id="aud-pessoas-dica">Auditório: até 170 pessoas.</p><p className="err" id="aud-pessoas-erro"></p></div></div>
+<div className="row2"><div className="field"><label htmlFor="aud-data">Data desejada</label><input type="date" id="aud-data" name="aud-data" data-rules="required date-future" data-label="Data desejada" aria-describedby="aud-data-erro aud-data-dica" /><p className="hint" id="aud-data-dica">A partir de hoje. A disponibilidade é confirmada pela equipe.</p><p className="err" id="aud-data-erro"></p></div><div className="field"><label htmlFor="aud-pessoas">Número estimado de pessoas <span className="opt">(opcional)</span></label><input type="number" id="aud-pessoas" name="aud-pessoas" data-rules="" data-label="Número estimado de pessoas" aria-describedby="aud-pessoas-erro aud-pessoas-dica" min="1" max="170" inputMode="numeric" /><p className="hint" id="aud-pessoas-dica">Auditório: até 170 pessoas.</p><p className="err" id="aud-pessoas-erro"></p></div></div>
 <div className="field"><label htmlFor="aud-msg">Detalhes do evento <span className="opt">(opcional)</span></label><textarea id="aud-msg" name="aud-msg" data-rules="" data-label="Detalhes do evento" aria-describedby="aud-msg-erro aud-msg-dica"></textarea><p className="hint" id="aud-msg-dica">Horário, tipo de atividade e outras informações.</p><p className="err" id="aud-msg-erro"></p></div>
+<input type="hidden" name="formulario" value="auditorio" /><div hidden><label>Não preencha<input type="text" name="site" tabIndex={-1} autoComplete="off" /></label></div>
 <div className="err-summary" tabIndex={-1} hidden></div>
-<div className="done" tabIndex={-1} role="status" hidden><b>Demonstração concluída. Nenhum dado foi enviado.</b><p>Nenhuma reserva foi realizada.</p><p>Você pode alterar os campos e repetir a demonstração.</p></div>
-<div className="form-actions"><button className="btn btn-p" type="submit">Concluir demonstração</button></div>
+<div className="done" tabIndex={-1} role="status" hidden><b>Solicitação enviada.</b><p>A reserva só vale depois da confirmação da equipe, que vai entrar em contato.</p></div>
+<div className="form-actions"><button className="btn btn-p" type="submit">Enviar</button></div>
 </form>
 </div></section>
     </main>

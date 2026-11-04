@@ -3,12 +3,9 @@ import { Footer } from '@/components/Footer';
 import { Story } from '@/components/blocos';
 import { getNoticia } from '@/lib/content';
 import type { Noticia } from '@/lib/types';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Representatividade' + SUF,
-  description: "Como a ACIDI representa os empresários de Indaial junto aos poderes públicos e privados.",
-};
+export const metadata = pagina('/representatividade', 'Representatividade', 'Como a ACIDI representa os empresários de Indaial (SC) junto aos poderes públicos e entidades, com pautas como o Voz Única e a FACISC.');
 
 const ACAO = ['documento-voz-unica-municipal', 'comitiva-visita-tecnica-maringa', 'encontro-de-liderancas-regionais'];
 

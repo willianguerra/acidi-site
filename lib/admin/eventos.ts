@@ -1,4 +1,5 @@
 // Regras da agenda no admin: editor, revisor e admin publicam direto (sem revisão).
+import { randomUUID } from 'node:crypto';
 import { asc, eq } from 'drizzle-orm';
 import type { Db } from '../db/index.ts';
 import { eventos, user } from '../db/schema.ts';
@@ -25,8 +26,9 @@ export async function criarEvento(db: Db, u: Usuario, dados: unknown): Promise<R
   if (!pode(u, 'agenda.editar')) return falha('sem-permissao');
   const v = validar(esquemaEvento, dados);
   if (!v.ok) return falha('invalida', { erros: v.erros });
-  const [e] = await db.insert(eventos).values({ ...v.valor, atualizadoPorId: u.id }).returning({ id: eventos.id });
-  return ok(e);
+  const id = randomUUID();
+  await db.insert(eventos).values({ ...v.valor, id, atualizadoPorId: u.id });
+  return ok({ id });
 }
 
 export async function salvarEvento(db: Db, u: Usuario, id: string, dados: unknown, lidoEm: string): Promise<Resultado<null>> {

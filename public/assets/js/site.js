@@ -1,4 +1,4 @@
-/* ACIDI · site demonstrativo. Sem dependências; nada é enviado ou armazenado. */
+/* ACIDI · site. Sem dependências. */
 (function (root) {
   'use strict';
 
@@ -97,7 +97,7 @@
     if (count) count.textContent = s.past.length;
   });
 
-  // Formulários demonstrativos
+  // Formulários: valida no navegador e envia para /api/contato
   [].forEach.call(doc.querySelectorAll('form.demo'), function (form) {
     var summary = form.querySelector('.err-summary'), done = form.querySelector('.done');
     var fields = [].slice.call(form.querySelectorAll('[data-rules]'));
@@ -121,15 +121,25 @@
       var problems = [];
       fields.forEach(function (f) { var m = check(f); if (m) problems.push({ f: f, m: m }); });
       if (problems.length) {
-        summary.innerHTML = '<h2>Corrija ' + (problems.length === 1 ? '1 campo' : problems.length + ' campos') + ' para concluir a demonstração</h2><ul>' +
+        summary.innerHTML = '<h2>Corrija ' + (problems.length === 1 ? '1 campo' : problems.length + ' campos') + ' para enviar</h2><ul>' +
           problems.map(function (p) { return '<li><a href="#' + p.f.id + '">' + p.m + '</a></li>'; }).join('') + '</ul>';
         summary.hidden = false;
         summary.focus();
         return;
       }
       summary.hidden = true;
-      done.hidden = false;
-      done.focus();
+      var btn = form.querySelector('button[type=submit]');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      fetch('/api/contato', { method: 'POST', body: new FormData(form) })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.erro); }); })
+        .then(function () { form.reset(); done.hidden = false; done.focus(); })
+        .catch(function (err) {
+          summary.innerHTML = '<h2>Não foi possível enviar</h2><p></p>';
+          summary.querySelector('p').textContent = (err && err.message && !/fetch|JSON/i.test(err.message)) ? err.message : 'Verifique a conexão e tente de novo, ou ligue (47) 3333-8786.';
+          summary.hidden = false; summary.focus();
+        })
+        .then(function () { btn.disabled = false; });
     });
     summary.addEventListener('click', function (e) {
       var a = e.target.closest('a'); if (!a) return;

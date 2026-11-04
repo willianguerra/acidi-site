@@ -12,16 +12,16 @@ const IMG = '/assets/img/';
 
 export async function carregar(db: Db): Promise<void> {
   await db.transaction(async tx => {
-    await tx.insert(noticias)
-      .values(NOTICIAS.map(n => ({ ...n, imagem: IMG + n.imagem, situacao: 'publicada' as const, publicadaEm: new Date(n.data + 'T12:00:00-03:00') })))
-      .onConflictDoNothing({ target: noticias.slug });
+    await tx.insert(noticias).ignore()  // INSERT IGNORE: slug que já existe fica como está
+      // NOTICIAS vem da mais recente para a mais antiga: um segundo a menos por posição desempata notícias do mesmo dia.
+      .values(NOTICIAS.map((n, i) => ({ ...n, imagem: IMG + n.imagem, situacao: 'publicada' as const, publicadaEm: new Date(Date.parse(n.data + 'T12:00:00-03:00') - i * 1000) })));
 
     for (const e of EVENTOS) {
       const [existe] = await tx.select({ id: eventos.id }).from(eventos).where(and(eq(eventos.data, e.data), eq(eventos.titulo, e.titulo)));
       if (!existe) await tx.insert(eventos).values(e);
     }
 
-    const [{ n: membros }] = await tx.select({ n: sql<number>`count(*)::int` }).from(diretoria);
+    const [{ n: membros }] = await tx.select({ n: sql<number>`count(*)`.mapWith(Number) }).from(diretoria);
     if (!membros) {
       const D = DIRETORIA;
       const linhas = [
@@ -35,7 +35,7 @@ export async function carregar(db: Db): Promise<void> {
       await tx.insert(diretoria).values(linhas.map((l, ordem) => ({ ...l, ordem })));
     }
 
-    const [{ n: presidentes }] = await tx.select({ n: sql<number>`count(*)::int` }).from(exPresidentes);
+    const [{ n: presidentes }] = await tx.select({ n: sql<number>`count(*)`.mapWith(Number) }).from(exPresidentes);
     if (!presidentes)
       await tx.insert(exPresidentes).values(EX_PRESIDENTES.map((p, ordem) => ({ ...p, foto: p.foto && IMG + p.foto, ordem })));
   });

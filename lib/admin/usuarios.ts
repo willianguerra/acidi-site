@@ -15,7 +15,7 @@ const SEM_ADMIN = 'Precisa haver ao menos um admin ativo.';
 const papelDe = (r: string | null): Papel => (r === 'admin' || r === 'revisor' ? r : 'editor');
 
 async function outrosAdminsAtivos(db: Db, id: string): Promise<number> {
-  const [{ n }] = await db.select({ n: sql<number>`count(*)::int` }).from(user)
+  const [{ n }] = await db.select({ n: sql<number>`count(*)`.mapWith(Number) }).from(user)
     .where(and(eq(user.role, 'admin'), sql`coalesce(${user.banned}, false) = false`, ne(user.id, id)));
   return n;
 }

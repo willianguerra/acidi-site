@@ -27,7 +27,7 @@ export async function salvarExPresidente(db: Db, u: Usuario, id: string | null, 
   const v = validar(esquemaExPresidente, dados);
   if (!v.ok) return falha('invalida', { erros: v.erros });
   if (!id) {
-    const [{ m }] = await db.select({ m: sql<number>`coalesce(max(${exPresidentes.ordem}), -1)::int` }).from(exPresidentes);
+    const [{ m }] = await db.select({ m: sql<number>`coalesce(max(${exPresidentes.ordem}), -1)`.mapWith(Number) }).from(exPresidentes);
     await db.insert(exPresidentes).values({ ...v.valor, ordem: m + 1 });
     return ok(null);
   }

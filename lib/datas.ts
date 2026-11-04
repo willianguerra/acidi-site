@@ -31,3 +31,6 @@ export function separarEventos(eventos: Evento[], hoje: string): { prox: Evento[
     arquivo: eventos.filter(e => e.data < hoje).sort((a, b) => (a.data > b.data ? -1 : 1)),
   };
 }
+
+// Data e hora no fuso de Indaial, para o admin.
+export const quando = (d: Date) => d.toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', dateStyle: 'short', timeStyle: 'short' });

@@ -11,7 +11,7 @@ export function Footer() {
         <div><h2>Acompanhe</h2><ul><li><a href="/noticias">Notícias</a></li><li><a href="/agenda">Agenda</a></li><li><a href="/contato">Contato</a></li><li><Ext href={INSTA}>Instagram</Ext></li><li><Ext href={FACE}>Facebook</Ext></li></ul></div>
       </div>
       <div className="wrap"><p className="big" aria-hidden="true">Juntos somos <b>mais fortes.</b></p></div>
-      <div className="wrap base"><span>© 2026 ACIDI · Associação Empresarial de Indaial · Versão demonstrativa</span><a href="#topo" className="top">Voltar ao topo <svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M6 11l6-6 6 6" /></svg></a></div>
+      <div className="wrap base"><span>© 2026 ACIDI · Associação Empresarial de Indaial</span><a href="#topo" className="top">Voltar ao topo <svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M6 11l6-6 6 6" /></svg></a></div>
     </footer>
     <div className="mbar"><a className="btn btn-p" href="/associe-se">Associe sua empresa</a><Ext href={WHATS} cls="btn btn-s">WhatsApp</Ext></div>
   </>);

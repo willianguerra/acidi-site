@@ -2,12 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Crumbs, PageHead } from '@/components/blocos';
 import { getDiretoria } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Diretoria' + SUF,
-  description: 'Diretoria e conselhos da ACIDI na gestão 2024/2026, conforme publicação da associação.',
-};
+export const metadata = pagina('/diretoria', 'Diretoria', 'Diretoria executiva, vice-presidências e conselhos da ACIDI – Associação Empresarial de Indaial na gestão 2024/2026.');
 
 const nomes = (lista: string[]) => <ul className="namelist">{lista.map(n => <li key={n}>{n}</li>)}</ul>;
 
