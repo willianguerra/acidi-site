@@ -15,7 +15,7 @@ const roles = { admin: adminAc, revisor: userAc, editor: userAc };
 
 export function criarAuth(db: Db, extras: BetterAuthPlugin[] = []) {
   return betterAuth({
-    database: drizzleAdapter(db, { provider: 'pg', schema }),
+    database: drizzleAdapter(db, { provider: 'mysql', schema }),
     emailAndPassword: { enabled: true, disableSignUp: true, minPasswordLength: 10 },
     rateLimit: { enabled: true },
     user: { additionalFields: { trocarSenha: { type: 'boolean', defaultValue: true, input: false } } },

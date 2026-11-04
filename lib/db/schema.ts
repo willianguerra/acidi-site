@@ -1,53 +1,63 @@
-import { pgTable, uuid, text, date, jsonb, timestamp, boolean, integer } from 'drizzle-orm/pg-core';
+import { mysqlTable, varchar, text, date, boolean, int } from 'drizzle-orm/mysql-core';
+import { id, ref, chave, json, quando, agora } from './colunas.ts';
 import type { Bloco } from '../types.ts';
 import { user } from './auth-schema.ts';
 export * from './auth-schema.ts';
 
-const agora = () => timestamp({ withTimezone: true }).notNull().defaultNow();
-
-export const noticias = pgTable('noticias', {
-  id: uuid().primaryKey().defaultRandom(),
-  slug: text().notNull().unique(),
+export const noticias = mysqlTable('noticias', {
+  id: id(),
+  slug: chave().notNull().unique(),
   data: date({ mode: 'string' }).notNull(),
   titulo: text().notNull(),
   imagem: text().notNull(),
   alt: text().notNull(),
   resumo: text().notNull(),
-  corpo: jsonb().$type<Bloco[]>().notNull(),
-  situacao: text().$type<'rascunho' | 'revisao' | 'publicada' | 'devolvida'>().notNull().default('rascunho'),
+  corpo: json<Bloco[]>().notNull(),
+  situacao: varchar({ length: 30 }).$type<'rascunho' | 'revisao' | 'publicada' | 'devolvida'>().notNull().default('rascunho'),
   comentarioRevisao: text(),
-  autorId: text().references(() => user.id, { onDelete: 'set null' }),
-  publicadaPorId: text().references(() => user.id, { onDelete: 'set null' }),
-  publicadaEm: timestamp({ withTimezone: true }),
-  atualizadaPorId: text().references(() => user.id, { onDelete: 'set null' }),
+  autorId: ref().references(() => user.id, { onDelete: 'set null' }),
+  publicadaPorId: ref().references(() => user.id, { onDelete: 'set null' }),
+  publicadaEm: quando(),
+  atualizadaPorId: ref().references(() => user.id, { onDelete: 'set null' }),
   criadaEm: agora(),
   atualizadaEm: agora(),
 });
 
-export const eventos = pgTable('eventos', {
-  id: uuid().primaryKey().defaultRandom(),
+export const eventos = mysqlTable('eventos', {
+  id: id(),
   data: date({ mode: 'string' }).notNull(),
   titulo: text().notNull(),
   horario: text(),
   local: text().notNull(),
   descricao: text().notNull(),
   atualizadoEm: agora(),
-  atualizadoPorId: text().references(() => user.id, { onDelete: 'set null' }),
+  atualizadoPorId: ref().references(() => user.id, { onDelete: 'set null' }),
 });
 
-export const diretoria = pgTable('diretoria', {
-  id: uuid().primaryKey().defaultRandom(),
-  grupo: text().$type<'executiva' | 'vps' | 'consultivo' | 'fiscal' | 'deliberativo' | 'deliberativoSuplentes'>().notNull(),
+export const diretoria = mysqlTable('diretoria', {
+  id: id(),
+  grupo: varchar({ length: 30 }).$type<'executiva' | 'vps' | 'consultivo' | 'fiscal' | 'deliberativo' | 'deliberativoSuplentes'>().notNull(),
   rotulo: text(),
   nome: text().notNull(),
   suplente: boolean().notNull().default(false),
-  ordem: integer().notNull(),
+  ordem: int().notNull(),
 });
 
-export const exPresidentes = pgTable('ex_presidentes', {
-  id: uuid().primaryKey().defaultRandom(),
+export const exPresidentes = mysqlTable('ex_presidentes', {
+  id: id(),
   foto: text(),
   nome: text().notNull(),
   gestao: text(),
-  ordem: integer().notNull(),
+  ordem: int().notNull(),
+});
+
+// Mensagens dos formulários públicos (contato, associe-se, auditório). campos guarda rótulo e valor na ordem do formulário.
+export const contatos = mysqlTable('contatos', {
+  id: id(),
+  formulario: varchar({ length: 30 }).$type<'contato' | 'associe-se' | 'auditorio'>().notNull(),
+  nome: text().notNull(),
+  email: text().notNull(),
+  campos: json<{ rotulo: string; valor: string }[]>().notNull(),
+  lida: boolean().notNull().default(false),
+  criadaEm: agora(),
 });

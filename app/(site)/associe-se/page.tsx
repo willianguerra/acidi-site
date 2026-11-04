@@ -2,12 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Ico } from '@/components/Ico';
 import { getBeneficios } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Associe-se' + SUF,
-  description: "Benefícios de ser associado da ACIDI e formulário demonstrativo de interesse.",
-};
+export const metadata = pagina('/associe-se', 'Associe-se', 'Associe sua empresa à ACIDI, a associação empresarial de Indaial (SC): convênios, treinamentos, auditório, Certificado de Origem e rede de contatos.');
 
 export default async function Page() {
   const beneficios = await getBeneficios();
@@ -28,7 +25,6 @@ export default async function Page() {
 <div className="ctas"><a className="btn btn-s" href="https://api.whatsapp.com/send?phone=554733338786" target="_blank" rel="noopener">Falar pelo WhatsApp<svg className="ico ext-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M8 7h9v9" /></svg><span className="sr"> (abre em nova aba)</span></a><a className="tlink" href="/contato">Outros contatos</a></div>
 </div>
 <form className="demo" noValidate aria-labelledby="h-int">
-<p className="demo-notice"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7.5v.5" /></svg><span><b>Formulário demonstrativo.</b> Os dados não são enviados nem armazenados.</span></p>
 <div className="row2"><div className="field"><label htmlFor="as-nome">Nome</label><input type="text" id="as-nome" name="as-nome" data-rules="required" data-label="Nome" aria-describedby="as-nome-erro" autoComplete="name" /><p className="err" id="as-nome-erro"></p></div><div className="field"><label htmlFor="as-empresa">Empresa</label><input type="text" id="as-empresa" name="as-empresa" data-rules="required" data-label="Empresa" aria-describedby="as-empresa-erro" autoComplete="organization" /><p className="err" id="as-empresa-erro"></p></div></div>
 <div className="row2"><div className="field"><label htmlFor="as-email">E-mail</label><input type="email" id="as-email" name="as-email" data-rules="required email" data-label="E-mail" aria-describedby="as-email-erro" autoComplete="email" /><p className="err" id="as-email-erro"></p></div><div className="field"><label htmlFor="as-tel">Telefone ou WhatsApp</label><input type="tel" id="as-tel" name="as-tel" data-rules="required phone" data-label="Telefone ou WhatsApp" aria-describedby="as-tel-erro as-tel-dica" autoComplete="tel" /><p className="hint" id="as-tel-dica">Com DDD.</p><p className="err" id="as-tel-erro"></p></div></div>
 <div className="field"><label htmlFor="as-setor">Setor da empresa</label><select id="as-setor" name="as-setor" data-rules="required" data-label="Setor da empresa" aria-describedby="as-setor-erro"><option value="">Selecione</option><option>Indústria</option><option>Comércio</option><option>Prestação de serviços</option><option>Agricultura</option><option>Instituição financeira</option><option>Profissional liberal</option><option>Outro</option></select><p className="err" id="as-setor-erro"></p></div>
@@ -36,9 +32,10 @@ export default async function Page() {
 <label><input type="checkbox" name="as-int" defaultValue="Serviços com parceiros" /> Serviços com parceiros</label><label><input type="checkbox" name="as-int" defaultValue="Treinamentos e palestras" /> Treinamentos e palestras</label><label><input type="checkbox" name="as-int" defaultValue="Auditório e salas" /> Auditório e salas</label><label><input type="checkbox" name="as-int" defaultValue="Certificado de Origem" /> Certificado de Origem</label><label><input type="checkbox" name="as-int" defaultValue="Eventos e networking" /> Eventos e networking</label>
 </div></fieldset>
 <div className="field"><label htmlFor="as-msg">Mensagem <span className="opt">(opcional)</span></label><textarea id="as-msg" name="as-msg" data-rules="" data-label="Mensagem" aria-describedby="as-msg-erro"></textarea><p className="err" id="as-msg-erro"></p></div>
+<input type="hidden" name="formulario" value="associe-se" /><div hidden><label>Não preencha<input type="text" name="site" tabIndex={-1} autoComplete="off" /></label></div>
 <div className="err-summary" tabIndex={-1} hidden></div>
-<div className="done" tabIndex={-1} role="status" hidden><b>Demonstração concluída. Nenhum dado foi enviado.</b><p>Você pode alterar os campos e repetir a demonstração.</p></div>
-<div className="form-actions"><button className="btn btn-p" type="submit">Concluir demonstração</button></div>
+<div className="done" tabIndex={-1} role="status" hidden><b>Interesse registrado.</b><p>A equipe da ACIDI vai entrar em contato para apresentar as condições de associação.</p></div>
+<div className="form-actions"><button className="btn btn-p" type="submit">Enviar</button></div>
 </form>
 </div></section>
     </main>

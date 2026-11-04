@@ -3,12 +3,9 @@ import { Footer } from '@/components/Footer';
 import { Crumbs, PageHead, JoinBox } from '@/components/blocos';
 import { Ico, Ext } from '@/components/Ico';
 import { getServicos } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Para seu negócio' + SUF,
-  description: 'Serviços da ACIDI para associados: Util Card, Uniodonto, Boa Vista SCPC, Certificado de Origem, treinamentos e mais.',
-};
+export const metadata = pagina('/para-seu-negocio', 'Serviços para seu negócio', 'Serviços da ACIDI para empresas de Indaial: Util Card, Uniodonto, Boa Vista SCPC, Certificado de Origem, XML empresarial, treinamentos e auditório.');
 
 export default async function Page() {
   const servicos = await getServicos();

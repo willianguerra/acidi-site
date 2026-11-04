@@ -2,12 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Crumbs, PageHead, Story } from '@/components/blocos';
 import { getNoticias } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Notícias' + SUF,
-  description: 'Notícias da Associação Empresarial de Indaial: eventos, representatividade e ações para associados.',
-};
+export const metadata = pagina('/noticias', 'Notícias', 'Notícias da ACIDI e do empresariado de Indaial (SC): eventos, representatividade, Jogos entre Empresas, núcleos e ações para associados.');
 
 export default async function Page() {
   const noticias = await getNoticias();

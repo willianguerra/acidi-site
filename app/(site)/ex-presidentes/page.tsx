@@ -2,12 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Crumbs, PageHead } from '@/components/blocos';
 import { getExPresidentes } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Ex-Presidentes' + SUF,
-  description: 'Empresários que presidiram a ACIDI desde a fundação, em 1989.',
-};
+export const metadata = pagina('/ex-presidentes', 'Ex-presidentes', 'Os empresários que presidiram a ACIDI – Associação Empresarial de Indaial desde a fundação, em 1989, com foto e período de cada gestão.');
 
 const ini = (nome: string) => { const p = nome.split(' '); return p[0][0] + p[p.length - 1][0]; };
 

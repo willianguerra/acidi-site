@@ -14,7 +14,7 @@ export const GRUPOS: Record<Membro['grupo'], string> = {
 };
 
 const idValido = (id: string) => /^[0-9a-f-]{36}$/i.test(id);
-const proximaOrdem = async (db: Db) => (await db.select({ m: sql<number>`coalesce(max(${diretoria.ordem}), -1)::int` }).from(diretoria))[0].m + 1;
+const proximaOrdem = async (db: Db) => (await db.select({ m: sql<number>`coalesce(max(${diretoria.ordem}), -1)`.mapWith(Number) }).from(diretoria))[0].m + 1;
 
 export async function listarMembros(db: Db, u: Usuario): Promise<Resultado<Membro[]>> {
   if (!pode(u, 'diretoria.editar')) return falha('sem-permissao');

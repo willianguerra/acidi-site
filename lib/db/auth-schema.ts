@@ -1,41 +1,44 @@
 // Tabelas do Better Auth (núcleo + plugin admin), no formato que o adaptador Drizzle espera.
 // role/banned são o "papel" e o "ativo" da spec (ativo = !banned).
-import { pgTable, text, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { mysqlTable, varchar, text, boolean } from 'drizzle-orm/mysql-core';
+import { chave, quando, agora } from './colunas.ts';
 
-const ts = () => timestamp({ withTimezone: true });
+// ids gerados pelo Better Auth (32 caracteres); 64 dá folga.
+const idAuth = () => varchar({ length: 64 });
+const ts = quando;
 
-export const user = pgTable('user', {
-  id: text().primaryKey(),
+export const user = mysqlTable('user', {
+  id: idAuth().primaryKey(),
   name: text().notNull(),
-  email: text().notNull().unique(),
+  email: chave().notNull().unique(),
   emailVerified: boolean().notNull().default(false),
   image: text(),
-  createdAt: ts().notNull().defaultNow(),
-  updatedAt: ts().notNull().defaultNow(),
-  role: text(),
+  createdAt: agora(),
+  updatedAt: agora(),
+  role: varchar({ length: 30 }),
   banned: boolean().default(false),
   banReason: text(),
   banExpires: ts(),
   trocarSenha: boolean().notNull().default(true),
 });
 
-export const session = pgTable('session', {
-  id: text().primaryKey(),
+export const session = mysqlTable('session', {
+  id: idAuth().primaryKey(),
   expiresAt: ts().notNull(),
-  token: text().notNull().unique(),
-  createdAt: ts().notNull().defaultNow(),
-  updatedAt: ts().notNull().defaultNow(),
+  token: chave().notNull().unique(),
+  createdAt: agora(),
+  updatedAt: agora(),
   ipAddress: text(),
   userAgent: text(),
-  userId: text().notNull().references(() => user.id, { onDelete: 'cascade' }),
-  impersonatedBy: text(),
+  userId: idAuth().notNull().references(() => user.id, { onDelete: 'cascade' }),
+  impersonatedBy: idAuth(),
 });
 
-export const account = pgTable('account', {
-  id: text().primaryKey(),
-  accountId: text().notNull(),
-  providerId: text().notNull(),
-  userId: text().notNull().references(() => user.id, { onDelete: 'cascade' }),
+export const account = mysqlTable('account', {
+  id: idAuth().primaryKey(),
+  accountId: varchar({ length: 255 }).notNull(),
+  providerId: varchar({ length: 64 }).notNull(),
+  userId: idAuth().notNull().references(() => user.id, { onDelete: 'cascade' }),
   accessToken: text(),
   refreshToken: text(),
   idToken: text(),
@@ -43,15 +46,15 @@ export const account = pgTable('account', {
   refreshTokenExpiresAt: ts(),
   scope: text(),
   password: text(),
-  createdAt: ts().notNull().defaultNow(),
-  updatedAt: ts().notNull().defaultNow(),
+  createdAt: agora(),
+  updatedAt: agora(),
 });
 
-export const verification = pgTable('verification', {
-  id: text().primaryKey(),
-  identifier: text().notNull(),
+export const verification = mysqlTable('verification', {
+  id: idAuth().primaryKey(),
+  identifier: chave().notNull(),
   value: text().notNull(),
   expiresAt: ts().notNull(),
-  createdAt: ts().notNull().defaultNow(),
-  updatedAt: ts().notNull().defaultNow(),
+  createdAt: agora(),
+  updatedAt: agora(),
 });

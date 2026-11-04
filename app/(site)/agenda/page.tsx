@@ -3,12 +3,9 @@ import { Footer } from '@/components/Footer';
 import { EventItem } from '@/components/blocos';
 import { getEventos } from '@/lib/content';
 import { evId, hojeIso, separarEventos } from '@/lib/datas';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Agenda' + SUF,
-  description: "Agenda de eventos da ACIDI: próximos eventos e arquivo de registros publicados.",
-};
+export const metadata = pagina('/agenda', 'Agenda de eventos', 'Próximos eventos da ACIDI em Indaial: palestras, núcleos, encontros de associados e networking, com o arquivo dos eventos já realizados.');
 
 export default async function Page() {
   const eventos = await getEventos();

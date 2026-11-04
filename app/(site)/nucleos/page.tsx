@@ -1,11 +1,8 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'Núcleos' + SUF,
-  description: "Núcleos setoriais da ACIDI: grupos de trabalho para trocar experiências e buscar soluções em conjunto.",
-};
+export const metadata = pagina('/nucleos', 'Núcleos setoriais', 'Núcleos setoriais da ACIDI em Indaial: grupos de empresários que trocam experiências e buscam soluções em conjunto para o seu setor.');
 
 export default async function Page() {
   return (<>

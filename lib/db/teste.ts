@@ -1,6 +1,6 @@
 // Utilitários dos testes *.db-test.ts: banco de TEST_DATABASE_URL, migrado e esvaziado entre testes.
 import { sql } from 'drizzle-orm';
-import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import { migrate } from 'drizzle-orm/mysql2/migrator';
 import { criarDb, type Db } from './index.ts';
 export type { Db };
 
@@ -13,9 +13,14 @@ export async function dbDeTeste(): Promise<Db> {
 }
 
 export async function limpar(db: Db): Promise<void> {
-  const r = await db.execute<{ tablename: string }>(sql`select tablename from pg_tables where schemaname = 'public'`);
-  const nomes = r.map(t => `"${t.tablename}"`).join(', ');
-  if (nomes) await db.execute(sql.raw(`truncate ${nomes} restart identity cascade`));
+  const [linhas] = await db.execute(sql`select table_name as t from information_schema.tables where table_schema = database() and table_name <> '__drizzle_migrations'`);
+  const nomes = (linhas as unknown as { t: string }[]).map(l => l.t);
+  // uma conexão só: o SET vale para a sessão, e o pool poderia dar outra conexão a cada execute
+  await db.transaction(async tx => {
+    await tx.execute(sql`set foreign_key_checks = 0`);
+    for (const n of nomes) await tx.execute(sql.raw('truncate table `' + n + '`'));
+    await tx.execute(sql`set foreign_key_checks = 1`);
+  });
 }
 
 export async function fechar(db: Db): Promise<void> {

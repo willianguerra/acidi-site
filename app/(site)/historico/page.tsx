@@ -2,12 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { JoinBox } from '@/components/blocos';
 import { getExPresidentes } from '@/lib/content';
-import { SUF } from '@/lib/meta';
+import { pagina } from '@/lib/meta';
 
-export const metadata = {
-  title: 'A ACIDI e sua história' + SUF,
-  description: 'História da Associação Empresarial de Indaial, fundada em 22 de maio de 1989.',
-};
+export const metadata = pagina('/historico', 'A ACIDI e sua história', 'História da Associação Empresarial de Indaial (SC), fundada em 22 de maio de 1989 para unir e representar os empresários da cidade.');
 
 export default async function Page() {
   const retratos = (await getExPresidentes()).filter(p => p.foto);

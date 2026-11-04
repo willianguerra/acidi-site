@@ -20,7 +20,7 @@ export function FormNoticia({ n, pode }: { n: DadosForm; pode: Permissoes }) {
   const val = (k: keyof DadosForm) => v[k] ?? String(n[k] ?? '');
   const imagem = v.imagemAtual || n.imagem;
   return (
-    <form action={acao} className="form" encType="multipart/form-data">
+    <form action={acao} className="form">
       <Aviso estado={estado} />
       <input type="hidden" name="id" value={n.id ?? ''} />
       <input type="hidden" name="lidaEm" value={n.lidaEm} />

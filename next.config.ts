@@ -1,5 +1,5 @@
 import type { NextConfig } from 'next';
-import { ROTAS } from './lib/rotas';
+import { ROTAS, ROTAS_WP } from './lib/rotas';
 
 const nextConfig: NextConfig = {
   // raiz explícita: existe um package-lock.json solto na pasta do usuário
@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       ...Object.entries(ROTAS).map(([arq, destination]) => ({ source: '/' + arq, destination, statusCode: 301 as const })),
+      ...Object.entries(ROTAS_WP).map(([wp, destination]) => ({ source: '/' + wp, destination, statusCode: 301 as const })),
       { source: '/noticia-:slug.html', destination: "/noticias/:slug", statusCode: 301 as const },
     ];
   },
