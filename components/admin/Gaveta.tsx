@@ -3,14 +3,23 @@ import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Ico } from '@/components/Ico';
 
-// Abaixo de 900px a lateral vira gaveta; acima disso o botão some (CSS) e a lateral fica fixa.
-export function Gaveta({ children }: { children: React.ReactNode }) {
+// Barra superior + lateral. Abaixo de 900px a lateral vira gaveta; acima disso o botão some (CSS).
+// Também fecha o menu do usuário (details.usuario) ao clicar fora ou com Esc.
+export function Gaveta({ topo, children }: { topo: React.ReactNode; children: React.ReactNode }) {
   const [aberta, setAberta] = useState(false);
   const botao = useRef<HTMLButtonElement>(null);
   const lateral = useRef<HTMLElement>(null);
   const caminho = usePathname();
 
   useEffect(() => { setAberta(false); }, [caminho]);
+
+  useEffect(() => {
+    const fora = (e: Event) => document.querySelectorAll<HTMLDetailsElement>('details.usuario[open]').forEach(d => {
+      if (e instanceof KeyboardEvent ? e.key === 'Escape' : !d.contains(e.target as Node)) d.open = false;
+    });
+    document.addEventListener('click', fora); document.addEventListener('keydown', fora);
+    return () => { document.removeEventListener('click', fora); document.removeEventListener('keydown', fora); };
+  }, []);
 
   useEffect(() => {
     if (!aberta) return;
@@ -31,12 +40,12 @@ export function Gaveta({ children }: { children: React.ReactNode }) {
   const fechar = () => { setAberta(false); botao.current?.focus(); };
 
   return (<>
-    <div className="topo-movel">
-      <a className="marca" href="/admin"><img src="/assets/img/logo.png" width="113" height="30" alt="ACIDI admin, início" /></a>
+    <header className="topo">
       <button ref={botao} type="button" className="abrir-menu" aria-expanded={aberta} aria-controls="lateral" onClick={() => setAberta(true)}>
         <Ico n="menu" /><span className="sr">Abrir menu</span>
       </button>
-    </div>
+      {topo}
+    </header>
     <aside ref={lateral} id="lateral" className="barra" data-aberta={aberta || undefined}>
       <button type="button" className="fechar-menu" onClick={fechar}><Ico n="x" /><span className="sr">Fechar menu</span></button>
       {children}

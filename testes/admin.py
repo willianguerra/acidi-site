@@ -58,7 +58,7 @@ def trocar_senha(pg):
     pg.wait_for_url(BASE + '/admin')
 
 def criar_conta(pg, nome, email, papel):
-    pg.goto(BASE + '/admin/usuarios'); pg.click('summary')
+    pg.goto(BASE + '/admin/usuarios'); pg.click('summary:has-text("Criar conta")')
     pg.fill('#nome', nome); pg.fill('#email', email); pg.select_option('#papel', papel); pg.fill('#senha', SENHA_PROV)
     pg.click('button:has-text("Criar conta")'); pg.wait_for_url('**/admin/usuarios/*?ok=criado')
     return pg.url.split('/admin/usuarios/')[1].split('?')[0]
@@ -156,9 +156,17 @@ with sync_playwright() as p:
     adm.goto(BASE + '/admin/noticias?situacao=publicada')
     if adm.locator('.paginacao a[aria-label="Página 2"]').count():
         adm.click('.paginacao a[aria-label="Página 2"]'); adm.wait_for_url('**pagina=2*')
-        ok('Paginação mantém o filtro de situação', 'situacao=publicada' in adm.url and 'Publicada' in adm.inner_text('.abas a[aria-current]'), adm.url)
+        ok('Paginação mantém o filtro de situação', 'situacao=publicada' in adm.url and adm.input_value('#situacao') == 'publicada', adm.url)
     else:
         print('PULOU  Paginação mantém o filtro de situação · menos de 21 notícias publicadas')
+
+    # 6d2. trocar o select já filtra; o menu do usuário abre e fecha
+    adm.goto(BASE + '/admin/noticias'); adm.select_option('#situacao', 'rascunho'); adm.wait_for_url('**situacao=rascunho*')
+    ok('Trocar a situação no select filtra a lista', 'situacao=rascunho' in adm.url)
+    adm.click('details.usuario summary')
+    ok('Menu do usuário mostra Minha conta e Sair', adm.locator('details.usuario .menu a:has-text("Minha conta")').is_visible() and adm.locator('details.usuario button:has-text("Sair")').is_visible())
+    adm.click('main h1'); adm.wait_for_timeout(200)
+    ok('Clicar fora fecha o menu do usuário', not adm.locator('details.usuario .menu').is_visible())
 
     # 6e. no celular o menu vira gaveta
     cel = nav.new_context(viewport={'width': 390, 'height': 844}).new_page()
@@ -182,8 +190,8 @@ with sync_playwright() as p:
         ok(f'Editor é barrado em {area}', ed.url == BASE + '/admin', ed.url)
 
     # limpeza: apagar evento e notícia de teste
-    ed.goto(BASE + '/admin/agenda'); ed.check(f'tr:has-text("{EVENTO}") input[name=ids]'); ed.click('.massa button[value=apagar]'); ed.wait_for_url('**msg=*')
-    ok('Evento apagado em massa some da agenda', EVENTO not in get('/agenda')[1], ed.inner_text('main .aviso.ok'))
+    ed.goto(BASE + '/admin/agenda'); ed.click(f'tr:has-text("{EVENTO}") button[value=apagar]'); ed.wait_for_url('**msg=*')
+    ok('Ícone de apagar da linha remove o evento', EVENTO not in get('/agenda')[1] and '1 apagado.' in ed.inner_text('main .aviso.ok'), ed.inner_text('main .aviso.ok'))
     rev.goto(BASE + '/admin/noticias?busca=' + SUFIXO); rev.check('input[data-todas]'); rev.click('.massa button[value=apagar]'); rev.wait_for_url('**msg=*')
     ok('Apagar em massa remove as notícias de teste', '2 apagadas.' in rev.inner_text('main .aviso.ok') and TITULO not in get('/noticias')[1])
 

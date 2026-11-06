@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   if (!r.ok) redirect('/admin');
   const ok = (await searchParams).ok;
   return (<>
-    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { rotulo: 'Diretoria' }]} titulo="Diretoria" extra={<a className="bt sec" href="/diretoria" target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a>} />
+    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { rotulo: 'Diretoria' }]} titulo="Diretoria" descricao="Membros mostrados na página Diretoria do site, na ordem de cada grupo." extra={<a className="bt sec" href="/diretoria" target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a>} />
     {ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
     <details className="cartao"><summary><b>Adicionar membro</b></summary>
       <div style={{ marginTop: 16 }}><FormMembro m={{ id: null, grupo: 'executiva', rotulo: '', nome: '', suplente: false }} grupos={GRUPOS} /></div>

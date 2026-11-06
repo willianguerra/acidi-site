@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   if (!r.ok) redirect('/admin');
   const ok = (await searchParams).ok;
   return (<>
-    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { rotulo: 'Ex-presidentes' }]} titulo="Ex-presidentes" extra={<a className="bt sec" href="/ex-presidentes" target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a>} />
+    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { rotulo: 'Ex-presidentes' }]} titulo="Ex-presidentes" descricao="Galeria de ex-presidentes do site, na ordem em que aparecem." extra={<a className="bt sec" href="/ex-presidentes" target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a>} />
     {ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
     <details className="cartao"><summary><b>Adicionar ex-presidente</b></summary>
       <div style={{ marginTop: 16 }}><FormExPresidente p={{ id: null, nome: '', gestao: '', foto: '' }} /></div>
