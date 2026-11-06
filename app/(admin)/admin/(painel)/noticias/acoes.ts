@@ -73,7 +73,7 @@ export async function agirNoticia(_: Estado, f: FormData): Promise<Estado> {
   redirect(destino);
 }
 
-const FEITO = { publicar: 'publicadas', despublicar: 'despublicadas', apagar: 'apagadas' } as const;
+const FEITO = { publicar: ['publicada', 'publicadas'], despublicar: ['despublicada', 'despublicadas'], apagar: ['apagada', 'apagadas'] } as const;
 
 // Ações em massa da lista: volta para a mesma lista (filtros e página) com o resumo.
 export async function noticiasMassa(f: FormData): Promise<void> {
@@ -84,5 +84,5 @@ export async function noticiasMassa(f: FormData): Promise<void> {
   if (!ids) redirect(voltaComMsg(f, '/admin/noticias', `Selecione no máximo ${MAX_MASSA} de cada vez.`));
   const r = await noticiasEmMassa(db, u, acao, ids);
   if (r.slugs.length) { revalidatePath('/', 'layout'); r.slugs.forEach(s => revalidatePath('/noticias/' + s)); }
-  redirect(voltaComMsg(f, '/admin/noticias', textoMassa(r.resumo, FEITO[acao])));
+  redirect(voltaComMsg(f, '/admin/noticias', textoMassa(r.resumo, FEITO[acao][0], FEITO[acao][1])));
 }

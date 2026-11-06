@@ -26,7 +26,7 @@ def foto_grande():
 FOTO = foto_grande()
 SUFIXO = str(int(time.time()))
 SENHA_PROV, SENHA_NOVA = 'provisoria-' + SUFIXO, 'definitiva-' + SUFIXO
-TITULO, EVENTO = f'Notícia de teste {SUFIXO}', f'Evento de teste {SUFIXO}'
+TITULO, TITULO2, EVENTO = f'Notícia de teste {SUFIXO}', f'Segunda notícia de teste {SUFIXO}', f'Evento de teste {SUFIXO}'
 resultados, erros_console = [], []
 
 def ok(nome, cond, detalhe=''):
@@ -94,7 +94,7 @@ with sync_playwright() as p:
     entrar(rev, f'revisor{SUFIXO}@acidi.test', SENHA_PROV); rev.wait_for_url('**/admin/trocar-senha'); trocar_senha(rev)
     ok('Revisor vê a notícia aguardando revisão no início', TITULO in rev.inner_text('#h-rev + ul, #h-rev ~ *'))
     abrir_noticia(rev)
-    rev.click('text=Devolver ao autor'); rev.fill('#comentario', 'Inclua o horário do evento.'); rev.click('button[value=devolver]'); rev.wait_for_url('**ok=devolvida')
+    rev.click('text=Devolver com comentário'); rev.fill('#comentario', 'Inclua o horário do evento.'); rev.click('button[value=devolver]'); rev.wait_for_url('**ok=devolvida')
     ok('Revisor devolve com comentário', 'Devolvida' in rev.inner_text('.selo'))
 
     # 4. editor vê o comentário, corrige e reenvia
@@ -106,7 +106,7 @@ with sync_playwright() as p:
 
     # 5. revisor publica e a notícia entra no site
     abrir_noticia(rev); rev.click('button[value=publicar]'); rev.wait_for_url('**ok=publicada')
-    slug = rev.inner_text('main .meta a').split('/noticias/')[1]
+    slug = rev.get_attribute('a:has-text("Ver no site")', 'href').split('/noticias/')[1]
     st, html = get('/noticias/' + slug)
     ok('Notícia publicada abre no site', st == 200 and 'Resumo corrigido, com horário.' in html, f'/noticias/{slug} {st}')
     ok('Notícia publicada aparece na home e na lista', TITULO in get('/')[1] and TITULO in get('/noticias')[1])
@@ -117,6 +117,49 @@ with sync_playwright() as p:
     abrir_noticia(rev); rev.click('button[value=despublicar]'); rev.wait_for_url('**ok=despublicada')
     ok('Notícia despublicada responde 404', get('/noticias/' + slug)[0] == 404)
     ok('Notícia despublicada some da home e da lista', TITULO not in get('/')[1] and TITULO not in get('/noticias')[1])
+
+    # 6b. sair com alterações pede confirmação; salvar e sair não pede
+    sai = nav.new_context(viewport={'width': 1280, 'height': 900}).new_page()
+    perguntas = []
+    # o confirm do clique é recusado (fica na página); o beforeunload da navegação seguinte é aceito (descarta)
+    sai.on('dialog', lambda d: d.accept() if d.type == 'beforeunload' else (perguntas.append(d.message), d.dismiss()))
+    entrar(sai, *ADMIN); abrir_noticia(sai)
+    sai.fill('#resumo', 'Resumo alterado sem salvar.'); sai.click('.migalhas a[href="/admin/noticias"]'); sai.wait_for_timeout(500)
+    ok('Sair com alterações pede confirmação', len(perguntas) == 1 and '/admin/noticias/' in sai.url, f'{perguntas} {sai.url}')
+    abrir_noticia(sai); sai.fill('#resumo', 'Resumo corrigido, com horário.'); sai.click('button[value=salvar]'); sai.wait_for_url('**ok=salva')
+    ok('Salvar mostra a hora', 'Salvo às' in sai.inner_text('main .aviso.ok'))
+    antes = len(perguntas); sai.click('.migalhas a[href="/admin/noticias"]'); sai.wait_for_url(BASE + '/admin/noticias')
+    ok('Depois de salvar, sair não pede confirmação', len(perguntas) == antes)
+
+    # 6c. revisor cria uma segunda notícia e publica as duas em massa
+    rev.goto(BASE + '/admin/noticias/nova')
+    rev.fill('#titulo', TITULO2); rev.fill('#resumo', 'Resumo da segunda.'); rev.fill('#alt', 'Fachada da sede da ACIDI')
+    rev.set_input_files('#foto', FOTO); rev.locator('.bloco textarea').first.fill('Texto da segunda.')
+    rev.click('button[value=salvar]'); rev.wait_for_url('**ok=criada')
+    rev.goto(BASE + '/admin/noticias?busca=' + SUFIXO)
+    ok('Busca acha as duas notícias de teste', rev.locator('.tabela tbody tr').count() == 2)
+    rev.check('input[data-todas]'); rev.click('.massa button[value=publicar]'); rev.wait_for_url('**msg=*')
+    ok('Publicar em massa resume o resultado', '2 publicadas.' in rev.inner_text('main .aviso.ok'), rev.inner_text('main .aviso.ok'))
+    lista = get('/noticias')[1]
+    ok('As duas publicadas em massa aparecem no site', TITULO in lista and TITULO2 in lista)
+
+    # 6d. paginação mantém o filtro
+    adm.goto(BASE + '/admin/noticias?situacao=publicada')
+    if adm.locator('.paginacao a[aria-label="Página 2"]').count():
+        adm.click('.paginacao a[aria-label="Página 2"]'); adm.wait_for_url('**pagina=2*')
+        ok('Paginação mantém o filtro de situação', 'situacao=publicada' in adm.url and 'Publicada' in adm.inner_text('.abas a[aria-current]'), adm.url)
+    else:
+        print('PULOU  Paginação mantém o filtro de situação · menos de 21 notícias publicadas')
+
+    # 6e. no celular o menu vira gaveta
+    cel = nav.new_context(viewport={'width': 390, 'height': 844}).new_page()
+    entrar(cel, *ADMIN)
+    ok('No celular o menu começa fechado', not cel.locator('.barra nav').is_visible())
+    cel.click('.abrir-menu'); cel.wait_for_timeout(300)
+    ok('Botão abre a gaveta', cel.locator('.barra nav').is_visible())
+    cel.keyboard.press('Escape'); cel.wait_for_timeout(300)
+    ok('Esc fecha a gaveta e devolve o foco', not cel.locator('.barra nav').is_visible() and cel.evaluate("document.activeElement.classList.contains('abrir-menu')"))
+    ok('Celular sem rolagem horizontal', cel.evaluate('document.documentElement.scrollWidth <= innerWidth'))
 
     # 7. editor publica evento direto na agenda
     ed.goto(BASE + '/admin/agenda/novo')
@@ -130,9 +173,10 @@ with sync_playwright() as p:
         ok(f'Editor é barrado em {area}', ed.url == BASE + '/admin', ed.url)
 
     # limpeza: apagar evento e notícia de teste
-    ed.goto(BASE + '/admin/agenda'); ed.click(f'text={EVENTO}'); ed.click('button[value=apagar]'); ed.wait_for_url('**ok=apagado')
-    ok('Evento apagado some da agenda', EVENTO not in get('/agenda')[1])
-    abrir_noticia(rev); rev.click('button[value=apagar]'); rev.wait_for_url('**ok=apagada')
+    ed.goto(BASE + '/admin/agenda'); ed.check(f'tr:has-text("{EVENTO}") input[name=ids]'); ed.click('.massa button[value=apagar]'); ed.wait_for_url('**msg=*')
+    ok('Evento apagado em massa some da agenda', EVENTO not in get('/agenda')[1], ed.inner_text('main .aviso.ok'))
+    rev.goto(BASE + '/admin/noticias?busca=' + SUFIXO); rev.check('input[data-todas]'); rev.click('.massa button[value=apagar]'); rev.wait_for_url('**msg=*')
+    ok('Apagar em massa remove as notícias de teste', '2 apagadas.' in rev.inner_text('main .aviso.ok') and TITULO not in get('/noticias')[1])
 
     # 9. admin desativa o editor: a próxima ação dele cai na tela de entrar
     adm.goto(BASE + f'/admin/usuarios/{id_ed}'); adm.click('button[value=desativar]'); adm.wait_for_url('**ok=desativar')

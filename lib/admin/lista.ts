@@ -39,8 +39,8 @@ export function resumoMassa(rs: Resultado<unknown>[]) {
   };
 }
 
-export function textoMassa(r: ReturnType<typeof resumoMassa>, feito: string) {
-  const partes = [`${r.feitas} ${feito}`];
+export function textoMassa(r: ReturnType<typeof resumoMassa>, singular: string, plural: string) {
+  const partes = [`${r.feitas} ${r.feitas === 1 ? singular : plural}`];
   if (r.recusadas) partes.push(r.recusadas === 1 ? '1 não pôde ser alterada' : `${r.recusadas} não puderam ser alteradas`);
   if (r.naoEncontradas) partes.push(r.naoEncontradas === 1 ? '1 não encontrada' : `${r.naoEncontradas} não encontradas`);
   return partes.join(', ') + '.';

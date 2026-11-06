@@ -35,5 +35,5 @@ export async function eventosMassa(f: FormData): Promise<void> {
   for (const id of ids) rs.push(await E.apagarEvento(db, u, id));
   const r = resumoMassa(rs);
   if (r.feitas) { revalidatePath('/'); revalidatePath('/agenda'); }
-  redirect(voltaComMsg(f, '/admin/agenda', textoMassa(r, r.feitas === 1 ? 'apagado' : 'apagados')));
+  redirect(voltaComMsg(f, '/admin/agenda', textoMassa(r, 'apagado', 'apagados')));
 }
