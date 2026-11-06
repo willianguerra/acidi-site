@@ -170,6 +170,9 @@ body.adm{margin:0;background:var(--fundo);color:var(--tinta);font:400 .95rem/1.5
 .caixa .acoes .largo{grid-column:1/-1}
 .caixa dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:.88rem}
 .caixa dt{color:var(--cinza)}.caixa dd{margin:0}
+fieldset.caixa{margin:0;min-inline-size:0}
+fieldset.solto{border:0;padding:0;margin:0;min-width:0;display:grid;gap:12px}
+.caixa .foto-atual{max-width:100%}
 
 /* contadores do início */
 .contadores{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
@@ -192,7 +195,10 @@ body.adm{margin:0;background:var(--fundo);color:var(--tinta);font:400 .95rem/1.5
   .conteudo{padding-top:24px}
   .cartao{padding:18px}
   .duas-colunas{grid-template-columns:1fr}
-  .duas-colunas > .lateral{position:static}
+  .duas-colunas > .lateral{position:static;order:2}
+  .duas-colunas > .principal{display:contents}
+  .duas-colunas > .principal > *{order:3}
+  .duas-colunas > .principal > .topo-form{order:1}
   .tabela thead{display:none}
   .tabela,.tabela tbody,.tabela tr,.tabela td{display:block;width:100%}
   .tabela tr{position:relative;padding:12px 14px 12px 50px;border-bottom:1px solid var(--linha)}

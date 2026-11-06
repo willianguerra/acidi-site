@@ -5,11 +5,15 @@ import { obterNoticia } from '@/lib/admin/noticias';
 import { pode, type Acao } from '@/lib/admin/permissoes';
 import { proxima, SITUACOES, type Evento } from '@/lib/admin/fluxo';
 import { FormNoticia } from '@/components/admin/FormNoticia';
+import { Cabecalho } from '@/components/admin/Cabecalho';
+import { Aviso } from '@/components/admin/Aviso';
+import { eq } from 'drizzle-orm';
+import { user } from '@/lib/db/schema';
 
 export const metadata = { title: 'Editar notícia' };
 
 const OKS: Record<string, string> = {
-  criada: 'Notícia criada como rascunho.', salva: 'Alterações salvas.', enviada: 'Enviada para revisão.',
+  criada: 'Notícia criada como rascunho.', enviada: 'Enviada para revisão.',
   publicada: 'Publicada: já está no site.', devolvida: 'Devolvida ao autor com o seu comentário.', despublicada: 'Retirada do site; voltou a rascunho.',
 };
 
@@ -24,14 +28,15 @@ export default async function Page({ params, searchParams }: Props) {
   // o botão só aparece se o papel permite e a transição existe a partir da situação atual
   const pd = (acao: Acao, ev?: Evento) => pode(u, acao, alvo) && (!ev || proxima(n.situacao, ev) !== null);
   const revisa = pd('noticia.publicar');
+  const [autor] = n.autorId ? await db.select({ nome: user.name }).from(user).where(eq(user.id, n.autorId)) : [];
+  const hora = n.atualizadaEm.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' });
+  const msg = ok === 'salva' ? `Salvo às ${hora}.` : ok && OKS[ok];
   return (<>
-    <p><a href="/admin/noticias">← Notícias</a></p>
-    <div className="cabeca"><h1>{n.titulo}</h1><span className={'selo ' + n.situacao}>{SITUACOES[n.situacao]}</span></div>
-    {ok && OKS[ok] && <p className="aviso ok" role="status">{OKS[ok]}</p>}
-    {n.situacao === 'devolvida' && n.comentarioRevisao && <p className="aviso info"><b>Comentário da revisão:</b> {n.comentarioRevisao}</p>}
-    {n.situacao === 'publicada' && <p className="meta">No site em <a href={`/noticias/${n.slug}`} target="_blank" rel="noopener">/noticias/{n.slug}</a></p>}
-    <div className="cartao">
-      <FormNoticia
+    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/noticias', rotulo: 'Notícias' }, { rotulo: 'Editar' }]} titulo={n.titulo}
+      extra={n.situacao === 'publicada' ? <a className="bt sec" href={`/noticias/${n.slug}`} target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a> : undefined} />
+    {msg && <Aviso tipo="ok">{msg}</Aviso>}
+    {n.situacao === 'devolvida' && n.comentarioRevisao && <Aviso tipo="info"><b>Comentário da revisão:</b> {n.comentarioRevisao}</Aviso>}
+      <FormNoticia situacao={n.situacao} autor={autor?.nome}
         n={{ id: n.id, titulo: n.titulo, slug: n.slug, data: n.data, resumo: n.resumo, imagem: n.imagem, alt: n.alt, corpo: n.corpo, lidaEm: n.atualizadaEm.toISOString(), slugTravado: !!n.publicadaEm }}
         pode={{
           editar: pd('noticia.editar'),
@@ -42,6 +47,5 @@ export default async function Page({ params, searchParams }: Props) {
           despublicar: pd('noticia.despublicar', 'despublicar'),
           apagar: pd('noticia.apagar'),
         }} />
-    </div>
   </>);
 }
