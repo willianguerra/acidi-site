@@ -4,6 +4,8 @@ import { db } from '@/lib/db';
 import { obterExPresidente } from '@/lib/admin/ex-presidentes';
 import { FormExPresidente } from '@/components/admin/FormsDiretoria';
 
+import { Cabecalho } from '@/components/admin/Cabecalho';
+
 export const metadata = { title: 'Editar ex-presidente' };
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -11,8 +13,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!r.ok) { if (r.erro === 'sem-permissao') redirect('/admin'); notFound(); }
   const p = r.valor;
   return (<>
-    <p><a href="/admin/ex-presidentes">← Ex-presidentes</a></p>
-    <h1>{p.nome}</h1>
+    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/ex-presidentes', rotulo: 'Ex-presidentes' }, { rotulo: 'Editar' }]} titulo={p.nome} />
     <div className="cartao"><FormExPresidente p={{ id: p.id, nome: p.nome, gestao: p.gestao ?? '', foto: p.foto ?? '' }} /></div>
   </>);
 }

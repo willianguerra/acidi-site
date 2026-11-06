@@ -4,6 +4,9 @@ import { db } from '@/lib/db';
 import { obterUsuario } from '@/lib/admin/usuarios';
 import { FormsUsuario } from '@/components/admin/FormsUsuarios';
 
+import { Cabecalho } from '@/components/admin/Cabecalho';
+import { Aviso } from '@/components/admin/Aviso';
+
 export const metadata = { title: 'Usuário' };
 
 const OKS: Record<string, string> = {
@@ -17,10 +20,9 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (!r.ok) { if (r.erro === 'sem-permissao') redirect('/admin'); notFound(); }
   const u = r.valor, ok = (await searchParams).ok;
   return (<>
-    <p><a href="/admin/usuarios">← Usuários</a></p>
-    <h1>{u.nome}</h1>
+    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/usuarios', rotulo: 'Usuários' }, { rotulo: u.nome }]} titulo={u.nome} />
     <p className="meta">{u.email}{!u.ativo && ' · conta desativada'}</p>
-    {ok && OKS[ok] && <p className="aviso ok" role="status">{OKS[ok]}</p>}
+    {ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
     <FormsUsuario id={u.id} papel={u.papel} ativo={u.ativo} eu={u.id === eu.id} />
   </>);
 }
