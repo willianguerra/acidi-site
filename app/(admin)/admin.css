@@ -99,18 +99,108 @@ body.adm{margin:0;background:var(--fundo);color:var(--tinta);font:400 .95rem/1.5
 .bloco .topo{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.82rem;font-weight:600;color:var(--cinza)}
 .foto-atual{max-width:240px;border-radius:10px;display:block}
 
-/* celular e tablet: a lateral vira barra no topo, menu rola na horizontal */
+/* ícones, atalho de teclado, contador do menu */
+.adm .ico{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pular{position:absolute;left:-9999px;top:8px;z-index:50;background:var(--amarelo);color:var(--mata)!important;padding:8px 14px;border-radius:8px;font-weight:700}
+.pular:focus{left:8px}
+.barra nav a{display:flex;align-items:center;gap:10px}
+.barra nav a .ico{opacity:.85}
+.contagem{margin-left:auto;min-width:22px;text-align:center;background:var(--amarelo);color:var(--mata);border-radius:99px;padding:1px 7px;font-size:.75rem;font-weight:700}
+.adm .quem a,.quem button{display:inline-flex;align-items:center;gap:6px}
+.quem .ico{width:16px;height:16px}
+.topo-movel,.fechar-menu,.veu{display:none}
+
+/* cabeçalho da página */
+.cabecalho{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 16px;flex-wrap:wrap;margin-bottom:24px}
+.cabecalho h1{margin:0}
+.migalhas{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0 0 6px;padding:0;font-size:.84rem;color:var(--cinza)}
+.migalhas li + li::before{content:"/";margin-right:6px;color:var(--linha-2)}
+.adm .migalhas a{color:var(--cinza);text-decoration:none}.adm .migalhas a:hover{color:var(--acao)}
+
+/* abas com contagem */
+.abas{display:flex;gap:4px 22px;flex-wrap:wrap;border-bottom:1px solid var(--linha-2);margin:0 0 16px}
+.adm .abas a{padding:10px 0;color:var(--cinza);text-decoration:none;font-weight:500;margin-bottom:-1px;border-bottom:3px solid transparent}
+.adm .abas a:hover{color:var(--tinta)}
+.adm .abas a[aria-current="page"]{color:var(--acao-h);border-bottom-color:var(--acao);font-weight:700}
+.abas .n{font-variant-numeric:tabular-nums;color:var(--cinza);font-weight:500;margin-left:4px}
+
+/* tabela padrão; no celular vira cartões */
+.tabela-envolta{background:#fff;border:1px solid var(--linha);border-radius:var(--r-l);box-shadow:var(--sombra);overflow:hidden}
+.tabela{width:100%;border-collapse:collapse}
+.tabela th{text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cinza);font-weight:700;padding:12px 14px;border-bottom:1px solid var(--linha);background:var(--menta)}
+.tabela td{padding:12px 14px;border-bottom:1px solid var(--linha);vertical-align:middle}
+.tabela tr:last-child td{border-bottom:0}
+.tabela tbody tr:hover,.tabela tbody tr:has(input:checked){background:var(--menta)}
+.tabela .sel{width:44px}
+.tabela input[type=checkbox]{width:18px;height:18px;accent-color:var(--acao)}
+.tabela .titulo a{font-weight:600;color:var(--tinta);text-decoration:none}
+.tabela .titulo a:hover{color:var(--acao)}
+.tabela .mini{width:56px;height:40px;object-fit:cover;border-radius:6px;background:var(--menta-2);vertical-align:middle;margin-right:12px;float:left}
+.acoes-linha{display:flex;gap:12px;font-size:.8rem;margin-top:2px;opacity:0;transition:opacity .15s}
+.adm .acoes-linha a{color:var(--cinza);font-weight:500}
+.tabela tr:hover .acoes-linha,.acoes-linha:focus-within{opacity:1}
+@media (hover:none){.acoes-linha{opacity:1}}
+.tabela .num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--cinza)}
+
+/* barra de ações em massa */
+.massa{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;background:var(--mata);color:#fff;border-radius:var(--r);padding:8px 14px;margin-bottom:10px;min-height:48px}
+.massa[data-vazia]{background:#fff;color:var(--cinza);border:1px dashed var(--linha-2)}
+.massa .qtd{font-weight:600;margin-right:auto}
+.massa button{font:600 .84rem var(--texto);background:transparent;border:1px solid currentColor;color:var(--amarelo);border-radius:8px;padding:6px 12px;cursor:pointer}
+.massa[data-vazia] button{color:var(--acao)}
+.massa button.perigo{color:#F7B4AE}.massa[data-vazia] button.perigo{color:var(--erro)}
+.massa .falta{flex-basis:100%;font-size:.84rem;color:var(--amarelo);margin:0}
+.massa[data-vazia] .falta{color:var(--erro)}
+
+/* paginação */
+.paginacao{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;color:var(--cinza);font-size:.88rem}
+.paginacao ol{display:flex;gap:4px;list-style:none;margin:0;padding:0}
+.adm .paginacao a,.paginacao span[aria-current],.paginacao .pulo{display:inline-grid;place-items:center;min-width:36px;height:36px;padding:0 8px;border-radius:8px;text-decoration:none;color:var(--tinta);font-weight:500}
+.adm .paginacao a:hover{background:var(--menta-2)}
+.paginacao span[aria-current]{background:var(--acao);color:#fff}
+
+/* formulário em duas colunas e caixas laterais */
+.duas-colunas{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+.duas-colunas > .principal{display:grid;gap:20px;min-width:0}
+.duas-colunas > .lateral{display:grid;gap:16px;position:sticky;top:24px}
+.caixa{background:#fff;border:1px solid var(--linha);border-radius:var(--r-l);padding:18px;box-shadow:var(--sombra);display:grid;gap:12px;align-content:start;min-width:0}
+.caixa > h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cinza);font-family:var(--texto);font-weight:700;margin:0}
+.caixa .acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.caixa .acoes .bt{width:100%}
+.caixa .acoes .largo{grid-column:1/-1}
+.caixa dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:.88rem}
+.caixa dt{color:var(--cinza)}.caixa dd{margin:0}
+
+/* contadores do início */
+.contadores{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px}
+.adm a.contador{display:grid;gap:4px;background:#fff;border:1px solid var(--linha);border-radius:var(--r-l);padding:18px;text-decoration:none;color:var(--cinza);box-shadow:var(--sombra);transition:border-color .15s}
+.adm a.contador:hover{border-color:var(--acao)}
+.contador b{font:800 2rem/1 var(--titulo);color:var(--tinta);font-variant-numeric:tabular-nums}
+.contador.destaque b{color:var(--acao-h)}
+.atalhos{display:flex;gap:10px;flex-wrap:wrap}
+
+/* celular e tablet: barra superior verde e lateral em gaveta */
 @media (max-width:900px){
-  .painel{grid-template-columns:1fr}
-  .barra{height:auto;position:sticky;z-index:10;padding:12px 16px;gap:12px;flex-direction:row;flex-wrap:wrap;align-items:center;overflow:visible}
-  .marca{padding:0}.adm .marca span{display:none}
-  .barra .quem{border:0;padding:0;margin-left:auto;display:flex;gap:10px}
-  .quem .nome{display:none}
-  .avatar{width:30px;height:30px;font-size:.85rem}
-  .barra nav{order:3;flex-basis:100%;display:flex;overflow-x:auto;gap:4px;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none}
-  .barra nav a{white-space:nowrap;padding:8px 12px}
-  .barra nav a[aria-current="page"]::before{left:12px;right:12px;top:auto;bottom:2px;width:auto;height:3px}
+  .painel{display:block}
+  .topo-movel{display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20;background:var(--mata);padding:10px 16px;border-bottom:3px solid var(--amarelo)}
+  .topo-movel .marca{padding:0}
+  .abrir-menu,.fechar-menu{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;width:42px;height:42px;display:grid;place-items:center;cursor:pointer}
+  .barra{position:fixed;inset:0 auto 0 0;width:min(300px,86vw);z-index:40;transform:translateX(-105%);transition:transform .2s;visibility:hidden}
+  .barra[data-aberta]{transform:none;visibility:visible}
+  .fechar-menu{display:grid;position:absolute;top:16px;right:14px}
+  .veu{display:block;position:fixed;inset:0;z-index:30;background:rgba(11,61,36,.55)}
   .conteudo{padding-top:24px}
   .cartao{padding:18px}
+  .duas-colunas{grid-template-columns:1fr}
+  .duas-colunas > .lateral{position:static}
+  .tabela thead{display:none}
+  .tabela,.tabela tbody,.tabela tr,.tabela td{display:block;width:100%}
+  .tabela tr{position:relative;padding:12px 14px 12px 50px;border-bottom:1px solid var(--linha)}
+  .tabela tr:last-child{border-bottom:0}
+  .tabela td{padding:2px 0;border:0}
+  .tabela td.sel{position:absolute;left:14px;top:14px;width:auto}
+  .tabela td[data-titulo]:not(.titulo)::before{content:attr(data-titulo) ": ";color:var(--cinza);font-size:.8rem}
+  .tabela tr:not(:has(.sel)){padding-left:14px}
+  .acoes-linha{opacity:1}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
