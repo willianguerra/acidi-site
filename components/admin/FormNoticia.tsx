@@ -29,7 +29,7 @@ export function FormNoticia({ n, pode, situacao, autor }: { n: DadosForm; pode: 
       <input type="hidden" name="lidaEm" value={n.lidaEm} />
       <input type="hidden" name="editavel" value={pode.editar ? '1' : ''} />
       <input type="hidden" name="imagemAtual" value={imagem} />
-      <AvisoSaida formId="form-noticia" />
+      <AvisoSaida formId="form-noticia" estado={estado} />
       <div className="principal">
         <fieldset disabled={bloq} className="caixa topo-form">
           <legend className="sr">Título e endereço</legend>

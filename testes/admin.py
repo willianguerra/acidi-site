@@ -130,6 +130,15 @@ with sync_playwright() as p:
     ok('Salvar mostra a hora', 'Salvo às' in sai.inner_text('main .aviso.ok'))
     antes = len(perguntas); sai.click('.migalhas a[href="/admin/noticias"]'); sai.wait_for_url(BASE + '/admin/noticias')
     ok('Depois de salvar, sair não pede confirmação', len(perguntas) == antes)
+    falso = os.path.join(tempfile.gettempdir(), 'acidi-nao-e-foto.png')
+    with open(falso, 'w') as f: f.write('isto não é uma imagem')
+    abrir_noticia(sai); sai.fill('#resumo', 'Resumo que não pode se perder.'); sai.set_input_files('#foto', falso)
+    sai.click('button[value=salvar]'); sai.wait_for_selector('main .aviso[role=alert]')
+    antes = len(perguntas); sai.click('.migalhas a[href="/admin/noticias"]'); sai.wait_for_timeout(500)
+    ok('Depois de salvar com erro, sair ainda pede confirmação', len(perguntas) == antes + 1 and '/admin/noticias/' in sai.url, sai.url)
+    abrir_noticia(sai); sai.click('button[aria-label="Remover bloco 1"]')
+    antes = len(perguntas); sai.click('.migalhas a[href="/admin/noticias"]'); sai.wait_for_timeout(500)
+    ok('Remover um bloco e sair pede confirmação', len(perguntas) == antes + 1, sai.url)
 
     # 6c. revisor cria uma segunda notícia e publica as duas em massa
     rev.goto(BASE + '/admin/noticias/nova')

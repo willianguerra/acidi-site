@@ -1,22 +1,24 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const PERGUNTA = 'Há alterações não salvas. Sair mesmo assim?';
 
 // Avisa antes de sair de um formulário alterado; enviar o próprio formulário não conta como sair.
-export function AvisoSaida({ formId }: { formId: string }) {
+// `estado` é a resposta do servidor (objeto novo a cada envio): se veio com erro, o que foi digitado continua não salvo.
+export function AvisoSaida({ formId, estado }: { formId: string; estado?: { erro?: string } }) {
+  const alteradoRef = useRef(false);
+  useEffect(() => { if (estado?.erro) alteradoRef.current = true; }, [estado]);
   useEffect(() => {
     const form = document.getElementById(formId) as HTMLFormElement | null;
     if (!form) return;
-    let alterado = false;
-    const marcar = () => { alterado = true; };
-    const enviou = () => { alterado = false; };
-    const antes = (e: BeforeUnloadEvent) => { if (alterado) { e.preventDefault(); e.returnValue = ''; } };
+    const marcar = () => { alteradoRef.current = true; };
+    const enviou = () => { alteradoRef.current = false; };
+    const antes = (e: BeforeUnloadEvent) => { if (alteradoRef.current) { e.preventDefault(); e.returnValue = ''; } };
     const clique = (e: MouseEvent) => {
-      if (!alterado || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      if (!alteradoRef.current || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
       const a = (e.target as Element).closest('a[href]') as HTMLAnchorElement | null;
       if (!a || a.target === '_blank' || a.origin !== location.origin || a.href.split('#')[0] === location.href.split('#')[0]) return;
-      if (!confirm(PERGUNTA)) e.preventDefault(); else alterado = false;
+      if (!confirm(PERGUNTA)) e.preventDefault(); else alteradoRef.current = false;
     };
     form.addEventListener('input', marcar); form.addEventListener('change', marcar); form.addEventListener('submit', enviou);
     window.addEventListener('beforeunload', antes); document.addEventListener('click', clique, true);

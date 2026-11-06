@@ -15,7 +15,7 @@ export function FormEvento({ e }: { e: DadosEvento }) {
     <form action={acao} id="form-evento" className="duas-colunas">
       <input type="hidden" name="id" value={e.id ?? ''} />
       <input type="hidden" name="lidoEm" value={e.lidoEm} />
-      <AvisoSaida formId="form-evento" />
+      <AvisoSaida formId="form-evento" estado={estado} />
       <div className="principal">
         <div className="caixa topo-form">
           <Aviso estado={estado} />

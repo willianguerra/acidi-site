@@ -15,12 +15,12 @@ export default async function Page() {
   const u = await exigirUsuario();
   const revisa = pode(u, 'noticia.publicar', { autorId: null, situacao: 'revisao' });
   const escreve = pode(u, 'noticia.criar');
-  const lista = async (situacao: 'revisao' | 'devolvida') => { const r = await listarNoticias(db, u, { situacao }); return r.ok ? r.valor.itens : []; };
+  const lista = async (situacao: 'revisao' | 'devolvida', autorId?: string) => { const r = await listarNoticias(db, u, { situacao, autorId }); return r.ok ? r.valor : { itens: [], total: 0 }; };
   let dados;
   try {
     const [resumo, eventos, emRevisao, devolvidas, msgs] = await Promise.all([
-      resumoPainel(db, u), getEventos(), revisa ? lista('revisao') : [],
-      escreve ? lista('devolvida').then(ns => ns.filter(n => n.autorId === u.id)) : [],
+      resumoPainel(db, u), getEventos(), revisa ? lista('revisao') : { itens: [], total: 0 },
+      escreve ? lista('devolvida', u.id) : { itens: [], total: 0 },
       listarContatos(db, u, {}),
     ]);
     dados = { resumo, prox: separarEventos(eventos, hojeIso()).prox, emRevisao, devolvidas, msgs: msgs.ok ? msgs.valor.itens.slice(0, 5) : null };
@@ -48,11 +48,13 @@ export default async function Page() {
     </div>
     {revisa && <section className="cartao" aria-labelledby="h-rev">
       <h2 id="h-rev">Aguardando revisão</h2>
-      {emRevisao.length ? itens(emRevisao) : <p className="vazio">Nenhuma notícia esperando revisão.</p>}
+      {emRevisao.itens.length ? itens(emRevisao.itens) : <p className="vazio">Nenhuma notícia esperando revisão.</p>}
+      {emRevisao.total > emRevisao.itens.length && <p><a href="/admin/noticias?situacao=revisao">Ver todas as {emRevisao.total}</a></p>}
     </section>}
-    {devolvidas.length > 0 && <section className="cartao" aria-labelledby="h-dev">
+    {devolvidas.itens.length > 0 && <section className="cartao" aria-labelledby="h-dev">
       <h2 id="h-dev">Devolvidas para você ajustar</h2>
-      {itens(devolvidas, true)}
+      {itens(devolvidas.itens, true)}
+      {devolvidas.total > devolvidas.itens.length && <p><a href={`/admin/noticias?situacao=devolvida&autor=${u.id}`}>Ver todas as {devolvidas.total}</a></p>}
     </section>}
     <section className="cartao" aria-labelledby="h-ev">
       <div className="cabeca"><h2 id="h-ev">Próximos eventos</h2><a className="bt sec peq" href="/admin/agenda">Abrir agenda</a></div>
