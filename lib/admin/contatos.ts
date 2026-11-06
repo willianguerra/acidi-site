@@ -1,6 +1,7 @@
 // Mensagens dos formulários públicos: o site grava sem login; só o admin lê.
 import { randomUUID } from 'node:crypto';
-import { desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, inArray } from 'drizzle-orm';
+import { POR_PAGINA, limitarPagina } from './lista.ts';
 import type { Db } from '../db/index.ts';
 import { contatos } from '../db/schema.ts';
 import { pode, type Usuario } from './permissoes.ts';
@@ -39,9 +40,40 @@ export async function registrarContato(db: Db, f: FormData): Promise<Resultado<L
   return ok(c);
 }
 
-export async function listarContatos(db: Db, u: Usuario): Promise<Resultado<LinhaContato[]>> {
+export async function listarContatos(db: Db, u: Usuario, filtro: { lida?: boolean; formulario?: Formulario; pagina?: number }) {
   if (!pode(u, 'contatos.ver')) return falha('sem-permissao');
-  return ok(await db.select().from(contatos).orderBy(desc(contatos.criadaEm)));
+  const doForm = filtro.formulario ? eq(contatos.formulario, filtro.formulario) : undefined;
+  const onde = and(doForm, filtro.lida === undefined ? undefined : eq(contatos.lida, filtro.lida));
+  const [{ total }] = await db.select({ total: count() }).from(contatos).where(onde);
+  const pagina = limitarPagina(filtro.pagina ?? 1, total);
+  const itens = await db.select().from(contatos).where(onde).orderBy(desc(contatos.criadaEm)).limit(POR_PAGINA).offset((pagina - 1) * POR_PAGINA);
+  let novas = 0, lidas = 0;
+  for (const g of await db.select({ lida: contatos.lida, n: count() }).from(contatos).where(doForm).groupBy(contatos.lida)) g.lida ? (lidas = g.n) : (novas = g.n);
+  return ok({ itens, total, pagina, novas, lidas });
+}
+
+const validos = (ids: string[]) => ids.filter(idValido);
+
+export async function marcarContatos(db: Db, u: Usuario, ids: string[], lida: boolean): Promise<Resultado<number>> {
+  if (!pode(u, 'contatos.ver')) return falha('sem-permissao');
+  const v = validos(ids);
+  if (!v.length) return ok(0);
+  const [r] = await db.update(contatos).set({ lida }).where(inArray(contatos.id, v));
+  return ok(r.affectedRows);
+}
+
+export async function apagarContatos(db: Db, u: Usuario, ids: string[]): Promise<Resultado<number>> {
+  if (!pode(u, 'contatos.ver')) return falha('sem-permissao');
+  const v = validos(ids);
+  if (!v.length) return ok(0);
+  const [r] = await db.delete(contatos).where(inArray(contatos.id, v));
+  return ok(r.affectedRows);
+}
+
+export async function naoLidas(db: Db, u: Usuario): Promise<number> {
+  if (!pode(u, 'contatos.ver')) return 0;
+  const [{ n }] = await db.select({ n: count() }).from(contatos).where(eq(contatos.lida, false));
+  return n;
 }
 
 // Abrir a mensagem já a marca como lida.
