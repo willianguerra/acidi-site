@@ -1,17 +1,18 @@
 // Regras das notícias no admin. Cada função confere pode() antes de agir; as Server Actions só
 // obtêm o usuário da sessão, chamam estas funções e revalidam as páginas públicas.
 import { randomUUID } from 'node:crypto';
-import { and, desc, eq, like, ne, or, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNotNull, like, ne, or, sql, type SQL } from 'drizzle-orm';
 import type { Db } from '../db/index.ts';
 import { noticias, user } from '../db/schema.ts';
 import { pode, type Acao, type Usuario } from './permissoes.ts';
-import { proxima, type Evento, type Situacao } from './fluxo.ts';
+import { proxima, SITUACOES, type Evento, type Situacao } from './fluxo.ts';
+import { POR_PAGINA, limitarPagina } from './lista.ts';
 import { slugDe } from './slug.ts';
 import { esquemaNoticia, validar } from './validacao.ts';
 import { ok, falha, mudouDesde, type Resultado } from './resultado.ts';
 
 export type LinhaNoticia = typeof noticias.$inferSelect;
-export type ItemLista = Pick<LinhaNoticia, 'id' | 'slug' | 'titulo' | 'data' | 'situacao' | 'autorId' | 'atualizadaEm' | 'comentarioRevisao'> & { autor: string | null };
+export type ItemLista = Pick<LinhaNoticia, 'id' | 'slug' | 'titulo' | 'data' | 'situacao' | 'autorId' | 'atualizadaEm' | 'comentarioRevisao' | 'imagem'> & { autor: string | null };
 
 const daAcao = (u: Usuario, acao: Acao, n?: LinhaNoticia) => pode(u, acao, n && { autorId: n.autorId, situacao: n.situacao });
 
@@ -30,17 +31,38 @@ async function slugLivre(db: Db, base: string, ignorarId?: string): Promise<stri
   return s;
 }
 
-export async function listarNoticias(db: Db, u: Usuario, filtro: { situacao?: Situacao; busca?: string }): Promise<Resultado<ItemLista[]>> {
+export type FiltroNoticias = { situacao?: Situacao; busca?: string; autorId?: string; ano?: number; pagina?: number };
+
+// O editor vê as próprias e as publicadas; vale para a lista, as contagens e as opções dos filtros.
+const visiveis = (u: Usuario) => (u.papel === 'editor' ? or(eq(noticias.autorId, u.id), eq(noticias.situacao, 'publicada')) : undefined);
+
+export async function listarNoticias(db: Db, u: Usuario, filtro: FiltroNoticias) {
   if (!pode(u, 'noticia.criar')) return falha('sem-permissao');
-  const conds: (SQL | undefined)[] = [];
-  if (u.papel === 'editor') conds.push(or(eq(noticias.autorId, u.id), eq(noticias.situacao, 'publicada')));
-  if (filtro.situacao) conds.push(eq(noticias.situacao, filtro.situacao));
-  if (filtro.busca?.trim()) conds.push(like(noticias.titulo, `%${filtro.busca.trim().replace(/[%_\\]/g, '\\$&')}%`));
-  const linhas = await db.select({
-    id: noticias.id, slug: noticias.slug, titulo: noticias.titulo, data: noticias.data, situacao: noticias.situacao,
+  const base: (SQL | undefined)[] = [visiveis(u)];
+  if (filtro.busca?.trim()) base.push(like(noticias.titulo, `%${filtro.busca.trim().replace(/[%_\\]/g, '\\$&')}%`));
+  if (filtro.autorId) base.push(eq(noticias.autorId, filtro.autorId));
+  if (filtro.ano) base.push(sql`year(${noticias.data}) = ${filtro.ano}`);
+  const onde = and(...base, filtro.situacao ? eq(noticias.situacao, filtro.situacao) : undefined);
+  const [{ total }] = await db.select({ total: count() }).from(noticias).where(onde);
+  const pagina = limitarPagina(filtro.pagina ?? 1, total);
+  const itens: ItemLista[] = await db.select({
+    id: noticias.id, slug: noticias.slug, titulo: noticias.titulo, data: noticias.data, situacao: noticias.situacao, imagem: noticias.imagem,
     autorId: noticias.autorId, atualizadaEm: noticias.atualizadaEm, comentarioRevisao: noticias.comentarioRevisao, autor: user.name,
-  }).from(noticias).leftJoin(user, eq(user.id, noticias.autorId)).where(and(...conds)).orderBy(desc(noticias.atualizadaEm));
-  return ok(linhas);
+  }).from(noticias).leftJoin(user, eq(user.id, noticias.autorId)).where(onde)
+    .orderBy(desc(noticias.atualizadaEm)).limit(POR_PAGINA).offset((pagina - 1) * POR_PAGINA);
+  const porSituacao = Object.fromEntries(Object.keys(SITUACOES).map(k => [k, 0])) as Record<Situacao, number>;
+  for (const g of await db.select({ situacao: noticias.situacao, n: count() }).from(noticias).where(and(...base)).groupBy(noticias.situacao)) porSituacao[g.situacao] = g.n;
+  return ok({ itens, total, pagina, porSituacao });
+}
+
+export async function autoresDeNoticias(db: Db, u: Usuario): Promise<{ id: string; nome: string }[]> {
+  return db.selectDistinct({ id: user.id, nome: user.name }).from(noticias).innerJoin(user, eq(user.id, noticias.autorId))
+    .where(and(visiveis(u), isNotNull(noticias.autorId))).orderBy(asc(user.name));
+}
+
+export async function anosDeNoticias(db: Db, u: Usuario): Promise<number[]> {
+  const ano = sql<number>`year(${noticias.data})`;
+  return (await db.selectDistinct({ ano }).from(noticias).where(visiveis(u)).orderBy(desc(ano))).map(r => Number(r.ano));
 }
 
 export async function obterNoticia(db: Db, u: Usuario, id: string): Promise<Resultado<LinhaNoticia>> {

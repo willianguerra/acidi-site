@@ -26,6 +26,16 @@ const P = {
   pause: "<path d=\"M9 6v12M15 6v12\"/>",
   play: "<path d=\"M8 5.5v13l10-6.5z\"/>",
   replay: "<path d=\"M4 12a8 8 0 1 0 2.4-5.7\"/><path d=\"M4 4v4.5h4.5\"/>",
+  home: "<path d=\"M3 11l9-7 9 7M5 10v10h5v-6h4v6h5V10\"/>",
+  news: "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M7 8h10M7 12h10M7 16h6\"/>",
+  users: "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 010 7M18 14.8c1.8.8 3 2.6 3.5 5.2\"/>",
+  user: "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c1-4 4.2-6 8-6s7 2 8 6\"/>",
+  star: "<path d=\"M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z\"/>",
+  logout: "<path d=\"M15 4h4a1 1 0 011 1v14a1 1 0 01-1 1h-4M10 16l-4-4 4-4M6 12h10\"/>",
+  edit: "<path d=\"M4 20h4L19 9l-4-4L4 16zM13 7l4 4\"/>",
+  eye: "<path d=\"M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>",
+  trash: "<path d=\"M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13\"/>",
+  plus: "<path d=\"M12 5v14M5 12h14\"/>",
 } as const;
 
 export type IconName = keyof typeof P;

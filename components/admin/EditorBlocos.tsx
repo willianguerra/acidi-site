@@ -1,7 +1,7 @@
 'use client';
 // Editor do corpo da notícia em blocos (o mesmo formato Bloco[] que o site renderiza).
 // O resultado vai como JSON no campo oculto "corpo"; o servidor valida de novo.
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Bloco } from '@/lib/types';
 
 type Ed =
@@ -39,8 +39,11 @@ export function EditorBlocos({ inicial, erro, desabilitado }: { inicial: Bloco[]
   const muda = (i: number, e: Ed) => setBlocos(bs => bs.map((b, k) => (k === i ? e : b)));
   const move = (i: number, d: -1 | 1) => setBlocos(bs => { const c = [...bs]; [c[i], c[i + d]] = [c[i + d], c[i]]; return c; });
   const tira = (i: number) => setBlocos(bs => bs.filter((_, k) => k !== i));
+  // mudanças só de estrutura (incluir, mover, remover) não disparam input: avisa o form, para o AvisoSaida
+  const campo = useRef<HTMLFieldSetElement>(null), montou = useRef(false);
+  useEffect(() => { if (montou.current) campo.current?.dispatchEvent(new Event('change', { bubbles: true })); montou.current = true; }, [blocos]);
   return (
-    <fieldset className="campo" data-erro={erro ? '' : undefined} disabled={desabilitado} aria-describedby={erro ? 'corpo-erro' : undefined}>
+    <fieldset ref={campo} className="campo" data-erro={erro ? '' : undefined} disabled={desabilitado} aria-describedby={erro ? 'corpo-erro' : undefined}>
       <legend>Texto da notícia <span aria-hidden="true">*</span></legend>
       <input type="hidden" name="corpo" value={JSON.stringify(blocos.map(paraBloco))} />
       <div className="blocos">

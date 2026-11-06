@@ -6,6 +6,9 @@ import { FormExPresidente } from '@/components/admin/FormsDiretoria';
 import { Mover } from '@/components/admin/Mover';
 import { moverExPresidente } from '../diretoria/acoes';
 
+import { Cabecalho } from '@/components/admin/Cabecalho';
+import { Aviso } from '@/components/admin/Aviso';
+
 export const metadata = { title: 'Ex-presidentes' };
 
 const OKS: Record<string, string> = { salvo: 'Lista atualizada no site.', apagado: 'Removido da lista.' };
@@ -15,8 +18,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   if (!r.ok) redirect('/admin');
   const ok = (await searchParams).ok;
   return (<>
-    <h1>Ex-presidentes</h1>
-    {ok && OKS[ok] && <p className="aviso ok" role="status">{OKS[ok]}</p>}
+    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { rotulo: 'Ex-presidentes' }]} titulo="Ex-presidentes" descricao="Galeria de ex-presidentes do site, na ordem em que aparecem." extra={<a className="bt sec" href="/ex-presidentes" target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a>} />
+    {ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
     <details className="cartao"><summary><b>Adicionar ex-presidente</b></summary>
       <div style={{ marginTop: 16 }}><FormExPresidente p={{ id: null, nome: '', gestao: '', foto: '' }} /></div>
     </details>

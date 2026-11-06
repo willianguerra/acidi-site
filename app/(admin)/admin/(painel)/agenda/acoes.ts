@@ -6,6 +6,7 @@ import { db } from '@/lib/db';
 import * as E from '@/lib/admin/eventos';
 import { estadoDe, ERRO_BANCO, textosDe } from '@/lib/admin/mensagens';
 import type { Estado } from '@/lib/admin/estado';
+import { lerIds, resumoMassa, textoMassa, voltaComMsg, MAX_MASSA } from '@/lib/admin/lista';
 
 export async function agirEvento(_: Estado, f: FormData): Promise<Estado> {
   const u = await exigirUsuario();
@@ -23,4 +24,16 @@ export async function agirEvento(_: Estado, f: FormData): Promise<Estado> {
   revalidatePath('/');
   revalidatePath('/agenda');
   redirect('/admin/agenda?ok=' + (acao === 'apagar' ? 'apagado' : 'salvo'));
+}
+
+export async function eventosMassa(f: FormData): Promise<void> {
+  const u = await exigirUsuario();
+  const ids = lerIds(f);
+  if (!ids) redirect(voltaComMsg(f, '/admin/agenda', `Selecione no máximo ${MAX_MASSA} de cada vez.`));
+  if (String(f.get('acao')) !== 'apagar') redirect('/admin/agenda');
+  const rs = [];
+  for (const id of ids) rs.push(await E.apagarEvento(db, u, id));
+  const r = resumoMassa(rs);
+  if (r.feitas) { revalidatePath('/'); revalidatePath('/agenda'); }
+  redirect(voltaComMsg(f, '/admin/agenda', textoMassa(r, 'apagado', 'apagados')));
 }
