@@ -4,6 +4,7 @@ import { dbDeTeste, limpar, fechar, type Db } from '../db/teste.ts';
 import { user } from '../db/schema.ts';
 import type { Usuario } from './permissoes.ts';
 import * as N from './noticias.ts';
+import { noticiasEmMassa } from './massa.ts';
 
 let db: Db;
 before(async () => { db = await dbDeTeste(); });
@@ -170,6 +171,21 @@ test('filtro por autor e ano, e as opções dos filtros', async () => {
   assert.deepEqual((await N.autoresDeNoticias(db, rita)).map(a => a.id).sort(), ['edna', 'otto']);
   assert.deepEqual(await N.anosDeNoticias(db, rita), [2026]);
   assert.deepEqual((await N.autoresDeNoticias(db, edna)).map(a => a.id), ['edna']);
+});
+
+test('editor não publica em massa notícia de outra pessoa', async () => {
+  const a = await criar(outro, 'A'); await N.enviarNoticia(db, outro, a.id);
+  const r = await noticiasEmMassa(db, edna, 'publicar', [a.id]);
+  assert.deepEqual(r.resumo, { feitas: 0, recusadas: 1, naoEncontradas: 0 }); assert.deepEqual(r.slugs, []);
+  assert.equal((await situacao(a.id)).situacao, 'revisao');
+});
+
+test('revisor publica em massa e ids desconhecidos contam como não encontrados', async () => {
+  const a = await criar(edna, 'A'), b = await criar(edna, 'B');
+  const r = await noticiasEmMassa(db, rita, 'publicar', [a.id, b.id, 'nao-existe']);
+  assert.deepEqual(r.resumo, { feitas: 2, recusadas: 0, naoEncontradas: 1 }); assert.equal(r.slugs.length, 2);
+  assert.equal((await situacao(b.id)).situacao, 'publicada');
+  const ap = await noticiasEmMassa(db, rita, 'apagar', [a.id]); assert.equal(ap.resumo.feitas, 1);
 });
 
 test('usuário inativo não faz nada', async () => {

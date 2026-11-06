@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 type AcaoMassa = { valor: string; rotulo: string; perigo?: boolean };
 
 // Os checkboxes da Tabela usam form="massa": ficam na tabela, mas são enviados por este form.
-export function BarraMassa({ acao, acoes, nome }: { acao: (f: FormData) => Promise<void>; acoes: AcaoMassa[]; nome: string }) {
+export function BarraMassa({ acao, acoes, nome, volta }: { acao: (f: FormData) => Promise<void>; acoes: AcaoMassa[]; nome: string; volta: string }) {
   const [qtd, setQtd] = useState(0);
   const [falta, setFalta] = useState(false);
   const form = useRef<HTMLFormElement>(null);
@@ -33,6 +33,7 @@ export function BarraMassa({ acao, acoes, nome }: { acao: (f: FormData) => Promi
   };
 
   return (<form id="massa" ref={form} action={acao} onSubmit={enviar} className="massa" data-vazia={qtd ? undefined : true} aria-label={`Ações em massa: ${nome}`}>
+    <input type="hidden" name="volta" value={volta} />
     <span className="qtd" aria-live="polite">{qtd ? `${qtd} selecionada${qtd > 1 ? 's' : ''}` : 'Nenhuma selecionada'}</span>
     {acoes.map(a => <button key={a.valor} type="submit" name="acao" value={a.valor} className={a.perigo ? 'perigo' : undefined} data-perigo={a.perigo || undefined}>{a.rotulo}</button>)}
     {falta && <p className="falta" role="alert">Selecione ao menos um item.</p>}

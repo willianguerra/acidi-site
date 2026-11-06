@@ -7,6 +7,8 @@ import * as N from '@/lib/admin/noticias';
 import { salvarImagem } from '@/lib/storage';
 import { estadoDe, ERRO_BANCO, textosDe } from '@/lib/admin/mensagens';
 import type { Estado } from '@/lib/admin/estado';
+import { lerIds, textoMassa, MAX_MASSA } from '@/lib/admin/lista';
+import { noticiasEmMassa, type AcaoNoticiaMassa } from '@/lib/admin/massa';
 
 // Uma notícia aparece na home, na lista e nos links anterior/próxima das vizinhas: invalida o site
 // inteiro (as páginas são regeradas sob demanda) e a própria notícia pelo caminho exato.
@@ -69,4 +71,21 @@ export async function agirNoticia(_: Estado, f: FormData): Promise<Estado> {
     return { ...ERRO_BANCO, valores };
   }
   redirect(destino);
+}
+
+const FEITO = { publicar: 'publicadas', despublicar: 'despublicadas', apagar: 'apagadas' } as const;
+
+// Ações em massa da lista: volta para a mesma lista (filtros e página) com o resumo.
+export async function noticiasMassa(f: FormData): Promise<void> {
+  const u = await exigirUsuario();
+  const volta = String(f.get('volta') ?? '');
+  const lista = volta.startsWith('/admin/noticias') ? volta : '/admin/noticias';
+  const junta = (q: string) => lista + (lista.includes('?') ? '&' : '?') + q;
+  const acao = String(f.get('acao') ?? '');
+  const ids = lerIds(f);
+  if (!(acao in FEITO)) redirect(lista);
+  if (!ids) redirect(junta('msg=' + encodeURIComponent(`Selecione no máximo ${MAX_MASSA} de cada vez.`)));
+  const r = await noticiasEmMassa(db, u, acao as AcaoNoticiaMassa, ids);
+  if (r.slugs.length) { revalidatePath('/', 'layout'); r.slugs.forEach(s => revalidatePath('/noticias/' + s)); }
+  redirect(junta('msg=' + encodeURIComponent(textoMassa(r.resumo, FEITO[acao as AcaoNoticiaMassa]))));
 }

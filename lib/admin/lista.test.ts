@@ -43,6 +43,6 @@ test('resumoMassa conta feitas, recusadas e não encontradas', () => {
 
 test('textoMassa', () => {
   assert.equal(textoMassa({ feitas: 3, recusadas: 0, naoEncontradas: 0 }, 'apagadas'), '3 apagadas.');
-  assert.equal(textoMassa({ feitas: 3, recusadas: 1, naoEncontradas: 0 }, 'publicadas'), '3 publicadas, 1 não pôde ser alterada (sem permissão).');
-  assert.equal(textoMassa({ feitas: 0, recusadas: 2, naoEncontradas: 1 }, 'publicadas'), '0 publicadas, 2 não puderam ser alteradas (sem permissão), 1 não encontrada.');
+  assert.equal(textoMassa({ feitas: 3, recusadas: 1, naoEncontradas: 0 }, 'publicadas'), '3 publicadas, 1 não pôde ser alterada.');
+  assert.equal(textoMassa({ feitas: 0, recusadas: 2, naoEncontradas: 1 }, 'publicadas'), '0 publicadas, 2 não puderam ser alteradas, 1 não encontrada.');
 });
