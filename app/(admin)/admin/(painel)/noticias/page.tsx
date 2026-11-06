@@ -15,7 +15,7 @@ export default async function Page({ searchParams }: Props) {
   const q = await searchParams;
   const situacao = q.situacao && q.situacao in SITUACOES ? q.situacao as Situacao : undefined;
   const r = await listarNoticias(db, u, { situacao, busca: q.busca });
-  const lista = r.ok ? r.valor : [];
+  const lista = r.ok ? r.valor.itens : [];
   return (<>
     <div className="cabeca"><h1>Notícias</h1><a className="bt" href="/admin/noticias/nova">Nova notícia</a></div>
     {q.ok && OKS[q.ok] && <p className="aviso ok" role="status">{OKS[q.ok]}</p>}

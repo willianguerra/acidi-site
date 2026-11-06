@@ -11,7 +11,7 @@ export default async function Page() {
   const u = await exigirUsuario();
   const { prox } = separarEventos(await getEventos(), hojeIso());
   const revisa = pode(u, 'noticia.publicar', { autorId: null, situacao: 'revisao' });
-  const lista = async (situacao: 'revisao' | 'devolvida') => { const r = await listarNoticias(db, u, { situacao }); return r.ok ? r.valor : []; };
+  const lista = async (situacao: 'revisao' | 'devolvida') => { const r = await listarNoticias(db, u, { situacao }); return r.ok ? r.valor.itens : []; };
   const emRevisao = revisa ? await lista('revisao') : [];
   const devolvidas = pode(u, 'noticia.criar') ? (await lista('devolvida')).filter(n => n.autorId === u.id) : [];
   const itens = (ns: ItemLista[], comentario = false) => <ul className="lista">{ns.map(n => <li key={n.id}><span><a href={`/admin/noticias/${n.id}`}>{n.titulo}</a>{comentario && n.comentarioRevisao && <><br /><span className="meta">{n.comentarioRevisao}</span></>}</span><span className="meta">{n.autor}</span></li>)}</ul>;

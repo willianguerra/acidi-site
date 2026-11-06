@@ -129,14 +129,47 @@ test('editor vê as próprias e as publicadas; revisor filtra por situação', a
   await N.publicarNoticia(db, rita, pub.id);
   const r = await N.listarNoticias(db, edna, {});
   assert.ok(r.ok);
-  assert.deepEqual(r.valor.map(n => n.id).sort(), [minha.id, pub.id].sort());
+  assert.deepEqual(r.valor.itens.map(n => n.id).sort(), [minha.id, pub.id].sort());
   assert.equal((await N.obterNoticia(db, edna, alheia.id) as { erro?: string }).erro, 'sem-permissao');
   const so = await N.listarNoticias(db, rita, { situacao: 'publicada' });
   assert.ok(so.ok);
-  assert.deepEqual(so.valor.map(n => n.id), [pub.id]);
+  assert.deepEqual(so.valor.itens.map(n => n.id), [pub.id]);
   const busca = await N.listarNoticias(db, rita, { busca: 'alh' });
   assert.ok(busca.ok);
-  assert.deepEqual(busca.valor.map(n => n.id), [alheia.id]);
+  assert.deepEqual(busca.valor.itens.map(n => n.id), [alheia.id]);
+});
+
+test('lista pagina de 20 e conta por situação com os mesmos filtros', async () => {
+  for (let i = 0; i < 23; i++) await criar(rita, 'Notícia ' + i);
+  const p2 = await N.listarNoticias(db, rita, { pagina: 2 }); assert.ok(p2.ok);
+  assert.equal(p2.valor.itens.length, 3); assert.equal(p2.valor.total, 23); assert.equal(p2.valor.porSituacao.rascunho, 23);
+  const alem = await N.listarNoticias(db, rita, { pagina: 99 }); assert.ok(alem.ok); assert.equal(alem.valor.pagina, 2);
+});
+
+test('editor só conta as próprias e as publicadas', async () => {
+  await criar(edna); await criar(outro); const pub = await criar(outro, 'Publicada'); await N.publicarNoticia(db, rita, pub.id);
+  const r = await N.listarNoticias(db, edna, {}); assert.ok(r.ok);
+  assert.equal(r.valor.total, 2); assert.deepEqual([r.valor.porSituacao.rascunho, r.valor.porSituacao.publicada], [1, 1]);
+});
+
+test('a aba escolhida não muda as contagens das outras abas', async () => {
+  await criar(rita, 'A'); const b = await criar(rita, 'B'); await N.publicarNoticia(db, rita, b.id);
+  const r = await N.listarNoticias(db, rita, { situacao: 'publicada' }); assert.ok(r.ok);
+  assert.equal(r.valor.total, 1); assert.equal(r.valor.porSituacao.rascunho, 1); assert.equal(r.valor.porSituacao.revisao, 0);
+});
+
+test('busca com % é literal', async () => {
+  await criar(rita, '100% feira'); await criar(rita, 'Outra');
+  const r = await N.listarNoticias(db, rita, { busca: '%' }); assert.ok(r.ok); assert.equal(r.valor.total, 1);
+});
+
+test('filtro por autor e ano, e as opções dos filtros', async () => {
+  await criar(edna); await criar(outro);
+  const r = await N.listarNoticias(db, rita, { autorId: 'otto', ano: 2026 }); assert.ok(r.ok); assert.equal(r.valor.total, 1);
+  const nenhum = await N.listarNoticias(db, rita, { ano: 2020 }); assert.ok(nenhum.ok); assert.equal(nenhum.valor.total, 0);
+  assert.deepEqual((await N.autoresDeNoticias(db, rita)).map(a => a.id).sort(), ['edna', 'otto']);
+  assert.deepEqual(await N.anosDeNoticias(db, rita), [2026]);
+  assert.deepEqual((await N.autoresDeNoticias(db, edna)).map(a => a.id), ['edna']);
 });
 
 test('usuário inativo não faz nada', async () => {
