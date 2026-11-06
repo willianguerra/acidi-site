@@ -28,8 +28,10 @@ export function BarraMassa({ acao, acoes, nome, volta }: { acao: (f: FormData) =
 
   const enviar = (e: React.FormEvent<HTMLFormElement>) => {
     const botao = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
-    if (!qtd) { e.preventDefault(); setFalta(true); return; }
-    if (botao?.dataset.perigo && !confirm(`${botao.textContent} ${qtd} ${nome}? Isso não pode ser desfeito.`)) e.preventDefault();
+    // conta no DOM, não no estado: o estado pode não ter sido atualizado ainda
+    const n = document.querySelectorAll('input[name="ids"][form="massa"]:checked').length;
+    if (!n) { e.preventDefault(); setFalta(true); return; }
+    if (botao?.dataset.perigo && !confirm(`${botao.textContent} ${n} ${nome}? Isso não pode ser desfeito.`)) e.preventDefault();
   };
 
   return (<form id="massa" ref={form} action={acao} onSubmit={enviar} className="massa" data-vazia={qtd ? undefined : true} aria-label={`Ações em massa: ${nome}`}>

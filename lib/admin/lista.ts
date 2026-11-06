@@ -45,3 +45,11 @@ export function textoMassa(r: ReturnType<typeof resumoMassa>, feito: string) {
   if (r.naoEncontradas) partes.push(r.naoEncontradas === 1 ? '1 não encontrada' : `${r.naoEncontradas} não encontradas`);
   return partes.join(', ') + '.';
 }
+
+// Destino depois de uma ação em massa: a URL da lista enviada pelo form, só se for a própria lista.
+export function voltaComMsg(f: FormData, lista: string, msg: string): string {
+  const u = new URL(String(f.get('volta') ?? ''), 'http://local');
+  const destino = u.origin === 'http://local' && (u.pathname === lista || u.pathname.startsWith(lista + '/')) ? u : new URL(lista, 'http://local');
+  destino.searchParams.set('msg', msg);
+  return destino.pathname + destino.search;
+}
