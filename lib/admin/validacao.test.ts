@@ -29,6 +29,12 @@ test('todos os tipos de bloco válidos passam', () => {
   const corpo = ['p', { lista: ['a'] }, { citacao: 'c' }, { tabela: [{ categoria: 'k', itens: ['i'] }] }];
   assert.ok(validar(esquemaNoticia, { ...noticia, corpo }).ok);
 });
+test('blocos subtítulo e imagem', () => {
+  const corpo = [{ subtitulo: 'A' }, { imagem: { src: '/uploads/a.jpg', alt: 'x', legenda: '' } }];
+  assert.ok(validar(esquemaNoticia, { ...noticia, corpo }).ok);
+  for (const b of [{ imagem: { src: '/uploads/a.jpg', alt: ' ', legenda: '' } }, { imagem: { src: '', alt: 'x', legenda: '' } }, { subtitulo: '' }])
+    assert.ok(!validar(esquemaNoticia, { ...noticia, corpo: [b] }).ok, JSON.stringify(b));
+});
 test('evento sem horário grava null', () => {
   const r = validar(esquemaEvento, { data: '2026-11-05', titulo: 'E', horario: '', local: 'ACIDI', descricao: 'd' });
   assert.ok(r.ok);

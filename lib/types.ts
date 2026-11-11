@@ -5,7 +5,8 @@ export type Servico = {
   resumo: string; paragrafos: string[]; link: { href: string; texto: string } | null;
 };
 export type Evento = { data: string /* AAAA-MM-DD */; titulo: string; horario: string | null; local: string; descricao: string };
-export type Bloco = string | { lista: string[] } | { citacao: string } | { tabela: { categoria: string; itens: string[] }[] };
+export type Bloco = string | { lista: string[] } | { citacao: string } | { tabela: { categoria: string; itens: string[] }[] }
+  | { subtitulo: string } | { imagem: { src: string; alt: string; legenda: string } };
 export type Noticia = { slug: string; data: string; titulo: string; imagem: string; alt: string; resumo: string; corpo: Bloco[] };
 export type ExPresidente = { foto: string | null; nome: string; gestao: string | null };
 export type Diretoria = {

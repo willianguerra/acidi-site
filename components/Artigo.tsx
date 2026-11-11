@@ -4,18 +4,10 @@ import { Footer } from './Footer';
 import { Crumbs } from './blocos';
 import { Ico } from './Ico';
 import { dlong } from '@/lib/datas';
-import type { Bloco, Noticia } from '@/lib/types';
+import { Corpo } from './Corpo';
+import type { Noticia } from '@/lib/types';
 
 type Vizinha = Pick<Noticia, 'slug' | 'titulo'>;
-
-function Corpo({ blocos }: { blocos: Bloco[] }) {
-  return blocos.map((b, i) => {
-    if (typeof b === 'string') return <p key={i}>{b}</p>;
-    if ('lista' in b) return <ul key={i}>{b.lista.map(x => <li key={x}>{x}</li>)}</ul>;
-    if ('citacao' in b) return <blockquote key={i}>{b.citacao}</blockquote>;
-    return b.tabela.map(t => [<h2 key={i + t.categoria}>{t.categoria}</h2>, <ul key={i + t.categoria + 'ul'}>{t.itens.map(x => <li key={x}>{x}</li>)}</ul>]);
-  });
-}
 
 export function Artigo({ n, prox, ant }: { n: Noticia; prox?: Vizinha; ant?: Vizinha }) {
   return (<>

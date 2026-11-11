@@ -11,6 +11,8 @@ const bloco: z.ZodType<Bloco> = z.union([
   texto(),
   z.strictObject({ lista: z.array(texto()).min(1) }),
   z.strictObject({ citacao: texto() }),
+  z.strictObject({ subtitulo: texto() }),
+  z.strictObject({ imagem: z.strictObject({ src: texto(), alt: texto(), legenda: z.string().trim() }) }),
   z.strictObject({ tabela: z.array(z.strictObject({ categoria: texto(), itens: z.array(texto()).min(1) })).min(1) }),
 ], { error: 'Bloco inválido ou vazio' });
 
