@@ -17,8 +17,8 @@ Esta é a parte 3 das cinco da reforma do admin (ver `2026-11-06-admin-parte1-vi
 - O Admin cria páginas novas, escolhe se entram no menu (e em qual grupo) ou ficam só com o link,
   deixa em rascunho e publica.
 - Parágrafos e listas aceitam negrito e link; o editor de blocos ganha Subtítulo e Imagem.
-- Depois da carga, o site público fica idêntico: `testes/comparar.py` 22/22, e os testes atuais
-  continuam verdes.
+- Depois da carga, o site público fica idêntico: `testes/paridade.py` sem divergências, e os testes
+  atuais continuam verdes.
 
 ## Fora do escopo
 
@@ -158,7 +158,7 @@ sobrescreve edições.
   `paginas.editar` para os três papéis, conversão do editor para os blocos novos.
 - Banco (`*.db-test.ts`): criar, editar, publicar, tirar do ar, apagar, endereço repetido,
   conflito de edição, reordenar no menu, fixa não pode ser apagada, carga idempotente.
-- Visual: `testes/comparar.py` 22/22 após a carga.
+- Visual: `testes/paridade.py` sem divergências após a carga.
 - Jornada (navegador): editar o título do Histórico e ver no site; criar página no menu "A ACIDI",
   publicar e ver no menu (computador e celular) e no sitemap; rascunho dá 404 no site e abre na
   prévia; editar um texto da Home e ver no site.
