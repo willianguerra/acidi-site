@@ -99,8 +99,14 @@ body.adm{margin:0;background:var(--fundo);color:var(--tinta);font:400 .95rem/1.5
 
 /* editor de blocos */
 .blocos{display:grid;gap:12px}
-.bloco{border:1px solid var(--linha);border-radius:12px;padding:14px;background:var(--menta);display:grid;gap:8px}
-.bloco .topo{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.82rem;font-weight:600;color:var(--cinza)}
+.bloco{border:1px solid var(--linha);border-left:4px solid var(--verde);border-radius:12px;padding:12px 14px 14px;background:var(--menta);display:grid;gap:8px;min-width:0}
+/* não usar .topo aqui: é a barra do painel (sticky, verde-mata) */
+.bloco-topo{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cinza)}
+.bloco label{font-weight:600;font-size:.84rem}
+.bloco .campo + .campo{border-top:1px dashed var(--linha-2);padding-top:12px;margin-top:4px}
+.bloco .bt.peq{justify-self:start}
+.blocos + .acoes{margin-top:4px;padding-top:14px;border-top:1px solid var(--linha)}
+.blocos:empty + .acoes{border-top:0;padding-top:0;margin-top:0}
 .foto-atual{max-width:240px;border-radius:10px;display:block}
 
 /* ícones, atalho de teclado, contador do menu */
@@ -153,13 +159,13 @@ body.adm{margin:0;background:var(--fundo);color:var(--tinta);font:400 .95rem/1.5
 .paginacao span[aria-current]{background:var(--acao);color:#fff}
 
 /* formulário em duas colunas e caixas laterais */
-.duas-colunas{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
+.duas-colunas{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
 .duas-colunas > .principal{display:grid;gap:20px;min-width:0}
-.duas-colunas > .lateral{display:grid;gap:16px;position:sticky;top:24px}
+.duas-colunas > .lateral{display:grid;gap:16px;position:sticky;top:72px}
 .caixa{background:#fff;border:1px solid var(--linha);border-radius:var(--r-l);padding:18px;box-shadow:var(--sombra);display:grid;gap:12px;align-content:start;min-width:0}
 .caixa > h2{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cinza);font-family:var(--texto);font-weight:700;margin:0}
 .caixa .acoes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.caixa .acoes .bt{width:100%}
+.caixa .acoes .bt{width:100%;padding:0 8px;white-space:nowrap}
 .caixa .acoes .largo{grid-column:1/-1}
 .caixa dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:.88rem}
 .caixa dt{color:var(--cinza)}.caixa dd{margin:0}
@@ -205,7 +211,7 @@ fieldset.solto{border:0;padding:0;margin:0;min-width:0;display:grid;gap:12px}
 
 /* cabeçalho com descrição, cartão de lista e ações por ícone (layout da referência) */
 .cabecalho .descricao{margin:4px 0 0;color:var(--cinza)}
-.cartao-lista{background:#fff;border:1px solid var(--linha);border-radius:var(--r-l);box-shadow:var(--sombra);overflow:hidden}
+.cartao-lista{background:#fff;border:1px solid var(--linha);border-radius:var(--r-l);box-shadow:var(--sombra);overflow:hidden;margin-bottom:20px}
 .cartao-lista-topo{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;flex-wrap:wrap;padding:18px 20px;border-bottom:1px solid var(--linha)}
 .cartao-lista-topo h2{margin:0;font-size:1.15rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .registros{font:500 .78rem var(--texto);color:var(--acao-h);background:var(--menta-2);border-radius:99px;padding:3px 10px}
@@ -225,3 +231,14 @@ fieldset.solto{border:0;padding:0;margin:0;min-width:0;display:grid;gap:12px}
 .adm .icone.perigo:hover{background:#FDE8E7;color:var(--erro)}
 @media (max-width:900px){.tabela td.col-acoes{text-align:left}.tabela td.col-acoes::before{display:none}}
 .tabela .mini-ico{width:14px;height:14px;vertical-align:-2px}
+
+/* formulário longo (Home): campos curtos em duas colunas e Salvar sempre à vista */
+.form-longo{display:grid;gap:20px;max-width:920px}
+.grade{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.grade > .campo:has(textarea){grid-column:1/-1}
+.grade textarea{min-height:84px}
+.barra-salvar{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:#fff;border:1px solid var(--linha);border-radius:var(--r-l) var(--r-l) 0 0;box-shadow:0 -8px 24px -16px rgba(11,61,36,.35)}
+.barra-salvar .ajuda{margin-left:auto}
+@media (max-width:900px){.grade{grid-template-columns:minmax(0,1fr)}.barra-salvar .ajuda{margin-left:0}}
+.bloco-topo .acoes{display:flex;flex-wrap:nowrap;gap:6px}
+.bloco-topo .acoes .bt{width:auto;padding:0 12px}

@@ -100,7 +100,11 @@ export function validar<S extends z.ZodType>(esquema: S, dados: unknown): Valida
   const r = esquema.safeParse(dados);
   if (r.success) return { ok: true, valor: r.data };
   const erros: Record<string, string> = {};
-  for (const i of r.error.issues) erros[String(i.path[0] ?? '_')] ??= i.message;
+  for (const i of r.error.issues) {
+    // erro dentro de um bloco do corpo: diz qual bloco, senão a pessoa não acha o campo
+    const n = i.path[0] === 'corpo' && typeof i.path[1] === 'number' ? i.path[1] + 1 : 0;
+    erros[String(i.path[0] ?? '_')] ??= n ? `O bloco ${n} está vazio ou incompleto. Preencha ou remova.` : i.message;
+  }
   return { ok: false, erros };
 }
 

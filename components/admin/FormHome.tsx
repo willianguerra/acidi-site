@@ -32,19 +32,19 @@ export function FormHome({ c, id, lidaEm }: { c: ConteudoHome; id: string; lidaE
   const [estado, acao, enviando] = useActionState(salvarHome, undefined);
   const v = estado?.valores ?? {}, e = estado?.erros ?? {};
   return (
-    <form action={acao} id="form-home" style={{ display: 'grid', gap: 20 }}>
+    <form action={acao} id="form-home" className="form-longo">
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="lidaEm" value={lidaEm} />
       <AvisoSaida formId="form-home" estado={estado} />
       <Aviso estado={estado} />
       {SECOES.map(s => (
         <CaixaLateral key={s.titulo} titulo={s.titulo}>
-          <fieldset disabled={enviando} className="solto">
+          <fieldset disabled={enviando} className="solto grade">
             {s.campos.map(([nome, rotulo, longo]) => <Campo key={nome} nome={nome} rotulo={rotulo} tipo={longo ? 'textarea' : 'text'} valor={v[nome] ?? valorDe(c, nome)} erro={e[nome]} obrigatorio />)}
           </fieldset>
         </CaixaLateral>
       ))}
-      <div className="acoes"><button className="bt" disabled={enviando}>Salvar</button></div>
+      <div className="barra-salvar"><button className="bt" disabled={enviando}>{enviando ? 'Salvando…' : 'Salvar e publicar'}</button><span className="ajuda">Vale para o site assim que salvar.</span></div>
     </form>
   );
 }

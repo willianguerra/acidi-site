@@ -13,6 +13,8 @@ type Ed =
   | { tipo: 'imagem'; src: string; alt: string; legenda: string }
   | { tipo: 'tabela'; grupos: { categoria: string; itens: string }[] };
 
+type Item = Ed & { k: number };
+
 const NOMES = { p: 'Parágrafo', lista: 'Lista', citacao: 'Citação', subtitulo: 'Subtítulo', imagem: 'Imagem', tabela: 'Tabela por categoria' };
 const DICA = 'Use **negrito** e [texto](endereço).';
 const linhas = (s: string) => s.split('\n').map(x => x.trim()).filter(Boolean);
@@ -46,17 +48,22 @@ const NOVO: Record<Ed['tipo'], () => Ed> = {
 
 export function EditorBlocos({ inicial, erro, desabilitado, titulo = 'Texto da notícia', obrigatorio = true }: { inicial: Bloco[]; erro?: string; desabilitado?: boolean; titulo?: string; obrigatorio?: boolean }) {
   // texto opcional (páginas) começa sem blocos: um parágrafo vazio seria recusado pelo validador
-  const [blocos, setBlocos] = useState<Ed[]>(() => (inicial.length || !obrigatorio ? inicial.map(paraEditor) : [NOVO.p()]));
-  const muda = (i: number, e: Ed) => setBlocos(bs => bs.map((b, k) => (k === i ? e : b)));
+  // k: chave estável; com o índice como chave, mover um bloco deixava o arquivo escolhido no bloco errado
+  const [blocos, setBlocos] = useState<Item[]>(() => (inicial.length || !obrigatorio ? inicial.map(paraEditor) : [NOVO.p()]).map((b, k) => ({ ...b, k })));
+  const prox = useRef(blocos.length);
+  const muda = (i: number, e: Item) => setBlocos(bs => bs.map((b, k) => (k === i ? e : b)));
   const move = (i: number, d: -1 | 1) => setBlocos(bs => { const c = [...bs]; [c[i], c[i + d]] = [c[i + d], c[i]]; return c; });
   const tira = (i: number) => setBlocos(bs => bs.filter((_, k) => k !== i));
   // mudanças só de estrutura (incluir, mover, remover) não disparam input: avisa o form, para o AvisoSaida
-  const [envio, setEnvio] = useState<{ i: number; erro: string } | null>(null);
-  async function envia(i: number, b: Extract<Ed, { tipo: 'imagem' }>, arq: File | undefined) {
+  const [envio, setEnvio] = useState<{ k: number; erro?: string } | null>(null);
+  async function envia(k: number, arq: File | undefined) {
     if (!arq) return;
+    setEnvio({ k });
     const f = new FormData(); f.set('foto', arq);
-    const r = await enviarImagem(f);
-    if (r.src) { muda(i, { ...b, src: r.src }); setEnvio(null); } else setEnvio({ i, erro: r.erro ?? 'Não foi possível enviar a foto.' });
+    const r = await enviarImagem(f).catch(() => ({ src: undefined, erro: undefined }));
+    // acha o bloco pela chave: ele pode ter sido movido, editado ou removido durante o envio
+    if (r.src) { setBlocos(bs => bs.map(x => (x.k === k && x.tipo === 'imagem' ? { ...x, src: r.src! } : x))); setEnvio(null); }
+    else setEnvio({ k, erro: r.erro ?? 'Não foi possível enviar a foto. Tente de novo.' });
   }
   const campo = useRef<HTMLFieldSetElement>(null), montou = useRef(false);
   useEffect(() => { if (montou.current) campo.current?.dispatchEvent(new Event('change', { bubbles: true })); montou.current = true; }, [blocos]);
@@ -68,8 +75,8 @@ export function EditorBlocos({ inicial, erro, desabilitado, titulo = 'Texto da n
         {blocos.map((b, i) => {
           const id = `bloco-${i}`;
           return (
-            <div className="bloco" key={i}>
-              <div className="topo"><span id={id}>{i + 1}. {NOMES[b.tipo]}</span>
+            <div className="bloco" key={b.k}>
+              <div className="bloco-topo"><span id={id}>{i + 1}. {NOMES[b.tipo]}</span>
                 <span className="acoes">
                   <button type="button" className="bt sec peq" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Subir bloco ${i + 1}`}>↑</button>
                   <button type="button" className="bt sec peq" onClick={() => move(i, 1)} disabled={i === blocos.length - 1} aria-label={`Descer bloco ${i + 1}`}>↓</button>
@@ -80,9 +87,9 @@ export function EditorBlocos({ inicial, erro, desabilitado, titulo = 'Texto da n
               {b.tipo === 'subtitulo' && <input type="text" aria-labelledby={id} value={b.texto} onChange={e => muda(i, { ...b, texto: e.target.value })} />}
               {b.tipo === 'imagem' && <>
                 <label htmlFor={`${id}-f`}>Foto (JPG, PNG ou WebP, até 8 MB)</label>
-                <input type="file" id={`${id}-f`} accept="image/jpeg,image/png,image/webp" onChange={e => envia(i, b, e.target.files?.[0])} />
-                {b.src && <span className="ajuda">Foto enviada: {b.src}</span>}
-                {envio?.i === i && <span className="erro-campo">{envio.erro}</span>}
+                <input type="file" id={`${id}-f`} accept="image/jpeg,image/png,image/webp" onChange={e => envia(b.k, e.target.files?.[0])} />
+                {b.src && <img className="foto-atual" src={b.src} alt="" />}
+                <span aria-live="polite">{envio?.k === b.k && (envio.erro ? <span className="erro-campo">{envio.erro}</span> : <span className="ajuda">Enviando a foto…</span>)}</span>
                 <label htmlFor={`${id}-a`}>Texto alternativo (descreva a foto)</label>
                 <input type="text" id={`${id}-a`} value={b.alt} onChange={e => muda(i, { ...b, alt: e.target.value })} />
                 <label htmlFor={`${id}-l`}>Legenda (opcional)</label>
@@ -107,7 +114,7 @@ export function EditorBlocos({ inicial, erro, desabilitado, titulo = 'Texto da n
         })}
       </div>
       <div className="acoes" aria-label="Adicionar bloco">
-        {(Object.keys(NOMES) as Ed['tipo'][]).map(t => <button key={t} type="button" className="bt sec peq" onClick={() => setBlocos(bs => [...bs, NOVO[t]()])}>+ {NOMES[t]}</button>)}
+        {(Object.keys(NOMES) as Ed['tipo'][]).map(t => <button key={t} type="button" className="bt sec peq" onClick={() => setBlocos(bs => [...bs, { ...NOVO[t](), k: prox.current++ }])}>+ {NOMES[t]}</button>)}
       </div>
       {erro && <span className="erro-campo" id="corpo-erro">{erro}</span>}
     </fieldset>

@@ -11,6 +11,12 @@
       "port": 3000
     },
     {
+      "name": "site-3100",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--", "-p", "3100"],
+      "port": 3100
+    },
+    {
       "name": "ref",
       "runtimeExecutable": "python",
       "runtimeArgs": [

@@ -24,6 +24,8 @@ test('corpo vazio e blocos vazios são recusados', () => {
   assert.ok(!r.ok && r.erros.corpo);
   for (const b of [{ tabela: [] }, { lista: [''] }, { lista: [] }, { citacao: ' ' }, '', { outro: 1 }])
     assert.ok(!validar(esquemaNoticia, { ...noticia, corpo: [b] }).ok, JSON.stringify(b));
+  const v = validar(esquemaNoticia, { ...noticia, corpo: ['ok', ''] });
+  assert.ok(!v.ok && v.erros.corpo.startsWith('O bloco 2 '), 'o erro diz qual bloco');
 });
 test('todos os tipos de bloco válidos passam', () => {
   const corpo = ['p', { lista: ['a'] }, { citacao: 'c' }, { tabela: [{ categoria: 'k', itens: ['i'] }] }];
