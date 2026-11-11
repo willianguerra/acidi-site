@@ -46,7 +46,7 @@ export const esquemaPagina = z.object({
   nome: texto().max(T, `Use até ${T} caracteres`), slug,
   descricao: texto().max(DESC, `Use até ${DESC} caracteres`),
   menu: z.enum(['', 'acidi', 'negocio']).default(''), menuTexto: limite(T),
-  etiqueta: limite(T), titulo: texto().max(T, `Use até ${T} caracteres`), destaque: limite(T), chamada: limite(TX),
+  etiqueta: limite(T), titulo: texto().max(T, `Use até ${T} caracteres`), destaque: limite(T), chamada: texto().max(TX, `Use até ${TX} caracteres`),
   foto: limite(TX), fotoAlt: limite(T), fotoLegenda: limite(TX),
   lateralTexto: limite(TX), botaoTexto: limite(T), botaoHref: limite(TX),
   corpo: z.array(bloco).max(200, 'No máximo 200 blocos').default([]),

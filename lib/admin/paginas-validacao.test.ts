@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { validar, esquemaPagina, esquemaHome } from './validacao.ts';
 
-const base = { nome: 'Campanha', descricao: 'Sobre a campanha', titulo: 'Campanha' };
+const base = { nome: 'Campanha', descricao: 'Sobre a campanha', titulo: 'Campanha', chamada: 'Chamada' };
 const pagina = (extra: Record<string, unknown> = {}) => validar(esquemaPagina, { ...base, ...extra });
 const erros = (extra: Record<string, unknown>): Record<string, string> => { const r = pagina(extra); return r.ok ? {} : r.erros; };
 
@@ -23,6 +23,10 @@ test('botão: texto exige endereço e o endereço precisa ser seguro', () => {
   assert.ok(erros({ botaoTexto: 'Ir', botaoHref: 'javascript:x' }).botaoHref);
   const r = pagina({ botaoTexto: 'Ir', botaoHref: '/contato' });
   assert.ok(r.ok && r.valor.conteudo.lateral?.botao?.href === '/contato');
+});
+
+test('chamada obrigatória', () => {
+  assert.equal(erros({ chamada: '' }).chamada, 'Campo obrigatório');
 });
 
 test('limites de tamanho', () => {
