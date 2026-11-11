@@ -44,7 +44,7 @@ test('mínimo válido: sem foto nem lateral', () => {
 });
 
 test('esquemaHome monta três pilares', () => {
-  const campos = ['destaque.etiqueta', 'destaque.linha1', 'destaque.negrito', 'destaque.chamada', 'destaque.desde',
+  const campos = ['destaque.etiqueta', 'destaque.linha1', 'destaque.linha2', 'destaque.linha3', 'destaque.chamada', 'destaque.desde',
     'quemSomos.etiqueta', 'quemSomos.titulo', 'quemSomos.negrito', 'quemSomos.chamada',
     ...[1, 2, 3].flatMap(n => [`quemSomos.pilar${n}.titulo`, `quemSomos.pilar${n}.texto`]),
     ...['servicos', 'noticias', 'representatividade', 'auditorio', 'associe'].flatMap(s => [`${s}.titulo`, `${s}.negrito`, `${s}.chamada`]),

@@ -30,7 +30,7 @@ export type ConteudoPagina = {
 type Pilar = { titulo: string; texto: string };
 type Secao = { titulo: string; negrito: string; chamada: string };
 export type ConteudoHome = {
-  destaque: { etiqueta: string; linha1: string; negrito: string; chamada: string; desde: string };
+  destaque: { etiqueta: string; linha1: string; linha2: string; linha3: string; chamada: string; desde: string };
   quemSomos: { etiqueta: string; titulo: string; negrito: string; chamada: string; pilares: [Pilar, Pilar, Pilar] };
   servicos: Secao; noticias: Secao; representatividade: Secao & { sub: string };
   auditorio: Secao; associe: Secao;

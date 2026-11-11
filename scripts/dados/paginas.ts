@@ -12,7 +12,7 @@ export const PAGINAS_FIXAS: { fixa: Fixa; slug: string; nome: string; descricao:
     fixa: 'home', slug: '', nome: 'ACIDI – Associação Empresarial de Indaial',
     descricao: 'A ACIDI reúne empresários de Indaial (SC) desde 1989: serviços e convênios para associados, representatividade, núcleos setoriais, eventos e auditório.',
     conteudo: {
-      destaque: { etiqueta: 'Associação Empresarial de Indaial', linha1: 'Juntos por uma', negrito: 'Indaial mais forte',
+      destaque: { etiqueta: 'Associação Empresarial de Indaial', linha1: 'Juntos por uma', linha2: 'Indaial', linha3: 'mais forte',
         chamada: 'Desde 1989, conectando empresas, pessoas e oportunidades para o desenvolvimento da nossa cidade.',
         desde: 'Representando, conectando e fortalecendo o empresariado de Indaial.' },
       quemSomos: { etiqueta: 'Quem somos', titulo: 'Empresários unidos.', negrito: 'Indaial mais forte.',

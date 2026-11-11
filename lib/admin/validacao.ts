@@ -70,9 +70,10 @@ export const esquemaPagina = z.object({
 
 // Campos planos "secao.campo" (ex.: 'quemSomos.pilar1.titulo') -> ConteudoHome.
 const h = () => texto().max(TX, `Use até ${TX} caracteres`);
+const ht = () => texto().max(T, `Use até ${T} caracteres`);
 const secao = (c: string) => ({ [c + '.titulo']: h(), [c + '.negrito']: h(), [c + '.chamada']: h() });
 export const esquemaHome = z.object({
-  'destaque.etiqueta': h(), 'destaque.linha1': h(), 'destaque.negrito': h(), 'destaque.chamada': h(), 'destaque.desde': h(),
+  'destaque.etiqueta': h(), 'destaque.linha1': ht(), 'destaque.linha2': ht(), 'destaque.linha3': ht(), 'destaque.chamada': h(), 'destaque.desde': h(),
   'quemSomos.etiqueta': h(), 'quemSomos.titulo': h(), 'quemSomos.negrito': h(), 'quemSomos.chamada': h(),
   'quemSomos.pilar1.titulo': h(), 'quemSomos.pilar1.texto': h(),
   'quemSomos.pilar2.titulo': h(), 'quemSomos.pilar2.texto': h(),
@@ -85,7 +86,7 @@ export const esquemaHome = z.object({
     ({ titulo: v[`${c}.titulo`], negrito: v[`${c}.negrito`], chamada: v[`${c}.chamada`] });
   const pilar = (n: 1 | 2 | 3) => ({ titulo: v[`quemSomos.pilar${n}.titulo`], texto: v[`quemSomos.pilar${n}.texto`] });
   return {
-    destaque: { etiqueta: v['destaque.etiqueta'], linha1: v['destaque.linha1'], negrito: v['destaque.negrito'], chamada: v['destaque.chamada'], desde: v['destaque.desde'] },
+    destaque: { etiqueta: v['destaque.etiqueta'], linha1: v['destaque.linha1'], linha2: v['destaque.linha2'], linha3: v['destaque.linha3'], chamada: v['destaque.chamada'], desde: v['destaque.desde'] },
     quemSomos: { etiqueta: v['quemSomos.etiqueta'], titulo: v['quemSomos.titulo'], negrito: v['quemSomos.negrito'], chamada: v['quemSomos.chamada'], pilares: [pilar(1), pilar(2), pilar(3)] },
     servicos: sec('servicos'), noticias: sec('noticias'),
     representatividade: { ...sec('representatividade'), sub: v['representatividade.sub'] },
