@@ -11,6 +11,7 @@ const ITENS: ItemMenu[] = [
   { href: '/admin', rotulo: 'Início', icone: 'home' },
   { secao: 'Conteúdo', href: '/admin/noticias', rotulo: 'Notícias', icone: 'news', acao: 'noticia.criar' },
   { href: '/admin/agenda', rotulo: 'Agenda', icone: 'cal', acao: 'agenda.editar' },
+  { href: '/admin/paginas', rotulo: 'Páginas', icone: 'doc', acao: 'paginas.editar' },
   { secao: 'Institucional', href: '/admin/diretoria', rotulo: 'Diretoria', icone: 'people', acao: 'diretoria.editar' },
   { href: '/admin/ex-presidentes', rotulo: 'Ex-presidentes', icone: 'star', acao: 'diretoria.editar' },
   { secao: 'Atendimento', href: '/admin/contatos', rotulo: 'Mensagens', icone: 'mail', acao: 'contatos.ver' },

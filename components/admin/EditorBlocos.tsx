@@ -44,8 +44,9 @@ const NOVO: Record<Ed['tipo'], () => Ed> = {
   tabela: () => ({ tipo: 'tabela', grupos: [{ categoria: '', itens: '' }] }),
 };
 
-export function EditorBlocos({ inicial, erro, desabilitado }: { inicial: Bloco[]; erro?: string; desabilitado?: boolean }) {
-  const [blocos, setBlocos] = useState<Ed[]>(() => (inicial.length ? inicial.map(paraEditor) : [NOVO.p()]));
+export function EditorBlocos({ inicial, erro, desabilitado, titulo = 'Texto da notícia', obrigatorio = true }: { inicial: Bloco[]; erro?: string; desabilitado?: boolean; titulo?: string; obrigatorio?: boolean }) {
+  // texto opcional (páginas) começa sem blocos: um parágrafo vazio seria recusado pelo validador
+  const [blocos, setBlocos] = useState<Ed[]>(() => (inicial.length || !obrigatorio ? inicial.map(paraEditor) : [NOVO.p()]));
   const muda = (i: number, e: Ed) => setBlocos(bs => bs.map((b, k) => (k === i ? e : b)));
   const move = (i: number, d: -1 | 1) => setBlocos(bs => { const c = [...bs]; [c[i], c[i + d]] = [c[i + d], c[i]]; return c; });
   const tira = (i: number) => setBlocos(bs => bs.filter((_, k) => k !== i));
@@ -61,7 +62,7 @@ export function EditorBlocos({ inicial, erro, desabilitado }: { inicial: Bloco[]
   useEffect(() => { if (montou.current) campo.current?.dispatchEvent(new Event('change', { bubbles: true })); montou.current = true; }, [blocos]);
   return (
     <fieldset ref={campo} className="campo" data-erro={erro ? '' : undefined} disabled={desabilitado} aria-describedby={erro ? 'corpo-erro' : undefined}>
-      <legend>Texto da notícia <span aria-hidden="true">*</span></legend>
+      <legend>{titulo}{obrigatorio && <span aria-hidden="true"> *</span>}</legend>
       <input type="hidden" name="corpo" value={JSON.stringify(blocos.map(paraBloco))} />
       <div className="blocos">
         {blocos.map((b, i) => {
