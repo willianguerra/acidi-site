@@ -48,6 +48,7 @@ export function FormPagina({ p, campos }: { p: DadosPagina; campos: CamposPagina
               {foto && <img className="foto-atual" src={foto} alt="" />}
               <input type="file" id="fotoArquivo" name="fotoArquivo" accept="image/jpeg,image/png,image/webp" aria-describedby="foto-ajuda" aria-invalid={e.foto ? true : undefined} />
               <span className="ajuda" id="foto-ajuda">{foto ? 'Envie outra para trocar. ' : ''}JPG, PNG ou WebP, até 8 MB.</span>
+              {foto && <label><input type="checkbox" name="semFoto" /> Remover foto</label>}
               {e.foto && <span className="erro-campo">{e.foto}</span>}
             </div>
             <Campo nome="fotoAlt" rotulo="Descrição da foto" valor={val('fotoAlt')} erro={e.fotoAlt} ajuda="Obrigatória quando há foto, para quem usa leitor de tela." />
@@ -63,19 +64,20 @@ export function FormPagina({ p, campos }: { p: DadosPagina; campos: CamposPagina
           </fieldset>
         ) : guarda(['lateralTexto', 'botaoTexto', 'botaoHref'])}
         {campos.corpo
-          ? <fieldset disabled={enviando} className="caixa"><legend className="sr">Texto</legend><EditorBlocos inicial={p.corpo} erro={e.corpo} desabilitado={enviando} titulo="Texto da página" obrigatorio={false} /></fieldset>
+          ? <div className="caixa"><EditorBlocos inicial={p.corpo} erro={e.corpo} desabilitado={enviando} titulo="Texto da página" obrigatorio={false} /></div>
           : <input type="hidden" name="corpo" value={JSON.stringify(p.corpo)} />}
       </div>
       <div className="lateral">
         <CaixaLateral titulo="Publicação">
           <dl><dt>Situação</dt><dd><span className={'selo ' + p.situacao}>{SITUACOES[p.situacao]}</span></dd></dl>
+          {!campos.fixa && <div id="publicacao-menu" className="ajuda">Se escolher “Nenhum” no menu, a página publicada fica acessível pelo link e não aparece no menu do site.</div>}
           <div className="acoes">
             {p.id && !campos.fixa && <a className="bt sec" href={`/admin/previa/pagina/${p.id}`} target="_blank" rel="noopener">Prévia<span className="sr"> (abre em nova aba)</span></a>}
             {campos.fixa
               ? <button className="bt largo" name="acao" value="salvar" disabled={enviando}>Salvar</button>
               : <>
-                <button className={'bt ' + (publicada ? 'largo' : 'sec')} name="acao" value="salvar" disabled={enviando}>{publicada ? 'Salvar' : 'Salvar rascunho'}</button>
-                {!publicada && <button className="bt" name="acao" value="publicar" disabled={enviando}>Publicar</button>}
+                <button className={'bt ' + (publicada ? 'largo' : 'sec')} name="acao" value="salvar" disabled={enviando} aria-describedby={publicada ? 'publicacao-menu' : undefined}>{publicada ? 'Salvar' : 'Salvar rascunho'}</button>
+                {!publicada && <button className="bt" name="acao" value="publicar" disabled={enviando} aria-describedby="publicacao-menu">Publicar</button>}
                 {p.id && publicada && <button className="bt sec" name="acao" value="tirar" disabled={enviando} formNoValidate onClick={confirmar('Tirar esta página do ar?')}>Tirar do ar</button>}
                 {p.id && <button className="bt perigo" name="acao" value="apagar" disabled={enviando} formNoValidate onClick={confirmar('Apagar esta página de vez? Não dá para desfazer.')}>Apagar</button>}
               </>}
@@ -84,7 +86,7 @@ export function FormPagina({ p, campos }: { p: DadosPagina; campos: CamposPagina
         {!campos.fixa && <>
           <CaixaLateral titulo="Endereço">
             <fieldset disabled={enviando} className="solto">
-              <Campo nome="slug" rotulo="Endereço" valor={val('slug')} erro={e.slug} somenteLeitura={!!p.id} obrigatorio={!p.id}
+              <Campo nome="slug" rotulo="Endereço" valor={p.id ? p.slug : val('slug')} erro={e.slug} somenteLeitura={!!p.id} obrigatorio={!p.id}
                 ajuda={p.id ? 'Não muda depois de criada, para não quebrar links.' : 'Só letras minúsculas sem acento, números e hífens. A página fica em /<endereço>.'} />
             </fieldset>
           </CaixaLateral>
@@ -92,10 +94,11 @@ export function FormPagina({ p, campos }: { p: DadosPagina; campos: CamposPagina
             <fieldset disabled={enviando} className="solto">
               <div className="campo" data-erro={e.menu ? '' : undefined}>
                 <label htmlFor="menu">Aparece no menu</label>
-                <select id="menu" name="menu" defaultValue={val('menu')}>
+                {/* O reset da ação usa a opção inicial. Remonte com a escolha devolvida pelo servidor. */}
+                <select key={val('menu')} id="menu" name="menu" defaultValue={val('menu')} aria-invalid={e.menu ? true : undefined} aria-describedby={e.menu ? 'publicacao-menu menu-erro' : 'publicacao-menu'}>
                   <option value="">Nenhum</option><option value="acidi">A ACIDI</option><option value="negocio">Para seu negócio</option>
                 </select>
-                {e.menu && <span className="erro-campo">{e.menu}</span>}
+                {e.menu && <span className="erro-campo" id="menu-erro">{e.menu}</span>}
               </div>
               <Campo nome="menuTexto" rotulo="Frase no menu" valor={val('menuTexto')} erro={e.menuTexto} ajuda="Linha pequena abaixo do nome." />
             </fieldset>

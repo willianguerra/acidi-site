@@ -61,6 +61,24 @@ test('salvar com lidaEm antigo dá conflito e não altera o banco', async () => 
   assert.equal((await linha(id)).nome, 'Novo');
 });
 
+test('salvar página existente com outro endereço mantém o original', async () => {
+  const id = await criar('endereco-fixo');
+  for (const slug of ['outro-endereco', 'admin', 'Endereço inválido']) {
+    const antes = await linha(id);
+    const r = await P.salvarPagina(db, adm, id, form({ slug, nome: 'Novo nome' }), antes.atualizadaEm.toISOString());
+    assert.ok(r.ok && r.valor.slug === 'endereco-fixo', slug);
+    const l = await linha(id); assert.equal(l.slug, 'endereco-fixo'); assert.equal(l.nome, 'Novo nome');
+  }
+});
+
+test('salvar e publicar de uma vez permite página acessível só pelo link', async () => {
+  const r = await P.salvarPagina(db, adm, null, form({ slug: 'so-link' }), undefined, { publicar: true });
+  assert.ok(r.ok && r.valor.publicada);
+  const p = await linha(r.valor.id);
+  assert.equal(p.situacao, 'publicada');
+  assert.equal(p.menu, null);
+});
+
 test('mover a terceira para cima troca com a segunda, só dentro do menu', async () => {
   const a = await criar('a', { menu: 'acidi' }), b = await criar('b', { menu: 'acidi' }), c = await criar('c', { menu: 'acidi' });
   await criar('d', { menu: 'negocio' });

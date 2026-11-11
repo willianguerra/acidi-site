@@ -50,11 +50,12 @@ export async function obterPaginaFixa(db: Db, u: Usuario, fixa: Fixa): Promise<R
   return p ? ok(p) : falha('nao-encontrada');
 }
 
-export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados: unknown, lidaEm?: string): Promise<Resultado<{ id: string; slug: string; publicada: boolean }>> {
+export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados: unknown, lidaEm?: string, { publicar = false } = {}): Promise<Resultado<{ id: string; slug: string; publicada: boolean }>> {
   if (!pode(u, 'paginas.editar')) return falha('sem-permissao');
   const atual = id ? await obterPagina(db, u, id) : null;
   if (atual && !atual.ok) return atual;
   const p = atual?.valor;
+  if (p?.fixa && publicar) return falha('invalida', { erros: { situacao: 'Páginas fixas ficam sempre no ar.' } });
   if (p && lidaEm !== undefined && mudouDesde(p.atualizadaEm, lidaEm)) {
     const [quem] = p.atualizadaPorId ? await db.select({ nome: user.name }).from(user).where(eq(user.id, p.atualizadaPorId)) : [];
     return falha('conflito', { quem: quem?.nome ?? 'outra pessoa' });
@@ -68,7 +69,8 @@ export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados:
     return ok({ id: p.id, slug: p.slug, publicada: true });
   }
 
-  const v = validar(esquemaPagina, dados);
+  // Só o formulário de criação define o endereço.
+  const v = validar(esquemaPagina, p && dados && typeof dados === 'object' ? { ...dados, slug: undefined } : dados);
   if (!v.ok) return falha('invalida', { erros: v.erros });
   const { nome, descricao, conteudo } = v.valor;
   if (p?.fixa) { // fixa: endereço, menu e situação não mudam
@@ -76,20 +78,22 @@ export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados:
     return ok({ id: p.id, slug: p.slug, publicada: true });
   }
 
-  const slug = v.valor.slug ?? p?.slug;
-  if (!slug) return falha('invalida', { erros: { slug: 'Campo obrigatório' } });
-  const [repetida] = await db.select({ id: paginas.id }).from(paginas).where(and(eq(paginas.slug, slug), p ? ne(paginas.id, p.id) : undefined));
-  if (repetida) return falha('invalida', { erros: { slug: 'Já existe uma página com este endereço.' } });
   const { menu, menuTexto } = v.valor;
   if (p) {
     // mudou de menu: vai para o fim do novo grupo
     const ordem = p.menu === menu ? p.ordem : await proximaOrdem(db, menu);
-    await db.update(paginas).set({ nome, slug, descricao, menu, menuTexto, ordem, conteudo, ...auditoria }).where(eq(paginas.id, p.id));
-    return ok({ id: p.id, slug, publicada: p.situacao === 'publicada' });
+    await db.update(paginas).set({
+      nome, descricao, menu, menuTexto, ordem, conteudo, situacao: publicar ? 'publicada' : undefined, ...auditoria,
+    }).where(eq(paginas.id, p.id));
+    return ok({ id: p.id, slug: p.slug, publicada: publicar || p.situacao === 'publicada' });
   }
+  const slug = v.valor.slug;
+  if (!slug) return falha('invalida', { erros: { slug: 'Campo obrigatório' } });
+  const [repetida] = await db.select({ id: paginas.id }).from(paginas).where(eq(paginas.slug, slug));
+  if (repetida) return falha('invalida', { erros: { slug: 'Já existe uma página com este endereço.' } });
   const novoId = randomUUID();
-  await db.insert(paginas).values({ id: novoId, nome, slug, descricao, menu, menuTexto, conteudo, situacao: 'rascunho', ordem: await proximaOrdem(db, menu), ...auditoria });
-  return ok({ id: novoId, slug, publicada: false });
+  await db.insert(paginas).values({ id: novoId, nome, slug, descricao, menu, menuTexto, conteudo, situacao: publicar ? 'publicada' : 'rascunho', ordem: await proximaOrdem(db, menu), ...auditoria });
+  return ok({ id: novoId, slug, publicada: publicar });
 }
 
 async function mudarSituacao(db: Db, u: Usuario, id: string, situacao: LinhaPagina['situacao']): Promise<Resultado<null>> {
