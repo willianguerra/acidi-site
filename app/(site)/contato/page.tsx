@@ -1,18 +1,21 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { getAssuntosContato } from '@/lib/content';
+import { getAssuntosContato, getPaginaFixa } from '@/lib/content';
 import { pagina } from '@/lib/meta';
+import { CabecalhoPagina } from '@/components/Molde';
 
-export const metadata = pagina('/contato', 'Contato', 'Fale com a ACIDI: telefone e WhatsApp (47) 3333-8786, contato@acidi.net e sede na Rua Ver. Alvin Rauh Júnior, 100, bairro Nações, Indaial (SC).');
+export async function generateMetadata() {
+  const p = await getPaginaFixa('contato');
+  return pagina('/contato', p.nome, p.descricao);
+}
 
 export default async function Page() {
+  const c = (await getPaginaFixa('contato')).conteudo;
   const assuntos = await getAssuntosContato();
   return (<>
     <Header page="contato" />
     <main id="conteudo">
-      <nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">Contato</li></ol></nav><header className="phead"><div className="wrap grid12">
-        <div className="t"><span className="kicker">Contato</span><h1 className="hl">Fale <b>com a ACIDI</b></h1><p className="lead">Atendimento por telefone, WhatsApp e e-mail, e a sede no bairro Nações, em Indaial.</p></div>
-      </div></header>
+      <nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">Contato</li></ol></nav><CabecalhoPagina cab={c.cabecalho} />
       <section className="sec"><div className="wrap formwrap">
         <div style={{ display: "grid", gap: "28px", alignContent: "start" }}>
           <dl className="contact-list">

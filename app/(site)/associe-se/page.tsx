@@ -1,20 +1,22 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Ico } from '@/components/Ico';
-import { getBeneficios } from '@/lib/content';
+import { getBeneficios, getPaginaFixa } from '@/lib/content';
 import { pagina } from '@/lib/meta';
+import { CabecalhoPagina } from '@/components/Molde';
 
-export const metadata = pagina('/associe-se', 'Associe-se', 'Associe sua empresa à ACIDI, a associação empresarial de Indaial (SC): convênios, treinamentos, auditório, Certificado de Origem e rede de contatos.');
+export async function generateMetadata() {
+  const p = await getPaginaFixa('associe-se');
+  return pagina('/associe-se', p.nome, p.descricao);
+}
 
 export default async function Page() {
+  const c = (await getPaginaFixa('associe-se')).conteudo;
   const beneficios = await getBeneficios();
   return (<>
     <Header page="associe-se" />
     <main id="conteudo">
-<nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">Associe-se</li></ol></nav><header className="phead photo-head"><div className="wrap grid12">
-<div className="t"><span className="kicker">Associe-se</span><h1 className="hl">Sua empresa <b>na rede da ACIDI</b></h1><p className="lead">Aproveite os benefícios de ser associado e as soluções da ACIDI para fazer sua empresa crescer. A rede de relacionamento é o ponto de partida.</p></div>
-<figure className="pic" style={{ margin: "0" }}><div className="photo"><img src="/assets/img/feijoada-2024.jpg" alt="Associados reunidos no palco da segunda Feijoada da ACIDI" /></div><figcaption className="cap">Segunda Feijoada da ACIDI, julho de 2024.</figcaption></figure>
-</div></header>
+<nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">Associe-se</li></ol></nav><CabecalhoPagina cab={c.cabecalho} />
 <section className="sec" aria-labelledby="h-ben"><div className="wrap grid12">
 <div className="col-a" style={{ display: "grid", gap: "18px", alignContent: "start" }}><span className="kicker">Benefícios</span><h2 id="h-ben" className="hl sec-t">O que a associação <b>oferece</b></h2><p className="muted">Benefícios publicados pela ACIDI. Condições e valores são informados pela equipe.</p></div>
 <ul className="idx col-b">{beneficios.map(b => <li key={b.titulo}><a href={b.href}><h3>{b.titulo}</h3><p>{b.texto}</p><Ico n="go" cls="ico arr" /></a></li>)}</ul>

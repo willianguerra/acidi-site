@@ -58,7 +58,7 @@ async function fixa(f: Fixa) {
   return p;
 }
 
-export async function getPaginaFixa(f: Exclude<Fixa, 'home'>): Promise<Pagina> {
+export async function getPaginaFixa(f: Fixa): Promise<Pagina> {
   return (await fixa(f)) as Pagina;
 }
 

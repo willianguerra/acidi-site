@@ -1,21 +1,24 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { Crumbs, PageHead, JoinBox } from '@/components/blocos';
+import { Crumbs, JoinBox } from '@/components/blocos';
 import { Ico, Ext } from '@/components/Ico';
-import { getServicos } from '@/lib/content';
+import { getServicos, getPaginaFixa } from '@/lib/content';
 import { pagina } from '@/lib/meta';
+import { CabecalhoPagina } from '@/components/Molde';
 
-export const metadata = pagina('/para-seu-negocio', 'Serviços para seu negócio', 'Serviços da ACIDI para empresas de Indaial: Util Card, Uniodonto, Boa Vista SCPC, Certificado de Origem, XML empresarial, treinamentos e auditório.');
+export async function generateMetadata() {
+  const p = await getPaginaFixa('para-seu-negocio');
+  return pagina('/para-seu-negocio', p.nome, p.descricao);
+}
 
 export default async function Page() {
+  const c = (await getPaginaFixa('para-seu-negocio')).conteudo;
   const servicos = await getServicos();
   return (<>
     <Header page="para-seu-negocio" />
     <main id="conteudo">
       <Crumbs items={[['/', 'Início'], [null, 'Para seu negócio']]} />
-      <PageHead kicker="Para seu negócio" title={<>Serviços para a <b>gestão da empresa</b></>}
-        lead="A ACIDI oferece aos associados vantagens e soluções para auxiliar a gestão do negócio e tornar a empresa mais competitiva."
-        side={<nav className="localnav" aria-label="Serviços nesta página">{servicos.map(s => <a key={s.slug} href={'#' + s.slug}>{s.titulo}</a>)}<a href="/auditorio">Auditório e salas</a></nav>} />
+      <CabecalhoPagina cab={c.cabecalho} side={<nav className="localnav" aria-label="Serviços nesta página">{servicos.map(s => <a key={s.slug} href={'#' + s.slug}>{s.titulo}</a>)}<a href="/auditorio">Auditório e salas</a></nav>} />
       <section className="sec"><div className="wrap">
         {servicos.map(s => (
           <article key={s.slug} className="svc" id={s.slug} aria-labelledby={'h-' + s.slug}>

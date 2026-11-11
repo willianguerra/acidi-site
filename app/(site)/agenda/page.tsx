@@ -1,22 +1,25 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { EventItem } from '@/components/blocos';
-import { getEventos } from '@/lib/content';
+import { getEventos, getPaginaFixa } from '@/lib/content';
 import { evId, hojeIso, separarEventos } from '@/lib/datas';
 import { pagina } from '@/lib/meta';
+import { CabecalhoPagina } from '@/components/Molde';
 
-export const metadata = pagina('/agenda', 'Agenda de eventos', 'Próximos eventos da ACIDI em Indaial: palestras, núcleos, encontros de associados e networking, com o arquivo dos eventos já realizados.');
+export async function generateMetadata() {
+  const p = await getPaginaFixa('agenda');
+  return pagina('/agenda', p.nome, p.descricao);
+}
 
 export default async function Page() {
+  const c = (await getPaginaFixa('agenda')).conteudo;
   const eventos = await getEventos();
   const hoje = hojeIso(); // data do build; o site.js reordena no navegador
   const { prox, arquivo } = separarEventos(eventos, hoje);
   return (<>
     <Header page="agenda" />
     <main id="conteudo">
-<nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">Agenda</li></ol></nav><header className="phead"><div className="wrap grid12">
-<div className="t"><span className="kicker">Acontece</span><h1 className="hl">Agenda <b>da ACIDI</b></h1><p className="lead">Próximos eventos publicados pela associação e o arquivo dos registros anteriores.</p></div>
-</div></header>
+<nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li aria-current="page">Agenda</li></ol></nav><CabecalhoPagina cab={c.cabecalho} />
 <div className="wrap" data-agenda="">
 <section className="block" aria-labelledby="h-prox"><h2 id="h-prox">Próximos <b>eventos</b></h2>
 <ul className="evlist" data-upcoming="" hidden={!prox.length}>{prox.map(e => <EventItem key={evId(e)} e={e} />)}</ul>

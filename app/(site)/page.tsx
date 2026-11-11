@@ -2,14 +2,18 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Story, EventItem } from '@/components/blocos';
 import { Ico } from '@/components/Ico';
-import { getNoticias, getEventos } from '@/lib/content';
+import { getNoticias, getEventos, getHome, getPaginaFixa } from '@/lib/content';
 import { dshort, evId, hojeIso, separarEventos } from '@/lib/datas';
 import { destaque } from '@/lib/admin/destaque';
 import { pagina, jsonLd, ORGANIZACAO } from '@/lib/meta';
 
-export const metadata = pagina('/', 'ACIDI – Associação Empresarial de Indaial', 'A ACIDI reúne empresários de Indaial (SC) desde 1989: serviços e convênios para associados, representatividade, núcleos setoriais, eventos e auditório.');
+export async function generateMetadata() {
+  const p = await getPaginaFixa('home');
+  return pagina('/', p.nome, p.descricao);
+}
 
 export default async function Page() {
+  const h = await getHome();
   const dest = destaque((await getNoticias()).slice(0, 3));
   const eventos = await getEventos();
   const hoje = hojeIso(); // data do build; o site.js recalcula no navegador
@@ -20,10 +24,10 @@ export default async function Page() {
     <Header page="index" />
     <main id="conteudo">
       <section className="hero" aria-labelledby="h-hero"><div className="wrap hero-g">
-        <div className="hero-t">{' '}<span className="kicker">Associação Empresarial de Indaial</span>{' '}<h1 id="h-hero" className="hl"><span className="l1">Juntos por uma</span>{' '}<b>Indaial</b>{' '}<b>mais forte</b></h1>
-          <p className="lead">Desde 1989, conectando empresas, pessoas e oportunidades para o desenvolvimento da nossa cidade.</p>
+        <div className="hero-t">{' '}<span className="kicker">{h.destaque.etiqueta}</span>{' '}<h1 id="h-hero" className="hl"><span className="l1">{h.destaque.linha1}</span>{' '}<b>{h.destaque.linha2}</b>{' '}<b>{h.destaque.linha3}</b></h1>
+          <p className="lead">{h.destaque.chamada}</p>
           <div className="ctas"><a className="btn btn-p" href="/associe-se" data-cta="">Associe sua empresa <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><a className="btn btn-s" href="/historico">Conheça a ACIDI</a></div>
-          <p className="since"><span className="yr"><small>Desde</small>1989</span><span>Representando, conectando e fortalecendo o empresariado de Indaial.</span></p>
+          <p className="since"><span className="yr"><small>Desde</small>1989</span><span>{h.destaque.desde}</span></p>
         </div>
         <figure className="stage"><img src="/assets/img/sede-viva.jpg" alt="Sede da ACIDI em Indaial, prédio em estilo enxaimel com o logotipo da associação na fachada" width="1535" height="1024" fetchPriority="high" /></figure>
       </div></section>
@@ -33,20 +37,20 @@ export default async function Page() {
           <div className="frame"><img src="/assets/img/posse-2024.jpg" alt="Diretoria e convidados reunidos na cerimônia de posse e comemoração dos 35 anos da ACIDI" width="1400" height="939" loading="lazy" /></div>
           <figcaption className="cap"><b>35 anos da ACIDI</b> · Posse da diretoria 2024–2026, maio de 2024</figcaption>
         </figure>
-        <div className="txt">{' '}<span className="kicker rule">Quem somos</span>{' '}<h2 id="h-about" className="hl sec-t">Empresários unidos. <b>Indaial mais forte.</b></h2>
-          <p className="lead">Conectamos empresas, representamos o setor empresarial e apoiamos iniciativas que impulsionam o desenvolvimento de Indaial.</p>
+        <div className="txt">{' '}<span className="kicker rule">{h.quemSomos.etiqueta}</span>{' '}<h2 id="h-about" className="hl sec-t">{h.quemSomos.titulo} <b>{h.quemSomos.negrito}</b></h2>
+          <p className="lead">{h.quemSomos.chamada}</p>
           <ul className="pilares">
-            <li><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.8.8 3 2.6 3.5 5.2" /></svg></span><b>Representatividade</b><span>Voz ativa nos conselhos municipais e nas pautas da região.</span></li>
-            <li><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="2.5" /><circle cx="5.5" cy="18" r="2.5" /><circle cx="18.5" cy="18" r="2.5" /><path d="M12 7.5v4M12 11.5l-4.8 4.6M12 11.5l4.8 4.6" /></svg></span><b>Conexões que fortalecem</b><span>Núcleos setoriais e troca de experiências entre empresas.</span></li>
-            <li><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-4M12 16V8M17 16V5" /></svg></span><b>Desenvolvimento local</b><span>Apoio às empresas e à comunidade de Indaial.</span></li>
+            <li><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.8.8 3 2.6 3.5 5.2" /></svg></span><b>{h.quemSomos.pilares[0].titulo}</b><span>{h.quemSomos.pilares[0].texto}</span></li>
+            <li><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="2.5" /><circle cx="5.5" cy="18" r="2.5" /><circle cx="18.5" cy="18" r="2.5" /><path d="M12 7.5v4M12 11.5l-4.8 4.6M12 11.5l4.8 4.6" /></svg></span><b>{h.quemSomos.pilares[1].titulo}</b><span>{h.quemSomos.pilares[1].texto}</span></li>
+            <li><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20h16M7 16v-4M12 16V8M17 16V5" /></svg></span><b>{h.quemSomos.pilares[2].titulo}</b><span>{h.quemSomos.pilares[2].texto}</span></li>
           </ul>
           <div className="ctas"><a className="btn btn-p" href="/historico">Conheça nossa história <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><a className="tlink go" href="/diretoria">Diretoria completa <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
         </div>
       </div></section>
       <section className="sec biz deco" aria-labelledby="h-biz"><div className="wrap">
         <div className="biz-h">
-          <div><span className="kicker">Para sua empresa</span><h2 id="h-biz" className="hl sec-t">Soluções que conectam. <b>Sua empresa mais forte.</b></h2></div>
-          <p className="lead">Serviços e benefícios para apoiar a gestão, desenvolver pessoas e tornar sua empresa mais competitiva, vários deles em parceria com a FACISC.</p>
+          <div><span className="kicker">Para sua empresa</span><h2 id="h-biz" className="hl sec-t">{h.servicos.titulo} <b>{h.servicos.negrito}</b></h2></div>
+          <p className="lead">{h.servicos.chamada}</p>
         </div>
         <div className="svx" data-svx=""><div className="svx-q" style={{ "--r": "1" }}><button type="button" className="svx-b" id="svx-b-util-card" aria-expanded="false" aria-controls="svx-util-card"><span className="i"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="6" width="18" height="12" rx="2" /><path d="M3 10h18M7 15h4" /></svg></span><span className="t">Família Util Card</span><svg className="ico arr" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg><svg className="ico chev" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg></button></div>
           <div className="svx-p" id="svx-util-card" role="region" aria-labelledby="svx-b-util-card"><div className="svx-in"><div className="svx-top"><span className="svx-tag">Util</span><span className="svx-n">01 / 07</span></div><span className="svx-logo"><img src="/assets/img/util.jpg" alt="Util" loading="lazy" /></span><h3>Família Util Card</h3><p className="svx-sum">Vale-refeição, vale-alimentação e cartão de benefícios, sem mensalidade nem anuidade.</p><p>Em parceria com a FACISC, a ACIDI oferece aos associados os cartões de benefício Util, divididos em vale-refeição, vale-alimentação e cartão de benefícios.</p><div className="ctas"><a className="btn btn-l" href="/para-seu-negocio#util-card">Ver detalhes <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><a className="btn btn-w" href="/contato?assunto=util-card">Falar com a ACIDI</a></div><p className="svx-sys"><a className="tlink" href="https://site.convcard.com.br/crt/" target="_blank" rel="noopener">Acessar o UtilCard<svg className="ico ext-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 17L17 7M8 7h9v9" /></svg><span className="sr"> (abre em nova aba)</span></a></p></div></div>
@@ -65,7 +69,7 @@ export default async function Page() {
         <p className="biz-all"><span>Encontre a solução ideal para o seu negócio.</span><a className="tlink go" href="/para-seu-negocio">Explore todos os serviços <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></p>
       </div></section>
       <section className="sec news deco" aria-labelledby="h-news"><div className="wrap">
-        <div className="sec-h"><div><span className="kicker">Acontece na ACIDI</span><h2 id="h-news" className="hl sec-t">Notícias <b>e agenda</b></h2><p className="lead">Informação e encontros que aproximam o empresariado de Indaial.</p></div><a className="btn btn-o" href="/noticias">Todas as notícias <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
+        <div className="sec-h"><div><span className="kicker">Acontece na ACIDI</span><h2 id="h-news" className="hl sec-t">{h.noticias.titulo} <b>{h.noticias.negrito}</b></h2><p className="lead">{h.noticias.chamada}</p></div><a className="btn btn-o" href="/noticias">Todas as notícias <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
         <div className="news-home">{' '}{dest && (() => { const { primeiro: n0, resto } = dest; return <><a className="story lead-s" href={'/noticias/' + n0.slug}><div className="photo"><span className="pill">Em destaque</span><img src={n0.imagem} alt={n0.alt} loading="lazy" /></div><div><time dateTime={n0.data}>{dshort(n0.data)}</time><h3>{n0.titulo}</h3><p>{n0.resumo}</p><span className="tlink go">Ler notícia <Ico n="go" cls="ico go" /></span></div></a>{' '}<div className="rest">{resto.map(n => <Story key={n.slug} n={n} cls="story small" showP={false} />)}</div></>; })()}
         </div>
         <aside className="agenda-box" aria-labelledby="h-ag" data-agenda=""><div className="ag-h"><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></svg></span><span className="kicker">Agenda</span><h3 id="h-ag">Próximos encontros</h3></div>
@@ -76,16 +80,16 @@ export default async function Page() {
       </div></section>
       <section className="sec rep on-dark" aria-labelledby="h-rep"><div className="wrap">
         <div className="rep-h">
-          <div><span className="kicker rule">Representatividade</span><h2 id="h-rep" className="hl sec-t">A voz do empresário. <b>Mais forte, mais longe.</b></h2></div>
-          <div><p className="lead">A ACIDI mobiliza lideranças, promove reuniões e debates e leva as demandas das empresas ao poder público, em defesa do desenvolvimento de Indaial e região.</p><p className="sub">Conheça algumas das pautas defendidas pela ACIDI.</p></div>
+          <div><span className="kicker rule">Representatividade</span><h2 id="h-rep" className="hl sec-t">{h.representatividade.titulo} <b>{h.representatividade.negrito}</b></h2></div>
+          <div><p className="lead">{h.representatividade.chamada}</p><p className="sub">{h.representatividade.sub}</p></div>
         </div>
         <div className="esc" data-anim=""><section className="lv" style={{ "--i": "0" }}><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 10l9-6 9 6M5 10v9M19 10v9M9 10v9M15 10v9M3 20h18" /></svg></span><span className="nn" aria-hidden="true">01</span><h3>Municipal</h3><p>Perto de quem empreende.</p><ul><li>Segurança pública</li><li>Corpo de Bombeiros Voluntários</li><li>Hospital Beatriz Ramos</li></ul></section><section className="lv" style={{ "--i": "1" }}><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14" /></svg></span><span className="nn" aria-hidden="true">02</span><h3>Estadual</h3><p>Conexões para a região.</p><ul><li>Reforma e revitalização da SC-412 (Jorge Lacerda)</li><li>Anel de Contorno Urbano de Gaspar</li></ul></section><section className="lv" style={{ "--i": "2" }}><span className="ic"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.7 3.7 5.7 3.7 9s-1.2 6.3-3.7 9c-2.5-2.7-3.7-5.7-3.7-9S9.5 5.7 12 3z" /></svg></span><span className="nn" aria-hidden="true">03</span><h3>Federal</h3><p>Demandas de alcance nacional.</p><ul><li>Duplicação da BR-470</li><li>Aeroporto Internacional de Navegantes</li><li>Prevenção de enchentes: monitoramento e barragens</li></ul></section></div>
         <div className="more"><p>Diálogo e presença onde as decisões acontecem.</p><a className="btn btn-c" href="/representatividade">Conheça nossa atuação <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
       </div></section>
       <section className="sec aud deco" aria-labelledby="h-aud"><div className="wrap grid12">
         <div className="aud-pic"><img src="/assets/img/auditorio-1.jpg" alt="Auditório da ACIDI com cadeiras verdes e telão" width="900" height="601" loading="lazy" /><span className="cap-tag"><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.8.8 3 2.6 3.5 5.2" /></svg>Até 170 pessoas</span></div>
-        <div className="aud-t">{' '}<span className="kicker">Auditório e salas</span>{' '}<h2 id="h-aud" className="hl sec-t">O espaço certo para <b>grandes encontros.</b></h2>
-          <p>Auditório climatizado e salas para reuniões e treinamentos, com valor diferenciado para associados.</p>
+        <div className="aud-t">{' '}<span className="kicker">Auditório e salas</span>{' '}<h2 id="h-aud" className="hl sec-t">{h.auditorio.titulo} <b>{h.auditorio.negrito}</b></h2>
+          <p>{h.auditorio.chamada}</p>
           <ul className="aud-f"><li><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5" /><path d="M16 4.5a3.5 3.5 0 010 7M18 14.8c1.8.8 3 2.6 3.5 5.2" /></svg>170 pessoas</li><li><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 4l3 2 3-2M9 20l3-2 3 2" /></svg>Climatizado</li><li><svg className="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4M8 14h2M8 17h2" /></svg>Agendamento prévio</li></ul>
           <div><a className="btn btn-p" href="/auditorio">Conheça os espaços <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></div>
         </div>
@@ -96,8 +100,8 @@ export default async function Page() {
       </div></section>
       <section className="join sec" aria-labelledby="h-join"><div className="wrap"><div className="box">
         <div className="ask on-dark" data-anim="">
-          <svg className="liga" viewBox="0 0 700 460" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false"><path pathLength="1" d="M-40 70C200 20 450 80 560 220S610 400 646 420" /><circle cx="700" cy="436" r="32" /></svg>{' '}<span className="kicker">Faça parte da ACIDI</span>{' '}<h2 id="h-join" className="hl">Sua empresa conectada. <b>Mais oportunidades para crescer.</b></h2>
-          <p>Relacionamento, representatividade e benefícios para fortalecer o seu negócio.</p>
+          <svg className="liga" viewBox="0 0 700 460" preserveAspectRatio="xMaxYMax slice" aria-hidden="true" focusable="false"><path pathLength="1" d="M-40 70C200 20 450 80 560 220S610 400 646 420" /><circle cx="700" cy="436" r="32" /></svg>{' '}<span className="kicker">Faça parte da ACIDI</span>{' '}<h2 id="h-join" className="hl">{h.associe.titulo} <b>{h.associe.negrito}</b></h2>
+          <p>{h.associe.chamada}</p>
           <div className="ctas"><a className="btn btn-l" href="/associe-se" data-cta="">Conheça os benefícios <svg className="ico go" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a><a className="btn btn-w" href="https://api.whatsapp.com/send?phone=554733338786" target="_blank" rel="noopener"><svg className="ico wa" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 20l1.3-4A8 8 0 1119 12a8 8 0 01-11.8 7z" /><path d="M9 8.5c0 3.5 3 6.5 6.5 6.5l1-1.6-2-1-1 .9c-1.2-.5-2.2-1.5-2.7-2.7l.9-1-1-2z" /></svg>Falar pelo WhatsApp<span className="sr"> (abre em nova aba)</span></a></div>
         </div>
         <div className="contact on-dark">

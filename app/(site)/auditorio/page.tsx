@@ -1,19 +1,22 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { Ico } from '@/components/Ico';
-import { getGaleriaAuditorio } from '@/lib/content';
+import { getGaleriaAuditorio, getPaginaFixa } from '@/lib/content';
 import { pagina } from '@/lib/meta';
+import { CabecalhoPagina } from '@/components/Molde';
 
-export const metadata = pagina('/auditorio', 'Auditório e salas', 'Alugue o auditório para 170 pessoas ou salas de reunião climatizadas na sede da ACIDI, em Indaial (SC). Valor diferenciado para associados.');
+export async function generateMetadata() {
+  const p = await getPaginaFixa('auditorio');
+  return pagina('/auditorio', p.nome, p.descricao);
+}
 
 export default async function Page() {
+  const c = (await getPaginaFixa('auditorio')).conteudo;
   const fotos = await getGaleriaAuditorio(), g0 = fotos[0];
   return (<>
     <Header page="auditorio" />
     <main id="conteudo">
-<nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li><a href="/para-seu-negocio">Para seu negócio</a></li><li aria-current="page">Auditório e salas</li></ol></nav><header className="phead"><div className="wrap grid12">
-<div className="t"><span className="kicker">Para seu negócio · Espaços</span><h1 className="hl">Realize seu evento <b>na ACIDI</b></h1><p className="lead">Para atender associados e a comunidade, a ACIDI disponibiliza para locação salas para reuniões e treinamentos e seu auditório.</p></div>
-</div></header>
+<nav className="crumbs wrap" aria-label="Você está em"><ol><li><a href="/">Início</a></li><li><a href="/para-seu-negocio">Para seu negócio</a></li><li aria-current="page">Auditório e salas</li></ol></nav><CabecalhoPagina cab={c.cabecalho} />
 <section className="sec tight"><div className="wrap" style={{ display: "grid", gap: "48px" }}>
 <div className="gv" data-gv="">
 <figure className="gv-main"><div className="photo"><img src={'/assets/img/' + g0.arquivo} alt={g0.alt} style={{ objectPosition: g0.pos }} width="900" height="601" /></div>
