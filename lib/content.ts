@@ -72,6 +72,11 @@ export async function getPaginaPublicada(slug: string): Promise<Pagina | undefin
   return p as Pagina | undefined;
 }
 
+export async function getSlugsPaginasPublicadas(): Promise<string[]> {
+  const l = await db.select({ slug: paginas.slug }).from(paginas).where(and(isNull(paginas.fixa), eq(paginas.situacao, 'publicada')));
+  return l.map(p => p.slug);
+}
+
 export async function getPaginasMenu(): Promise<{ menu: 'acidi' | 'negocio'; slug: string; nome: string; menuTexto: string | null }[]> {
   const l = await db.select({ menu: paginas.menu, slug: paginas.slug, nome: paginas.nome, menuTexto: paginas.menuTexto }).from(paginas)
     .where(and(eq(paginas.situacao, 'publicada'), isNotNull(paginas.menu))).orderBy(asc(paginas.ordem));
