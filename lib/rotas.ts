@@ -1,5 +1,5 @@
 // URLs do site estático antigo (*.html) -> rotas do Next. Usado pelos redirects 301 do next.config.ts.
-const PAGINAS = ['historico', 'diretoria', 'ex-presidentes', 'representatividade', 'nucleos', 'para-seu-negocio',
+export const PAGINAS = ['historico', 'diretoria', 'ex-presidentes', 'representatividade', 'nucleos', 'para-seu-negocio',
   'noticias', 'agenda', 'auditorio', 'associe-se', 'contato'];
 
 export const ROTAS: Record<string, string> = {

@@ -1,6 +1,6 @@
 import { mysqlTable, varchar, text, date, boolean, int } from 'drizzle-orm/mysql-core';
 import { id, ref, chave, json, quando, agora } from './colunas.ts';
-import type { Bloco } from '../types.ts';
+import type { Bloco, ConteudoPagina, ConteudoHome } from '../types.ts';
 import { user } from './auth-schema.ts';
 export * from './auth-schema.ts';
 
@@ -21,6 +21,21 @@ export const noticias = mysqlTable('noticias', {
   atualizadaPorId: ref().references(() => user.id, { onDelete: 'set null' }),
   criadaEm: agora(),
   atualizadaEm: agora(),
+});
+
+export const paginas = mysqlTable('paginas', {
+  id: id(),
+  fixa: varchar({ length: 30 }).unique(),
+  slug: chave().notNull().unique(),
+  nome: text().notNull(),
+  situacao: varchar({ length: 30 }).$type<'rascunho' | 'publicada'>().notNull().default('rascunho'),
+  descricao: text().notNull(),
+  menu: varchar({ length: 30 }).$type<'acidi' | 'negocio'>(),
+  menuTexto: text(),
+  ordem: int().notNull().default(0),
+  conteudo: json<ConteudoPagina | ConteudoHome>().notNull(),
+  atualizadaEm: agora(),
+  atualizadaPorId: ref().references(() => user.id, { onDelete: 'set null' }),
 });
 
 export const eventos = mysqlTable('eventos', {

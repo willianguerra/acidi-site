@@ -16,3 +16,23 @@ export type Diretoria = {
 export type Foto = { arquivo: string; alt: string; pos: string };
 export type Beneficio = { titulo: string; texto: string; href: string };
 export type Assunto = { slug: string; rotulo: string };
+
+export const FIXAS = ['home', 'historico', 'nucleos', 'representatividade', 'para-seu-negocio', 'auditorio', 'associe-se',
+  'contato', 'noticias', 'agenda', 'diretoria', 'ex-presidentes'] as const;
+export type Fixa = typeof FIXAS[number];
+export type Formatado = string; // aceita **negrito** e [texto](endereço)
+export type ConteudoPagina = {
+  cabecalho: { etiqueta: string; titulo: string; destaque: string; chamada: Formatado;
+    foto: { src: string; alt: string; legenda: Formatado } | null };
+  lateral: { texto: Formatado; botao: { texto: string; href: string } | null } | null;
+  corpo: Bloco[];
+};
+type Pilar = { titulo: string; texto: string };
+type Secao = { titulo: string; negrito: string; chamada: string };
+export type ConteudoHome = {
+  destaque: { etiqueta: string; linha1: string; negrito: string; chamada: string; desde: string };
+  quemSomos: { etiqueta: string; titulo: string; negrito: string; chamada: string; pilares: [Pilar, Pilar, Pilar] };
+  servicos: Secao; noticias: Secao; representatividade: Secao & { sub: string };
+  auditorio: Secao; associe: Secao;
+};
+export type Pagina = { slug: string; nome: string; descricao: string; menu: 'acidi' | 'negocio' | null; conteudo: ConteudoPagina };
