@@ -2,11 +2,13 @@
 // nem apaga o que foi criado pelo admin.  Uso: npm run db:carga
 import { and, eq, sql } from 'drizzle-orm';
 import type { Db } from '../lib/db/index.ts';
-import { noticias, eventos, diretoria, exPresidentes } from '../lib/db/schema.ts';
+import { noticias, eventos, diretoria, exPresidentes, paginas } from '../lib/db/schema.ts';
+import { FIXAS } from '../lib/types.ts';
 import { NOTICIAS } from './dados/noticias.ts';
 import { EVENTOS } from './dados/eventos.ts';
 import { DIRETORIA } from './dados/diretoria.ts';
 import { EX_PRESIDENTES } from './dados/ex-presidentes.ts';
+import { PAGINAS_FIXAS } from './dados/paginas.ts';
 
 const IMG = '/assets/img/';
 
@@ -38,6 +40,10 @@ export async function carregar(db: Db): Promise<void> {
     const [{ n: presidentes }] = await tx.select({ n: sql<number>`count(*)`.mapWith(Number) }).from(exPresidentes);
     if (!presidentes)
       await tx.insert(exPresidentes).values(EX_PRESIDENTES.map((p, ordem) => ({ ...p, foto: p.foto && IMG + p.foto, ordem })));
+
+    // INSERT IGNORE: página fixa que já existe (e talvez foi editada no admin) fica como está
+    await tx.insert(paginas).ignore()
+      .values(PAGINAS_FIXAS.map(p => ({ ...p, situacao: 'publicada' as const, ordem: FIXAS.indexOf(p.fixa) })));
   });
 }
 

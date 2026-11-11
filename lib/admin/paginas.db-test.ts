@@ -24,7 +24,6 @@ const criar = async (slug: string, extra: Record<string, unknown> = {}) => {
   assert.ok(r.ok); return r.valor.id;
 };
 const linha = async (id: string) => (await db.select().from(paginas).where(eq(paginas.id, id)))[0];
-const inserirHistorico = () => db.insert(paginas).values({ fixa: 'historico', slug: 'historico', nome: 'Histórico', descricao: 'x', situacao: 'publicada', ordem: 0, conteudo });
 
 test('revisor e editor não listam nem salvam páginas', async () => {
   for (const u of [rev, ed]) {
@@ -71,7 +70,6 @@ test('mover a terceira para cima troca com a segunda, só dentro do menu', async
 });
 
 test('página fixa não sai do ar, não é apagada e mantém o endereço', async () => {
-  await inserirHistorico();
   const f = await P.obterPaginaFixa(db, adm, 'historico'); assert.ok(f.ok);
   for (const r of [await P.tirarDoAr(db, adm, f.valor.id), await P.apagarPagina(db, adm, f.valor.id)]) assert.ok(!r.ok && r.erro === 'invalida');
   const s = await P.salvarPagina(db, adm, f.valor.id, form({ slug: 'outro', menu: 'acidi', nome: 'Histórico 2' }), f.valor.atualizadaEm.toISOString());

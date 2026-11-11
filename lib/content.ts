@@ -1,9 +1,9 @@
 // Única porta de entrada do conteúdo para as páginas. Notícias, agenda, diretoria e ex-presidentes vêm do banco;
 // o resto continua em content/*.ts até a Fase 3.
-import { asc, desc, eq, and } from 'drizzle-orm';
-import type { Servico, Evento, Noticia, Diretoria, ExPresidente, Foto, Beneficio, Assunto } from './types.ts';
+import { asc, desc, eq, and, isNotNull, isNull } from 'drizzle-orm';
+import type { Servico, Evento, Noticia, Diretoria, ExPresidente, Foto, Beneficio, Assunto, Fixa, Pagina, ConteudoHome } from './types.ts';
 import { db } from './db/index.ts';
-import { noticias, eventos, diretoria, exPresidentes } from './db/schema.ts';
+import { noticias, eventos, diretoria, exPresidentes, paginas } from './db/schema.ts';
 import { SERVICOS } from '../content/servicos.ts';
 import { GALERIA } from '../content/auditorio.ts';
 import { BENEFICIOS } from '../content/associacao.ts';
@@ -49,3 +49,31 @@ export async function getExPresidentes(): Promise<ExPresidente[]> {
 export async function getGaleriaAuditorio(): Promise<Foto[]> { return GALERIA; }
 export async function getBeneficios(): Promise<Beneficio[]> { return BENEFICIOS; }
 export async function getAssuntosContato(): Promise<Assunto[]> { return ASSUNTOS; }
+
+const campos = { slug: paginas.slug, nome: paginas.nome, descricao: paginas.descricao, menu: paginas.menu, conteudo: paginas.conteudo };
+
+async function fixa(f: Fixa) {
+  const [p] = await db.select(campos).from(paginas).where(eq(paginas.fixa, f));
+  if (!p) throw new Error(`página ${f} sem conteúdo no banco: rode npm run db:carga`);
+  return p;
+}
+
+export async function getPaginaFixa(f: Exclude<Fixa, 'home'>): Promise<Pagina> {
+  return (await fixa(f)) as Pagina;
+}
+
+export async function getHome(): Promise<ConteudoHome> {
+  return (await fixa('home')).conteudo as ConteudoHome;
+}
+
+// Só páginas criadas no painel e publicadas (as fixas têm rota própria).
+export async function getPaginaPublicada(slug: string): Promise<Pagina | undefined> {
+  const [p] = await db.select(campos).from(paginas).where(and(isNull(paginas.fixa), eq(paginas.situacao, 'publicada'), eq(paginas.slug, slug)));
+  return p as Pagina | undefined;
+}
+
+export async function getPaginasMenu(): Promise<{ menu: 'acidi' | 'negocio'; slug: string; nome: string; menuTexto: string | null }[]> {
+  const l = await db.select({ menu: paginas.menu, slug: paginas.slug, nome: paginas.nome, menuTexto: paginas.menuTexto }).from(paginas)
+    .where(and(eq(paginas.situacao, 'publicada'), isNotNull(paginas.menu))).orderBy(asc(paginas.ordem));
+  return l as { menu: 'acidi' | 'negocio'; slug: string; nome: string; menuTexto: string | null }[];
+}
