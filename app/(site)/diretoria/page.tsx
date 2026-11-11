@@ -20,7 +20,7 @@ export default async function Page() {
     <Header page="diretoria" />
     <main id="conteudo">
       <Crumbs items={[['/', 'Início'], ['/historico', 'A ACIDI'], [null, 'Diretoria']]} />
-      <CabecalhoPagina cab={c.cabecalho} side={<><p><Fmt t={c.lateral!.texto} /></p><p style={{ marginTop: '10px' }}><a className="tlink" href="/noticias/acidi-35-anos-posse-da-diretoria">Ler a notícia da posse</a></p></>} />
+      <CabecalhoPagina cab={c.cabecalho} side={<>{c.lateral && <p><Fmt t={c.lateral.texto} /></p>}<p style={{ marginTop: '10px' }}><a className="tlink" href="/noticias/acidi-35-anos-posse-da-diretoria">Ler a notícia da posse</a></p></>} />
       <div className="wrap">
         <section className="block" aria-labelledby="h-exec"><h2 id="h-exec">Diretoria <b>executiva</b></h2><div className="people">
           {d.executiva.map(p => <div key={p.cargo} className="person"><span>{p.cargo}</span><b>{p.nome}</b></div>)}
