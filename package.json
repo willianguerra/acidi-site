@@ -15,7 +15,8 @@
     "test:db": "node --env-file=.env.test --test --test-concurrency=1 \"lib/**/*.db-test.ts\"",
     "db:carga": "node --env-file=.env scripts/carga.ts",
     "db:importar-wp": "node --env-file=.env scripts/importar-wp.ts",
-    "criar-admin": "node --env-file=.env scripts/criar-admin.ts"
+    "criar-admin": "node --env-file=.env scripts/criar-admin.ts",
+    "criar-usuarios-teste": "node --env-file=.env scripts/criar-usuarios-teste.ts"
   },
   "repository": {
     "type": "git",
@@ -31,19 +32,27 @@
     "@aws-sdk/client-s3": "^3.1158.0",
     "basic-ftp": "^5.3.1",
     "better-auth": "^1.7.14",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.4",
+    "lucide-react": "^1.72.0",
     "mysql2": "^3.24.6",
     "next": "^16.4.3",
+    "radix-ui": "^1.8.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "server-only": "^0.0.1",
     "sharp": "^0.35.5",
+    "tailwind-merge": "^3.7.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^26.6.5",
     "@types/react": "^19.3.0",
     "drizzle-kit": "^0.31.11",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2"
   },
   "private": true

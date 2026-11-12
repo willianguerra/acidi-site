@@ -4,10 +4,16 @@ import { useEffect, useRef } from 'react';
 const PERGUNTA = 'Há alterações não salvas. Sair mesmo assim?';
 
 // Avisa antes de sair de um formulário alterado; enviar o próprio formulário não conta como sair.
-// `estado` é a resposta do servidor (objeto novo a cada envio): se veio com erro, o que foi digitado continua não salvo.
-export function AvisoSaida({ formId, estado }: { formId: string; estado?: { erro?: string } }) {
+// `estado` é a resposta do servidor (objeto novo a cada envio): se veio com erro, o que foi digitado continua não salvo
+// e o foco vai para o primeiro campo recusado (as seções recolhidas abrem antes, ver Secao.tsx).
+export function AvisoSaida({ formId, estado }: { formId: string; estado?: { erro?: string; erros?: Record<string, string | undefined> } }) {
   const alteradoRef = useRef(false);
-  useEffect(() => { if (estado?.erro) alteradoRef.current = true; }, [estado]);
+  useEffect(() => {
+    if (!estado?.erro) return;
+    alteradoRef.current = true;
+    const t = setTimeout(() => document.getElementById(formId)?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(), 60);
+    return () => clearTimeout(t);
+  }, [estado, formId]);
   useEffect(() => {
     const form = document.getElementById(formId) as HTMLFormElement | null;
     if (!form) return;

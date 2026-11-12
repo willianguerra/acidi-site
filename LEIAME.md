@@ -15,6 +15,7 @@ docker compose up -d          # Postgres em localhost:5432 (bancos acidi e acidi
 npm run db:migrar             # cria as tabelas
 npm run db:carga              # copia o conteúdo inicial (notícias, agenda, diretoria, ex-presidentes)
 npm run criar-admin -- --nome "Seu Nome" --email voce@acidi.net --senha "senha com 10 ou mais"
+npm run criar-usuarios-teste   # opcional, só em banco local: admin@, revisor@ e editor@acidi.test (senha <papel>-local-123)
 npm run dev
 ```
 

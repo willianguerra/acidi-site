@@ -20,8 +20,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (!r.ok) { if (r.erro === 'sem-permissao') redirect('/admin'); notFound(); }
   const u = r.valor, ok = (await searchParams).ok;
   return (<>
-    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/usuarios', rotulo: 'Usuários' }, { rotulo: u.nome }]} titulo={u.nome} />
-    <p className="meta">{u.email}{!u.ativo && ' · conta desativada'}</p>
+    <Cabecalho titulo={u.nome} descricao={u.email + (u.ativo ? '' : ' · conta desativada')} />
     {ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
     <FormsUsuario id={u.id} papel={u.papel} ativo={u.ativo} eu={u.id === eu.id} />
   </>);

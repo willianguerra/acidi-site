@@ -160,9 +160,9 @@ with sync_playwright() as p:
     else:
         print('PULOU  Paginação mantém o filtro de situação · menos de 21 notícias publicadas')
 
-    # 6d2. trocar o select já filtra; o menu do usuário abre e fecha
-    adm.goto(BASE + '/admin/noticias'); adm.select_option('#situacao', 'rascunho'); adm.wait_for_url('**situacao=rascunho*')
-    ok('Trocar a situação no select filtra a lista', 'situacao=rascunho' in adm.url)
+    # 6d2. a aba de situação filtra; o menu do usuário abre e fecha
+    adm.goto(BASE + '/admin/noticias'); adm.click('.abas a:has-text("Rascunho")'); adm.wait_for_url('**situacao=rascunho*')
+    ok('A aba de situação filtra a lista', 'situacao=rascunho' in adm.url)
     adm.click('details.usuario summary')
     ok('Menu do usuário mostra Minha conta e Sair', adm.locator('details.usuario .menu a:has-text("Minha conta")').is_visible() and adm.locator('details.usuario button:has-text("Sair")').is_visible())
     adm.click('main h1'); adm.wait_for_timeout(200)
@@ -190,8 +190,8 @@ with sync_playwright() as p:
         ok(f'Editor é barrado em {area}', ed.url == BASE + '/admin', ed.url)
 
     # limpeza: apagar evento e notícia de teste
-    ed.goto(BASE + '/admin/agenda'); ed.click(f'tr:has-text("{EVENTO}") button[value=apagar]'); ed.wait_for_url('**msg=*')
-    ok('Ícone de apagar da linha remove o evento', EVENTO not in get('/agenda')[1] and '1 apagado.' in ed.inner_text('main .aviso.ok'), ed.inner_text('main .aviso.ok'))
+    ed.goto(BASE + '/admin/agenda'); ed.click(f'tr:has-text("{EVENTO}") button[aria-label^="Mais ações"]'); ed.click('[role=menuitem]:has-text("Apagar")'); ed.wait_for_url('**msg=*')
+    ok('Apagar pelo menu da linha remove o evento', EVENTO not in get('/agenda')[1] and '1 apagado.' in ed.inner_text('main .aviso.ok'), ed.inner_text('main .aviso.ok'))
     rev.goto(BASE + '/admin/noticias?busca=' + SUFIXO); rev.check('input[data-todas]'); rev.click('.massa button[value=apagar]'); rev.wait_for_url('**msg=*')
     ok('Apagar em massa remove as notícias de teste', '2 apagadas.' in rev.inner_text('main .aviso.ok') and TITULO not in get('/noticias')[1])
 

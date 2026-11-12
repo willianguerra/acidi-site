@@ -1,9 +1,10 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { useActionState } from 'react';
 import { salvarHome } from '@/app/(admin)/admin/(painel)/paginas/acoes';
 import type { ConteudoHome } from '@/lib/types';
 import { Campo, Aviso } from './Campo';
-import { CaixaLateral } from './CaixaLateral';
+import { Card, CardTitle } from '@/components/ui/card';
 import { AvisoSaida } from './AvisoSaida';
 
 // [nome do campo "secao.campo", rótulo, true = texto longo]
@@ -32,19 +33,19 @@ export function FormHome({ c, id, lidaEm }: { c: ConteudoHome; id: string; lidaE
   const [estado, acao, enviando] = useActionState(salvarHome, undefined);
   const v = estado?.valores ?? {}, e = estado?.erros ?? {};
   return (
-    <form action={acao} id="form-home" className="form-longo">
+    <form action={acao} id="form-home" className="grid max-w-[1400px] gap-4">
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="lidaEm" value={lidaEm} />
       <AvisoSaida formId="form-home" estado={estado} />
       <Aviso estado={estado} />
       {SECOES.map(s => (
-        <CaixaLateral key={s.titulo} titulo={s.titulo}>
-          <fieldset disabled={enviando} className="solto grade">
+        <Card key={s.titulo}><CardTitle>{s.titulo}</CardTitle>
+          <fieldset disabled={enviando} className="grid min-w-0 gap-x-4 gap-y-3.5 md:grid-cols-2 xl:grid-cols-3 [&>.campo:has(textarea)]:col-span-full [&_textarea]:min-h-20">
             {s.campos.map(([nome, rotulo, longo]) => <Campo key={nome} nome={nome} rotulo={rotulo} tipo={longo ? 'textarea' : 'text'} valor={v[nome] ?? valorDe(c, nome)} erro={e[nome]} obrigatorio />)}
           </fieldset>
-        </CaixaLateral>
+        </Card>
       ))}
-      <div className="barra-salvar"><button className="bt" disabled={enviando}>{enviando ? 'Salvando…' : 'Salvar e publicar'}</button><span className="ajuda">Vale para o site assim que salvar.</span></div>
+      <div className="sticky bottom-0 z-5 flex flex-wrap items-center gap-3 rounded-t-lg border bg-card px-4 py-3 shadow-[0_-8px_24px_-16px_rgb(11_61_36/.35)]"><Button disabled={enviando}>{enviando ? 'Salvando…' : 'Salvar e publicar'}</Button><span className="ajuda md:ml-auto">Vale para o site assim que salvar.</span></div>
     </form>
   );
 }

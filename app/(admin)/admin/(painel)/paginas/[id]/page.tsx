@@ -3,7 +3,7 @@ import { exigirUsuario } from '@/lib/auth-servidor';
 import { db } from '@/lib/db';
 import { obterPagina, CAMPOS_FIXA } from '@/lib/admin/paginas';
 import { FormPagina } from '@/components/admin/FormPagina';
-import { Cabecalho } from '@/components/admin/Cabecalho';
+import { quando } from '@/lib/datas';
 import { Aviso } from '@/components/admin/Aviso';
 import type { ConteudoPagina, Fixa } from '@/lib/types';
 
@@ -19,15 +19,12 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   if (p.fixa === 'home') redirect('/admin/paginas/home');
   const c = p.conteudo as ConteudoPagina;
   const campos = p.fixa ? { ...CAMPOS_FIXA[p.fixa as Exclude<Fixa, 'home'>], fixa: true } : { foto: true, lateral: true, corpo: true, fixa: false };
-  return (<>
-    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/paginas', rotulo: 'Páginas' }, { rotulo: 'Editar' }]} titulo={p.nome}
-      extra={p.situacao === 'publicada' ? <a className="bt sec" href={'/' + p.slug} target="_blank" rel="noopener">Ver no site<span className="sr"> (abre em nova aba)</span></a> : undefined} />
-    {ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
-    <FormPagina campos={campos}
+  return (
+    <FormPagina campos={campos} alterada={quando(p.atualizadaEm)} avisos={ok && OKS[ok] && <Aviso tipo="ok">{OKS[ok]}</Aviso>}
       p={{ id: p.id, situacao: p.situacao, nome: p.nome, slug: p.slug, descricao: p.descricao, menu: p.menu ?? '', menuTexto: p.menuTexto ?? '',
         etiqueta: c.cabecalho.etiqueta, titulo: c.cabecalho.titulo, destaque: c.cabecalho.destaque, chamada: c.cabecalho.chamada,
         foto: c.cabecalho.foto?.src ?? '', fotoAlt: c.cabecalho.foto?.alt ?? '', fotoLegenda: c.cabecalho.foto?.legenda ?? '',
         lateralTexto: c.lateral?.texto ?? '', botaoTexto: c.lateral?.botao?.texto ?? '', botaoHref: c.lateral?.botao?.href ?? '',
         corpo: c.corpo, lidaEm: p.atualizadaEm.toISOString() }} />
-  </>);
+  );
 }

@@ -1,14 +1,14 @@
-import { Ico } from '@/components/Ico';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
-type Migalha = { href?: string; rotulo: string };
-
-export function Cabecalho({ migalhas, titulo, descricao, acao, extra }: { migalhas: Migalha[]; titulo: string; descricao?: string; acao?: { href: string; rotulo: string }; extra?: React.ReactNode }) {
-  return (<header className="cabecalho">
-    <div>
-      <nav aria-label="Você está em"><ol className="migalhas">{migalhas.map((m, i) => <li key={i}>{m.href ? <a href={m.href}>{m.rotulo}</a> : <span aria-current="page">{m.rotulo}</span>}</li>)}</ol></nav>
+// Título da página, descrição e ação principal. As migalhas ficam no topo (components/admin/Migalhas.tsx).
+export function Cabecalho({ titulo, descricao, acao, extra, sobre }: { titulo: string; descricao?: string; acao?: { href: string; rotulo: string }; extra?: React.ReactNode; sobre?: string }) {
+  return (<header className="mb-5 flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
+    <div className="min-w-0">
+      {sobre && <p className="mb-1 text-[0.8rem] text-muted-foreground first-letter:uppercase">{sobre}</p>}
       <h1>{titulo}</h1>
-      {descricao && <p className="descricao">{descricao}</p>}
+      {descricao && <p className="mt-1 text-muted-foreground">{descricao}</p>}
     </div>
-    {(acao || extra) && <div className="acoes">{extra}{acao && <a className="bt" href={acao.href}><Ico n="plus" />{acao.rotulo}</a>}</div>}
+    {(acao || extra) && <div className="flex flex-wrap items-center gap-2">{extra}{acao && <Button asChild><a href={acao.href}><Plus aria-hidden="true" />{acao.rotulo}</a></Button>}</div>}
   </header>);
 }

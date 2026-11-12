@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/card';
 import { notFound, redirect } from 'next/navigation';
 import { exigirUsuario } from '@/lib/auth-servidor';
 import { db } from '@/lib/db';
@@ -13,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!r.ok) { if (r.erro === 'sem-permissao') redirect('/admin'); notFound(); }
   const p = r.valor;
   return (<>
-    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/ex-presidentes', rotulo: 'Ex-presidentes' }, { rotulo: 'Editar' }]} titulo={p.nome} />
-    <div className="cartao"><FormExPresidente p={{ id: p.id, nome: p.nome, gestao: p.gestao ?? '', foto: p.foto ?? '' }} /></div>
+    <Cabecalho titulo={p.nome} />
+    <Card><FormExPresidente p={{ id: p.id, nome: p.nome, gestao: p.gestao ?? '', foto: p.foto ?? '' }} /></Card>
   </>);
 }

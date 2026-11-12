@@ -2,6 +2,13 @@
 // Editor do corpo da notícia em blocos (o mesmo formato Bloco[] que o site renderiza).
 // O resultado vai como JSON no campo oculto "corpo"; o servidor valida de novo.
 import { useEffect, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, Bold, Link2, Plus, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Obrigatorio } from './Campo';
 import type { Bloco } from '@/lib/types';
 import { enviarImagem } from '@/app/(admin)/admin/(painel)/paginas/imagem';
 
@@ -18,6 +25,20 @@ type Item = Ed & { k: number };
 const NOMES = { p: 'Parágrafo', lista: 'Lista', citacao: 'Citação', subtitulo: 'Subtítulo', imagem: 'Imagem', tabela: 'Tabela por categoria' };
 const DICA = 'Use **negrito** e [texto](endereço).';
 const linhas = (s: string) => s.split('\n').map(x => x.trim()).filter(Boolean);
+const FERRAMENTA = 'grid size-7 cursor-pointer place-items-center rounded-md text-muted-foreground hover:bg-card hover:text-foreground [&_svg]:size-4';
+
+// Envolve o trecho selecionado com a marcação que o site entende (**negrito** e [texto](endereço)) e devolve o novo texto.
+function marcar(id: string, tipo: 'b' | 'a', grava: (v: string) => void) {
+  const t = document.getElementById(id) as HTMLTextAreaElement | null;
+  if (!t) return;
+  const { selectionStart: a, selectionEnd: b, value } = t;
+  const sel = value.slice(a, b) || (tipo === 'b' ? 'texto em negrito' : 'texto do link');
+  const novo = tipo === 'b' ? `**${sel}**` : `[${sel}](https://)`;
+  grava(value.slice(0, a) + novo + value.slice(b));
+  // depois que o React regravar o campo: no negrito seleciona o trecho; no link, o endereço a preencher
+  const [i, f] = tipo === 'b' ? [a + 2, a + 2 + sel.length] : [a + sel.length + 3, a + sel.length + 11];
+  requestAnimationFrame(() => { t.focus(); t.setSelectionRange(i, f); });
+}
 
 function paraEditor(b: Bloco): Ed {
   if (typeof b === 'string') return { tipo: 'p', texto: b };
@@ -68,54 +89,67 @@ export function EditorBlocos({ inicial, erro, desabilitado, titulo = 'Texto da n
   const campo = useRef<HTMLFieldSetElement>(null), montou = useRef(false);
   useEffect(() => { if (montou.current) campo.current?.dispatchEvent(new Event('change', { bubbles: true })); montou.current = true; }, [blocos]);
   return (
-    <fieldset ref={campo} className="campo" data-erro={erro ? '' : undefined} disabled={desabilitado} aria-describedby={erro ? 'corpo-erro' : undefined}>
-      <legend>{titulo}{obrigatorio && <span aria-hidden="true"> *</span>}</legend>
+    <fieldset ref={campo} className="grid min-w-0 gap-3" data-erro={erro ? '' : undefined} disabled={desabilitado} aria-describedby={erro ? 'corpo-erro' : undefined}>
+      <legend className="float-left mb-1 w-full font-display text-[1.0625rem] font-bold">{titulo}{obrigatorio && <Obrigatorio />}</legend>
       <input type="hidden" name="corpo" value={JSON.stringify(blocos.map(paraBloco))} />
-      <div className="blocos">
+      {!blocos.length && <p className="vazio">Ainda não há conteúdo. Use “Inserir” para começar por um parágrafo, uma imagem ou outro bloco.</p>}
+      <div className="grid gap-3 empty:hidden">
         {blocos.map((b, i) => {
           const id = `bloco-${i}`;
+          const texto = b.tipo === 'p' || b.tipo === 'citacao' || b.tipo === 'lista';
+          const grava = (v: string) => muda(i, b.tipo === 'lista' ? { ...b, itens: v } : { ...b, texto: v } as Item);
           return (
-            <div className="bloco" key={b.k}>
-              <div className="bloco-topo"><span id={id}>{i + 1}. {NOMES[b.tipo]}</span>
-                <span className="acoes">
-                  <button type="button" className="bt sec peq" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Subir bloco ${i + 1}`}>↑</button>
-                  <button type="button" className="bt sec peq" onClick={() => move(i, 1)} disabled={i === blocos.length - 1} aria-label={`Descer bloco ${i + 1}`}>↓</button>
-                  <button type="button" className="bt perigo peq" onClick={() => tira(i)} aria-label={`Remover bloco ${i + 1}`}>Remover</button>
-                </span>
+            <div className="bloco grid min-w-0 overflow-hidden rounded-lg border bg-card focus-within:border-ring/60" key={b.k}>
+              <div className="flex flex-wrap items-center gap-1 border-b bg-secondary py-1 pr-1.5 pl-3">
+                <span id={id} className="mr-auto text-[0.8rem] font-semibold text-muted-foreground"><span className="tabular-nums">{i + 1}</span> · {NOMES[b.tipo]}</span>
+                {texto && <>
+                  <button type="button" className={FERRAMENTA} onClick={() => marcar(id + '-t', 'b', grava)} aria-label={`Negrito no bloco ${i + 1}`} title="Negrito"><Bold aria-hidden="true" /></button>
+                  <button type="button" className={FERRAMENTA} onClick={() => marcar(id + '-t', 'a', grava)} aria-label={`Link no bloco ${i + 1}`} title="Link"><Link2 aria-hidden="true" /></button>
+                  <span className="mx-1 h-4 w-px bg-border" aria-hidden="true" />
+                </>}
+                <button type="button" className={FERRAMENTA + ' disabled:pointer-events-none disabled:opacity-40'} onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Subir bloco ${i + 1}`} title="Subir"><ArrowUp aria-hidden="true" /></button>
+                <button type="button" className={FERRAMENTA + ' disabled:pointer-events-none disabled:opacity-40'} onClick={() => move(i, 1)} disabled={i === blocos.length - 1} aria-label={`Descer bloco ${i + 1}`} title="Descer"><ArrowDown aria-hidden="true" /></button>
+                <button type="button" className={FERRAMENTA + ' hover:bg-erro-soft! hover:text-destructive!'} onClick={() => tira(i)} aria-label={`Remover bloco ${i + 1}`} title="Remover bloco"><Trash2 aria-hidden="true" /></button>
               </div>
-              {(b.tipo === 'p' || b.tipo === 'citacao') && <><textarea aria-labelledby={id} aria-describedby={id + '-f'} value={b.texto} onChange={e => muda(i, { ...b, texto: e.target.value })} /><span className="ajuda" id={id + '-f'}>{DICA}</span></>}
-              {b.tipo === 'subtitulo' && <input type="text" aria-labelledby={id} value={b.texto} onChange={e => muda(i, { ...b, texto: e.target.value })} />}
+              <div className="grid min-w-0 gap-2 p-3">
+              {(b.tipo === 'p' || b.tipo === 'citacao') && <><Textarea id={id + '-t'} aria-labelledby={id} aria-describedby={id + '-f'} className={b.tipo === 'p' ? 'min-h-36' : undefined} value={b.texto} onChange={e => muda(i, { ...b, texto: e.target.value })} /><span className="ajuda" id={id + '-f'}>{DICA}</span></>}
+              {b.tipo === 'subtitulo' && <Input type="text" aria-labelledby={id} value={b.texto} onChange={e => muda(i, { ...b, texto: e.target.value })} />}
               {b.tipo === 'imagem' && <>
-                <label htmlFor={`${id}-f`}>Foto (JPG, PNG ou WebP, até 8 MB)</label>
-                <input type="file" id={`${id}-f`} accept="image/jpeg,image/png,image/webp" onChange={e => envia(b.k, e.target.files?.[0])} />
+                <Label htmlFor={`${id}-f`}>Foto (JPG, PNG ou WebP, até 8 MB)</Label>
+                <Input type="file" id={`${id}-f`} accept="image/jpeg,image/png,image/webp" onChange={e => envia(b.k, e.target.files?.[0])} />
                 {b.src && <img className="foto-atual" src={b.src} alt="" />}
                 <span aria-live="polite">{envio?.k === b.k && (envio.erro ? <span className="erro-campo">{envio.erro}</span> : <span className="ajuda">Enviando a foto…</span>)}</span>
-                <label htmlFor={`${id}-a`}>Texto alternativo (descreva a foto)</label>
-                <input type="text" id={`${id}-a`} value={b.alt} onChange={e => muda(i, { ...b, alt: e.target.value })} />
-                <label htmlFor={`${id}-l`}>Legenda (opcional)</label>
-                <input type="text" id={`${id}-l`} aria-describedby={id + '-d'} value={b.legenda} onChange={e => muda(i, { ...b, legenda: e.target.value })} />
+                <Label htmlFor={`${id}-a`}>Texto alternativo (descreva a foto)</Label>
+                <Input type="text" id={`${id}-a`} value={b.alt} onChange={e => muda(i, { ...b, alt: e.target.value })} />
+                <Label htmlFor={`${id}-l`}>Legenda (opcional)</Label>
+                <Input type="text" id={`${id}-l`} aria-describedby={id + '-d'} value={b.legenda} onChange={e => muda(i, { ...b, legenda: e.target.value })} />
                 <span className="ajuda" id={id + '-d'}>{DICA}</span>
               </>}
-              {b.tipo === 'lista' && <><textarea aria-labelledby={id} aria-describedby={id + '-a'} value={b.itens} onChange={e => muda(i, { ...b, itens: e.target.value })} /><span className="ajuda" id={id + '-a'}>Um item por linha. {DICA}</span></>}
+              {b.tipo === 'lista' && <><Textarea id={id + '-t'} aria-labelledby={id} aria-describedby={id + '-a'} value={b.itens} onChange={e => muda(i, { ...b, itens: e.target.value })} /><span className="ajuda" id={id + '-a'}>Um item por linha. {DICA}</span></>}
               {b.tipo === 'tabela' && <>
                 {b.grupos.map((g, k) => (
-                  <div key={k} className="campo">
-                    <label htmlFor={`${id}-c${k}`}>Categoria {k + 1}</label>
-                    <input type="text" id={`${id}-c${k}`} value={g.categoria} onChange={e => muda(i, { ...b, grupos: b.grupos.map((x, j) => (j === k ? { ...x, categoria: e.target.value } : x)) })} />
-                    <label htmlFor={`${id}-i${k}`}>Itens da categoria {k + 1} (um por linha)</label>
-                    <textarea id={`${id}-i${k}`} value={g.itens} onChange={e => muda(i, { ...b, grupos: b.grupos.map((x, j) => (j === k ? { ...x, itens: e.target.value } : x)) })} />
-                    {b.grupos.length > 1 && <button type="button" className="bt perigo peq" onClick={() => muda(i, { ...b, grupos: b.grupos.filter((_, j) => j !== k) })}>Remover categoria {k + 1}</button>}
+                  <div key={k} className="campo border-t border-dashed border-input pt-3 first:border-0 first:pt-0">
+                    <Label htmlFor={`${id}-c${k}`}>Categoria {k + 1}</Label>
+                    <Input type="text" id={`${id}-c${k}`} value={g.categoria} onChange={e => muda(i, { ...b, grupos: b.grupos.map((x, j) => (j === k ? { ...x, categoria: e.target.value } : x)) })} />
+                    <Label htmlFor={`${id}-i${k}`}>Itens da categoria {k + 1} (um por linha)</Label>
+                    <Textarea id={`${id}-i${k}`} value={g.itens} onChange={e => muda(i, { ...b, grupos: b.grupos.map((x, j) => (j === k ? { ...x, itens: e.target.value } : x)) })} />
+                    {b.grupos.length > 1 && <Button type="button" variant="destructive" size="sm" className="justify-self-start" onClick={() => muda(i, { ...b, grupos: b.grupos.filter((_, j) => j !== k) })}>Remover categoria {k + 1}</Button>}
                   </div>
                 ))}
-                <button type="button" className="bt sec peq" onClick={() => muda(i, { ...b, grupos: [...b.grupos, { categoria: '', itens: '' }] })}>Adicionar categoria</button>
+                <Button type="button" variant="outline" size="sm" className="justify-self-start" onClick={() => muda(i, { ...b, grupos: [...b.grupos, { categoria: '', itens: '' }] })}><Plus aria-hidden="true" />Adicionar categoria</Button>
               </>}
+              </div>
             </div>
           );
         })}
       </div>
-      <div className="acoes" aria-label="Adicionar bloco">
-        {(Object.keys(NOMES) as Ed['tipo'][]).map(t => <button key={t} type="button" className="bt sec peq" onClick={() => setBlocos(bs => [...bs, { ...NOVO[t](), k: prox.current++ }])}>+ {NOMES[t]}</button>)}
-      </div>
+      {/* um menu no lugar de seis botões: todos os tipos de bloco continuam aqui */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild><Button type="button" variant="outline" className="justify-self-start border-primary/40 text-accent-foreground"><Plus aria-hidden="true" />Inserir</Button></DropdownMenuTrigger>
+        <DropdownMenuContent align="start" aria-label="Inserir bloco">
+          {(Object.keys(NOMES) as Ed['tipo'][]).map(t => <DropdownMenuItem key={t} onSelect={() => setBlocos(bs => [...bs, { ...NOVO[t](), k: prox.current++ }])}>{NOMES[t]}</DropdownMenuItem>)}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {erro && <span className="erro-campo" id="corpo-erro">{erro}</span>}
     </fieldset>
   );

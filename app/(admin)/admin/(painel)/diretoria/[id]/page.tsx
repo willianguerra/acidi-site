@@ -1,3 +1,4 @@
+import { Card } from '@/components/ui/card';
 import { notFound, redirect } from 'next/navigation';
 import { exigirUsuario } from '@/lib/auth-servidor';
 import { db } from '@/lib/db';
@@ -13,7 +14,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   if (!r.ok) { if (r.erro === 'sem-permissao') redirect('/admin'); notFound(); }
   const m = r.valor;
   return (<>
-    <Cabecalho migalhas={[{ href: '/admin', rotulo: 'Início' }, { href: '/admin/diretoria', rotulo: 'Diretoria' }, { rotulo: 'Editar' }]} titulo={m.nome} />
-    <div className="cartao"><FormMembro m={{ id: m.id, grupo: m.grupo, rotulo: m.rotulo ?? '', nome: m.nome, suplente: m.suplente }} grupos={GRUPOS} /></div>
+    <Cabecalho titulo={m.nome} />
+    <Card><FormMembro m={{ id: m.id, grupo: m.grupo, rotulo: m.rotulo ?? '', nome: m.nome, suplente: m.suplente }} grupos={GRUPOS} /></Card>
   </>);
 }
