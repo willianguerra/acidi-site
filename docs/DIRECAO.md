@@ -1,6 +1,6 @@
 # Direção de arte e movimento · versão "Ponto de encontro"
 
-Documento interno. Cópia separada da demonstração (branch `direcao-de-arte`, pasta `ACIDI-site-direcao-de-arte`). A versão anterior em `ACIDI-site-demonstracao` não foi alterada.
+Documento interno: a ideia visual do site e as regras de movimento. Escrito em 26–27/10/2026, na versão estática; os caminhos `assets/...` hoje ficam em `public/assets/...`.
 
 ## Brief
 
@@ -59,11 +59,7 @@ Nenhum código, texto ou marca de terceiros foi incorporado.
 - **Interação:** botões sobem 1 px com sombra da própria cor, setas avançam, sublinhados se aproximam do texto; hover e foco por teclado têm a mesma resposta em todos os componentes (menus, atalhos, notícias, índice, galeria, rodapé).
 - **Movimento reduzido:** nenhuma revelação, entrada ou autoplay; tudo no estado final, funções iguais.
 
-## Entrega
-
-### Como abrir
-
-Dê dois cliques em `index.html` desta pasta, ou rode `python -m http.server 8767 --bind 127.0.0.1` nela e abra `http://127.0.0.1:8767/`. A versão anterior pode rodar ao lado (porta 8766) para comparar.
+## Decisões e limitações
 
 ### Decisões que tornaram o resultado mais expressivo
 
@@ -79,14 +75,6 @@ Dê dois cliques em `index.html` desta pasta, ou rode `python -m http.server 876
 
 Os textos alternativos da galeria do auditório estavam deslocados em relação às fotos 3 a 6 (por exemplo, "Fileiras de cadeiras do auditório" numa sala com mesa). Eles foram reescritos conforme cada imagem.
 
-### Evidências
-
-- `docs/comparativo/antes/` e `depois/`: mesmas larguras (1440, 768, 390 e 320 px) e mesmas posições de rolagem; `lado-a-lado/` junta os pares.
-- `docs/comparativo/quadros/`: abertura em 0, 250, 500, 800 e 1300 ms (1440 e 390); atuação e fechamento em 0, 350, 700 e 1400 ms; serviços em duas seleções (Boa Vista e Treinamentos), cada uma com o quadro intermediário da troca.
-- `docs/gravacoes/`: gravações reais do navegador (Edge/Playwright), sem quadros congelados: `home-desktop-1440.mp4` (25 s: abertura, três seleções por clique, uma por teclado, atuação, fechamento), `home-celular-390.mp4` (23 s, por toque) e `galeria-auditorio-1440.mp4`.
-- `docs/capturas/`: capturas das jornadas desta versão, incluindo `desktop-14-sem-js-servicos.jpg` e `celular-01b-servicos.jpg`.
-- Testes: `logica.test.js` passou; `verificar_links.py` não encontrou problemas nas 22 páginas; `jornadas.py` passou em 109 de 109 verificações. As 32 verificações novas cobrem a seleção por clique, teclado (setas, Home/End, Enter) e toque, a altura estável ao trocar de serviço, o marcador alinhado ao item e os painéis inativos fora da ordem de foco. Cobrem também a lista expansível no celular, a ordem título → fotos → botão no celular e a barra fixa oculta com o botão da abertura visível. Na galeria, verificam que ela não troca sozinha em 5 s e responde a botão, miniatura e seta. Por fim, conferem movimento reduzido (estado final imediato) e ausência de JavaScript (os 7 serviços em cartões, desenhos completos, miniaturas como links). Continuam valendo as jornadas anteriores: formulários, menus, agenda, rolagem horizontal a 768/390/320 px, console sem erros e nenhum envio de dados.
-
 ### Limitações reais
 
 - Os materiais das aulas não estavam no computador; segui o processo descrito no pedido.
@@ -94,4 +82,4 @@ Os textos alternativos da galeria do auditório estavam deslocados em relação 
 - As fotos são as já fornecidas, em resolução modesta (a dos Jogos tem 1400 px); em telas grandes de alta densidade perdem nitidez. O logotipo continua sendo o PNG de 189 × 50 px.
 - A 320 × 640 px o botão "Associe sua empresa" aparece na primeira tela, mas encostado na borda inferior (o "Ver serviços" fica abaixo), porque a foto passou a vir antes dele, como pedido. A 390 × 844 e a 768 × 1024 os dois botões aparecem inteiros.
 - A gravação mostra o movimento em ~25 fps do gravador do navegador; a suavidade real em aparelhos fracos não foi medida.
-- As fotos com pessoas identificáveis continuam dependendo de autorização de uso (pendência já registrada em `DOCUMENTACAO.md`).
+- As fotos com pessoas identificáveis continuam dependendo de autorização de uso (pendência já registrada em `CONTEUDO.md`).

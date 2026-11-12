@@ -19,3 +19,7 @@ next-env.d.ts
 dados/
 tsconfig.tsbuildinfo
 deploy/
+
+*.log
+docs/comparativo/
+docs/gravacoes/

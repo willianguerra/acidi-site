@@ -1,10 +1,7 @@
 {
   "name": "acidi-site",
   "version": "1.0.0",
-  "description": "ba",
-  "directories": {
-    "doc": "docs"
-  },
+  "description": "Site e painel da ACIDI",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
