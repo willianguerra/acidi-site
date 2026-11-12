@@ -1,5 +1,5 @@
 import { partes } from '@/lib/formatado';
-import { Ext } from './Ico';
+import { Ext } from '../Ico';
 
 export function Fmt({ t }: { t: string }) {
   return <>{partes(t).map((p, i) =>

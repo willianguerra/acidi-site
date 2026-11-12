@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Evento, Noticia } from '@/lib/types';
 import { dlong, dshort, evId, MESES } from '@/lib/datas';
-import { Ico, Ext } from './Ico';
+import { Ico, Ext } from '../Ico';
 import { WHATS, MAPA } from '@/content/links';
 
 export function Crumbs({ items }: { items: [href: string | null, texto: string][] }) {

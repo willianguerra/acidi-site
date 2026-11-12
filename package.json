@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "node --test \"lib/**/*.test.ts\"",
+    "test": "node --test \"lib/**/*.test.ts\" testes/logica.test.js",
     "db:gerar": "drizzle-kit generate",
     "db:migrar": "node --env-file=.env ./node_modules/drizzle-kit/bin.cjs migrate",
     "test:db": "node --env-file=.env.test --test --test-concurrency=1 \"lib/**/*.db-test.ts\"",

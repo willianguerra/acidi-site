@@ -1,4 +1,4 @@
-import { Ico, Ext, type IconName } from './Ico';
+import { Ico, Ext, type IconName } from '../Ico';
 import { INSTA, FACE } from '@/content/links';
 import { getServicos, getPaginasMenu } from '@/lib/content';
 

@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { exigirUsuario } from '@/lib/auth-servidor';
 import { db } from '@/lib/db';
 import { obterNoticia } from '@/lib/admin/noticias';
-import { Artigo } from '@/components/Artigo';
+import { Artigo } from '@/components/site/Artigo';
 
 export const metadata = { title: 'Prévia', robots: { index: false, follow: false } };
 

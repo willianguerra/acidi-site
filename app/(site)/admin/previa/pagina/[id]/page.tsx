@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { exigirUsuario } from '@/lib/auth-servidor';
 import { db } from '@/lib/db';
 import { obterPagina } from '@/lib/admin/paginas';
-import { PaginaDinamica } from '@/components/PaginaDinamica';
+import { PaginaDinamica } from '@/components/site/PaginaDinamica';
 import type { ConteudoPagina } from '@/lib/types';
 
 export const metadata = { title: 'Prévia', robots: { index: false, follow: false } };

@@ -1,4 +1,4 @@
-import { Ext } from './Ico';
+import { Ext } from '../Ico';
 import { INSTA, FACE, WHATS } from '@/content/links';
 
 export function Footer() {

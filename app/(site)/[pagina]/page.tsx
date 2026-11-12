@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { PaginaDinamica } from '@/components/PaginaDinamica';
+import { PaginaDinamica } from '@/components/site/PaginaDinamica';
 import { getPaginaPublicada } from '@/lib/content';
 import { pagina } from '@/lib/meta';
 

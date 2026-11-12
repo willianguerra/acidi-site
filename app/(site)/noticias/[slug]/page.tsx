@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { Artigo } from '@/components/Artigo';
+import { Artigo } from '@/components/site/Artigo';
 import { getNoticias, getNoticia } from '@/lib/content';
 import { pagina, jsonLd, ORGANIZACAO, SITE } from '@/lib/meta';
 

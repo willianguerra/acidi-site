@@ -71,7 +71,9 @@ app/(admin)/admin/      painel: entrar, trocar senha e (painel)/ com notícias, 
 app/api/auth/           rotas do Better Auth (login)
 app/api/contato/        recebe as mensagens dos formulários do site
 app/uploads/            serve as fotos enviadas pelo admin (STORAGE=disco)
-components/             Header, Footer, Artigo, ícones e blocos do site; components/admin/ tem as telas do painel; components/ui/ os básicos (shadcn)
+components/site/        Header, Footer, Molde, Artigo e blocos do site público
+components/admin/       telas e formulários do painel
+components/ui/          componentes básicos (shadcn); components/Ico.tsx tem os ícones, usados pelos dois lados
 content/                serviços, galeria do auditório, benefícios e assuntos de contato (ainda em arquivo, até a Fase 3)
 lib/content.ts          única porta de entrada do conteúdo para as páginas; notícias, agenda e diretoria vêm do banco
 lib/db/                 esquema Drizzle (conteúdo + tabelas do Better Auth) e conexão; drizzle/ tem as migrações
@@ -110,7 +112,7 @@ npm run test:db
 Com o site rodando em produção (`npm run build && npm start`):
 
 ```bash
-node --test testes/logica.test.js
+
 PYTHONIOENCODING=utf-8 python testes/admin.py      # jornada do admin; ADMIN_EMAIL/ADMIN_SENHA de uma conta criada com criar-admin
 python testes/verificar_links.py
 PYTHONIOENCODING=utf-8 python testes/jornadas.py

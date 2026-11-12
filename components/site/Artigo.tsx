@@ -2,7 +2,7 @@
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Crumbs } from './blocos';
-import { Ico } from './Ico';
+import { Ico } from '../Ico';
 import { dlong } from '@/lib/datas';
 import { Corpo } from './Corpo';
 import type { Noticia } from '@/lib/types';

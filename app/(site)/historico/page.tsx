@@ -1,9 +1,9 @@
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { JoinBox } from '@/components/blocos';
+import { Header } from '@/components/site/Header';
+import { Footer } from '@/components/site/Footer';
+import { JoinBox } from '@/components/site/blocos';
 import { getExPresidentes, getPaginaFixa } from '@/lib/content';
 import { pagina } from '@/lib/meta';
-import { CabecalhoPagina, SecaoTexto } from '@/components/Molde';
+import { CabecalhoPagina, SecaoTexto } from '@/components/site/Molde';
 
 export async function generateMetadata() {
   const p = await getPaginaFixa('historico');

@@ -1,6 +1,6 @@
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { Story, EventItem } from '@/components/blocos';
+import { Header } from '@/components/site/Header';
+import { Footer } from '@/components/site/Footer';
+import { Story, EventItem } from '@/components/site/blocos';
 import { Ico } from '@/components/Ico';
 import { getNoticias, getEventos, getHome, getPaginaFixa } from '@/lib/content';
 import { dshort, evId, hojeIso, separarEventos } from '@/lib/datas';
