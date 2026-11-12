@@ -197,24 +197,6 @@
     alvos.forEach(function (el) { iorv.observe(el); });
   }
 
-  // Filme da seção Quem somos (HyperFrames): toca uma vez ao entrar na tela; com movimento reduzido, só o pôster (quadro final).
-  [].forEach.call(doc.querySelectorAll('[data-film]'), function (fig) {
-    var v = fig.querySelector('video'), btn = fig.querySelector('.film-ctl');
-    function estado() { fig.setAttribute('data-estado', v.ended ? 'fim' : v.paused ? 'pausado' : 'tocando'); }
-    function tocar() { var p = v.play(); if (p && p.catch) p.catch(estado); }
-    ['play', 'pause', 'ended'].forEach(function (ev) { v.addEventListener(ev, estado); });
-    btn.addEventListener('click', function () { if (v.paused || v.ended) tocar(); else v.pause(); estado(); });
-    estado();
-    btn.hidden = false;
-    if (reduzido || !IO) return;
-    // com movimento, o pôster passa a ser o primeiro quadro, para o filme não saltar do fim ao início
-    v.poster = v.poster.replace('-poster.jpg', '-inicio.jpg');
-    var iof = new IO(function (es) {
-      if (es[0].isIntersecting) { iof.disconnect(); tocar(); }
-    }, { threshold: 0.6 });
-    iof.observe(fig);
-  });
-
   // Barra fixa do celular: escondida enquanto uma chamada de associação [data-cta] está visível
   var ctas = [].slice.call(doc.querySelectorAll('[data-cta]'));
   if (ctas.length && IO) {

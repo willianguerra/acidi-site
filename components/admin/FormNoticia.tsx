@@ -74,12 +74,13 @@ export function FormNoticia({ n, pode, situacao = 'rascunho', autor, alterada, a
             {pode.devolver && <div className="grid gap-3 border-t pt-4">
               {devolvendo && <Campo nome="comentario" rotulo="O que precisa mudar?" tipo="textarea" erro={e.comentario} obrigatorio />}
               {devolvendo
-                ? <Button variant="outline" name="acao" value="devolver" disabled={enviando}>Confirmar devolução</Button>
+                ? <><Button variant="outline" name="acao" value="devolver" disabled={enviando}>Confirmar devolução</Button>
+                  <Button variant="ghost" size="sm" type="button" onClick={() => setDevolvendo(false)}>Cancelar devolução</Button></>
                 : <Button variant="outline" type="button" onClick={() => setDevolvendo(true)}>Devolver com comentário</Button>}
             </div>}
             {(pode.despublicar || pode.apagar) && <div className="flex flex-wrap gap-2 border-t pt-4 *:flex-1">
-              {pode.despublicar && <Button variant="outline" size="sm" name="acao" value="despublicar" disabled={enviando} onClick={confirmar('Tirar esta notícia do site?')}>Despublicar</Button>}
-              {pode.apagar && <Button variant="destructive" size="sm" name="acao" value="apagar" disabled={enviando} onClick={confirmar('Apagar esta notícia de vez? Não dá para desfazer.')}>Apagar notícia</Button>}
+              {pode.despublicar && <Button variant="outline" size="sm" name="acao" value="despublicar" disabled={enviando} formNoValidate onClick={confirmar('Tirar esta notícia do site?')}>Despublicar</Button>}
+              {pode.apagar && <Button variant="destructive" size="sm" name="acao" value="apagar" disabled={enviando} formNoValidate onClick={confirmar('Apagar esta notícia de vez? Não dá para desfazer.')}>Apagar notícia</Button>}
             </div>}
           </Card>
           <Card>

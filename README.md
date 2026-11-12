@@ -87,10 +87,8 @@ proxy.ts                manda quem não tem sessão de /admin para /admin/entrar
 lib/rotas.ts            URLs .html antigas -> rotas novas (redirects do next.config.ts)
 public/assets/css/      site.css (tokens do protótipo) e fonts.css
 public/assets/fonts/    Archivo e Public Sans (woff2, latin e latin-ext) e licenças OFL
-public/assets/js/site.js  menus, agenda por data e validação dos formulários (sem mudanças desde a versão estática)
+public/assets/js/site.js  menus, agenda por data e validação dos formulários
 public/assets/img/      fotos e logos fornecidos pela ACIDI
-public/assets/video/    filme "Ponto de encontro" otimizado para a web e pôsteres
-motion/ponto-de-encontro/  fonte HyperFrames do filme (editar e renderizar: ver o LEIAME de lá)
 testes/                 testes de lógica, links, paridade e jornadas em navegador
 docs/                   DEPLOY, CONTEUDO, DIRECAO e historico/ (ver o topo deste arquivo)
 dados/, deploy/         fora do Git: fotos enviadas e pacote de deploy (com segredos)
@@ -112,7 +110,6 @@ npm run test:db
 Com o site rodando em produção (`npm run build && npm start`):
 
 ```bash
-
 PYTHONIOENCODING=utf-8 python testes/admin.py      # jornada do admin; ADMIN_EMAIL/ADMIN_SENHA de uma conta criada com criar-admin
 python testes/verificar_links.py
 PYTHONIOENCODING=utf-8 python testes/jornadas.py

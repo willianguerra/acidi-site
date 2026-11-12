@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import type { Evento, Noticia } from '@/lib/types';
 import { dlong, dshort, evId, MESES } from '@/lib/datas';
 import { Ico, Ext } from '../Ico';
@@ -9,25 +8,6 @@ export function Crumbs({ items }: { items: [href: string | null, texto: string][
     <nav className="crumbs wrap" aria-label="Você está em"><ol>
       {items.map(([h, t]) => h ? <li key={t}><a href={h}>{t}</a></li> : <li key={t} aria-current="page">{t}</li>)}
     </ol></nav>
-  );
-}
-
-export function PageHead({ kicker, title, lead, side, pic }: {
-  kicker: string; title: ReactNode; lead: ReactNode; side?: ReactNode;
-  pic?: { src: string; alt: string; cap?: ReactNode };
-}) {
-  const t = <div className="t"><span className="kicker">{kicker}</span><h1 className="hl">{title}</h1><p className="lead">{lead}</p></div>;
-  if (pic) return (
-    <header className="phead photo-head"><div className="wrap grid12">
-      {t}
-      <figure className="pic" style={{ margin: '0' }}><div className="photo"><img src={'/assets/img/' + pic.src} alt={pic.alt} /></div>{pic.cap && <figcaption className="cap">{pic.cap}</figcaption>}</figure>
-    </div></header>
-  );
-  return (
-    <header className="phead"><div className="wrap grid12">
-      {t}
-      {side && <div className="side">{side}</div>}
-    </div></header>
   );
 }
 

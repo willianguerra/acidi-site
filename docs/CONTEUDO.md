@@ -34,7 +34,6 @@ Arquivos fornecidos em `Desktop\fotos acidi`, redimensionados e comprimidos. As 
 
 | Arquivo no site | Original | Confirmação |
 |---|---|---|
-| `feijoada-palco.jpg` | DSC_1017-scaled.jpg | Faixa "Feijoada da ACIDI" visível na foto. Edição não identificada, por isso a legenda não cita ano. |
 | `feijoada-2024.jpg` | DSC_2278-scaled.jpg | Imagem de destaque da notícia da 2ª Feijoada (08/07/2024) |
 | `posse-2024.jpg` | WhatsApp-Image-2024-05-23… | Destaque da notícia dos 35 anos e posse (23/05/2024) |
 | `voz-unica-2024.jpg` | 42420c7a… | Destaque da notícia Voz Única (19/09/2024) |
@@ -107,7 +106,7 @@ Não verificado: leitores de tela reais (NVDA, VoiceOver), aparelhos físicos, S
 2. **Fontes (resolvido).** Archivo e Public Sans foram baixadas do Google Fonts em 26/10/2026 e embutidas em `assets/fonts` (woff2, subconjuntos latin e latin-ext, cerca de 215 KB), com as licenças SIL OFL 1.1 (`OFL-archivo.txt`, `OFL-public-sans.txt`, obtidas do repositório google/fonts). A OFL permite uso, embutimento e redistribuição com o site, mantidos os avisos de licença. Ao migrar para o WordPress, carregar os mesmos arquivos pelo tema.
 3. **E-mail oficial.** Definir se comunicacao@ e contato@ devem coexistir e com que finalidade.
 4. **Diretoria vigente.** Confirmar se a gestão 2024/2026 continua e a composição correta nos três pontos divergentes.
-5. **Ex-presidentes.** Corrigir os períodos sobrepostos. Os retratos de Jorge Alberto Jacobsen, Renato Tomio e Rogério Isnar Patricio foram fornecidos em 28/10/2026.
+5. **Ex-presidentes.** Corrigir os períodos sobrepostos. Os retratos de Jorge Alberto Jacobsen, Renato Tomio e Rogério Isnar Patricio foram fornecidos em 28/10/2026. Os de Renato e Rogério não estavam em uso e saíram do repositório: `public/assets/img/p-renato.jpg` e `p-rogerio.png` estão no histórico do Git (até o commit `784d43d`).
 6. **Núcleos ativos** e forma de participação.
 7. **Agenda e notícias.** Não há evento futuro publicado e a notícia mais recente é de abril de 2025.
 8. **Associe-se.** Condições, valores e etapas reais, se a ACIDI quiser publicá-los.

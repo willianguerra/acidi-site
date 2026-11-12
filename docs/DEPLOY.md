@@ -6,7 +6,7 @@ Produção roda num app Node.js do cPanel, com MySQL. Segredos (senha do banco, 
 
 - Crie um banco e um usuário com senha forte; dê ao usuário todos os privilégios nesse banco.
 - Primeira vez: importe o dump pelo phpMyAdmin, no banco novo e vazio (não no banco do WordPress).
-- Não reimporte o dump num banco em uso: ele recria as tabelas e apaga o que houver nelas. Mudanças de esquema depois disso vão por `npm run db:migrar`.
+- Não reimporte o dump num banco em uso: ele recria as tabelas e apaga o que houver nelas. Mudanças de esquema depois disso vão por `npm run db:migrar` (ver "Scripts no servidor").
 
 ## 2. App (Deploy a Node.js app)
 
@@ -27,11 +27,15 @@ Testando num endereço provisório do painel? Coloque esse endereço em `BETTER_
 
 ## 3. Primeiro acesso ao admin
 
-Crie a conta com `npm run criar-admin -- --nome "..." --email ... --senha "..."` (ou use a que veio no dump). Entre em `/admin/entrar`; o site obriga a trocar a senha no primeiro login. As outras contas são criadas em Usuários.
+Crie a conta com `npm run criar-admin -- --nome "..." --email ... --senha "..."` (ver "Scripts no servidor"), ou use a que veio no dump. Entre em `/admin/entrar`; o site obriga a trocar a senha no primeiro login. As outras contas são criadas em Usuários.
 
 ## 4. Domínio
 
 Só aponte `www.acidi.net` para o app depois de testar. Os links antigos do WordPress já redirecionam com 301 ([`lib/rotas.ts`](../lib/rotas.ts)). Depois, envie `https://www.acidi.net/sitemap.xml` no Google Search Console.
+
+## Scripts no servidor
+
+`npm run db:migrar` e `npm run criar-admin` leem um arquivo `.env` na pasta do app (`node --env-file=.env`); as variáveis do painel não chegam a eles. Para rodá-los em produção, crie esse `.env` no servidor com as mesmas variáveis do painel, fora do Git, ou rode da sua máquina com um `.env` apontando para o banco de produção, se a hospedagem liberar acesso remoto ao MySQL.
 
 ## Cuidados
 

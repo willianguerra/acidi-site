@@ -1,6 +1,6 @@
 # Direção de arte e movimento · versão "Ponto de encontro"
 
-Documento interno: a ideia visual do site e as regras de movimento. Escrito em 26–27/10/2026, na versão estática; os caminhos `assets/...` hoje ficam em `public/assets/...`.
+Documento interno: a ideia visual do site e as regras de movimento. O filme "Ponto de encontro" citado abaixo saiu do site depois; o vídeo e a fonte em `motion/` estão no histórico do Git (até o commit `784d43d`). Escrito em 26–27/10/2026, na versão estática; os caminhos `assets/...` hoje ficam em `public/assets/...`.
 
 ## Brief
 

@@ -9,7 +9,8 @@ import { criarAuth } from '../lib/auth.ts';
 const PAPEIS = ['admin', 'revisor', 'editor'] as const;
 const conta = (papel: string) => ({ nome: papel[0].toUpperCase() + papel.slice(1) + ' Teste', email: `${papel}@acidi.test`, senha: `${papel}-local-123` });
 
-const host = new URL(process.env.DATABASE_URL ?? '').hostname;
+// mesmo critério de lib/db/index.ts: DB_* tem preferência sobre DATABASE_URL
+const host = process.env.DB_NAME ? process.env.DB_HOST || 'localhost' : URL.parse(process.env.DATABASE_URL ?? '')?.hostname ?? '';
 if (!['localhost', '127.0.0.1', '::1', '[::1]'].includes(host)) {
   console.error(`Recusado: o banco em "${host}" não é local. Contas de teste têm senha conhecida.`);
   process.exit(1);
