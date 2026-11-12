@@ -71,7 +71,9 @@ export async function salvarImagem(arquivo: { bytes: Uint8Array; tamanho: number
     return { ok: true, caminho: '/uploads/' + nome };
   }
   const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
-  const s3 = new S3Client({ region: process.env.S3_REGION || 'auto', endpoint: process.env.S3_ENDPOINT || undefined, forcePathStyle: true });
+  const s3 = new S3Client({ region: process.env.S3_REGION || 'auto', endpoint: process.env.S3_ENDPOINT || undefined, forcePathStyle: true,
+    // sem as S3_*, o SDK cai nas AWS_* do ambiente
+    credentials: process.env.S3_ACCESS_KEY_ID ? { accessKeyId: process.env.S3_ACCESS_KEY_ID, secretAccessKey: process.env.S3_SECRET_ACCESS_KEY ?? '' } : undefined });
   await s3.send(new PutObjectCommand({ Bucket: process.env.S3_BUCKET, Key: nome, Body: saida, ContentType: MIME[ext], CacheControl: 'public, max-age=31536000, immutable' }));
   return { ok: true, caminho: `${process.env.S3_URL_PUBLICA}/${nome}` };
 }
