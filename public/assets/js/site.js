@@ -97,6 +97,22 @@
     if (count) count.textContent = s.past.length;
   });
 
+  // Agenda da home: descrição longa corta em 3 linhas com "Ler mais" (sem JS o texto fica inteiro)
+  // mede depois das fontes: com a fonte de reserva o texto quebra em outro número de linhas
+  if (doc.fonts) doc.fonts.ready.then(lerMais); else lerMais();
+  function lerMais() { [].forEach.call(doc.querySelectorAll('.ev-mais'), function (b) {
+    var p = doc.getElementById(b.getAttribute('aria-controls'));
+    p.classList.add('clamp');
+    if (p.scrollHeight <= p.clientHeight) { p.classList.remove('clamp'); return; }
+    b.hidden = false;
+    b.addEventListener('click', function () {
+      var open = b.getAttribute('aria-expanded') === 'true';
+      b.setAttribute('aria-expanded', String(!open));
+      p.classList.toggle('clamp', open);
+      b.textContent = open ? 'Ler mais' : 'Ler menos';
+    });
+  }); }
+
   // Formulários: valida no navegador e envia para /api/contato
   [].forEach.call(doc.querySelectorAll('form.demo'), function (form) {
     var summary = form.querySelector('.err-summary'), done = form.querySelector('.done');

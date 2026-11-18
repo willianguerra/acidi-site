@@ -1,7 +1,8 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { Story } from '@/components/site/blocos';
-import { getNoticia, getPaginaFixa } from '@/lib/content';
+import { getNoticia } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import type { Noticia } from '@/lib/types';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina, SecaoTexto } from '@/components/site/Molde';

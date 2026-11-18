@@ -7,7 +7,7 @@ import { dshort, hojeIso } from '@/lib/datas';
 import { Cabecalho } from '@/components/admin/Cabecalho';
 import { CartaoLista } from '@/components/admin/CartaoLista';
 import { Abas } from '@/components/admin/Abas';
-import { AcoesLinha } from '@/components/admin/AcoesLinha';
+import { MenuLinha } from '@/components/admin/MenuLinha';
 import { Tabela } from '@/components/admin/Tabela';
 import { Paginacao } from '@/components/admin/Paginacao';
 import { Aviso } from '@/components/admin/Aviso';
@@ -51,7 +51,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
         { titulo: 'Data', classe: 'num', celula: e => <span className="font-semibold text-foreground">{dshort(e.data)}</span> },
         { titulo: 'Horário', classe: 'num', celula: e => e.horario || '—' },
         { titulo: 'Local', celula: e => e.local },
-        { titulo: 'Ações', classe: 'col-acoes', celula: e => <AcoesLinha nome={e.titulo} links={[{ href: `/admin/agenda/${e.id}`, rotulo: 'Editar', icone: 'edit', onde: 'texto' }]}
+        { titulo: 'Ações', classe: 'col-acoes', celula: e => <MenuLinha nome={e.titulo} links={[{ href: `/admin/agenda/${e.id}`, rotulo: 'Editar', icone: 'edit' }]}
           apagar={{ acao: eventosMassa, id: e.id, nome: e.titulo, volta: aqui }} /> },
       ]} />
     <Paginacao caminho={CAMINHO} params={params} pagina={p.pagina} total={p.total} nome="eventos" />

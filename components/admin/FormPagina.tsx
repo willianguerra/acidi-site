@@ -127,9 +127,10 @@ export function FormPagina({ p, campos, alterada, avisos }: { p: DadosPagina; ca
               <legend className={SUB}>Busca e compartilhamento</legend>
               <Campo nome="descricao" rotulo="Descrição para buscadores" tipo="textarea" valor={val('descricao')} erro={e.descricao} obrigatorio limite={300} classe="min-h-24" ajuda="Aparece no Google e ao compartilhar o link." />
             </fieldset>
-            {!campos.fixa && p.id && <div className="flex flex-wrap gap-2 border-t pt-4 *:flex-1">
+            {p.id && <div className="flex flex-wrap gap-2 border-t pt-4 *:flex-1">
               {publicada && <Button variant="outline" size="sm" name="acao" value="tirar" disabled={enviando} formNoValidate onClick={confirmar('Tirar esta página do ar?')}>Tirar do ar</Button>}
-              <Button variant="destructive" size="sm" name="acao" value="apagar" disabled={enviando} formNoValidate onClick={confirmar('Apagar esta página de vez? Não dá para desfazer.')}>Apagar página</Button>
+              {campos.fixa && !publicada && <Button size="sm" name="acao" value="publicar" disabled={enviando}>Colocar no ar</Button>}
+              {!campos.fixa && <Button variant="destructive" size="sm" name="acao" value="apagar" disabled={enviando} formNoValidate onClick={confirmar('Apagar esta página de vez? Não dá para desfazer.')}>Apagar página</Button>}
             </div>}
           </Card>
         </div>

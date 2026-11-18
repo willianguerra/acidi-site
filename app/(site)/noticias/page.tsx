@@ -1,7 +1,8 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { Crumbs, Story } from '@/components/site/blocos';
-import { getNoticias, getPaginaFixa } from '@/lib/content';
+import { getNoticias } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina } from '@/components/site/Molde';
 

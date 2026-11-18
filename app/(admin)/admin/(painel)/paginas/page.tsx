@@ -14,14 +14,14 @@ import { Cabecalho } from '@/components/admin/Cabecalho';
 import { CartaoLista } from '@/components/admin/CartaoLista';
 import { Busca, Filtros } from '@/components/admin/Filtros';
 import { Tabela, type Coluna } from '@/components/admin/Tabela';
-import { AcoesLinha } from '@/components/admin/AcoesLinha';
+import { MenuLinha } from '@/components/admin/MenuLinha';
 import { Mover } from '@/components/admin/Mover';
 import { Aviso } from '@/components/admin/Aviso';
-import { moverPaginaAcao } from './acoes';
+import { moverPaginaAcao, paginaLinha } from './acoes';
 
 export const metadata = { title: 'Páginas' };
 
-const OKS: Record<string, string> = { apagada: 'Página apagada.' };
+const OKS: Record<string, string> = { apagada: 'Página apagada.', tirada: 'Página tirada do ar. O conteúdo continua guardado aqui.', publicada: 'Página no ar.' };
 const CAMINHO = '/admin/paginas';
 const cab = <Cabecalho titulo="Páginas" descricao="Edite os textos das páginas do site e crie páginas novas." acao={{ href: '/admin/paginas/nova', rotulo: 'Nova página' }} />;
 
@@ -39,7 +39,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   const acha = (p: LinhaPagina) => !busca || p.nome.toLowerCase().includes(busca) || p.slug.includes(busca);
   const grupos: { titulo: string; todas: LinhaPagina[]; fixas?: boolean; mover?: boolean; nota?: string }[] = [
     { titulo: 'Páginas fixas do site', todas: todas.filter(p => p.fixa && p.fixa !== 'home'), fixas: true,
-      nota: 'Fazem parte da estrutura do site: você edita o cabeçalho e os textos. Formulários, galerias e listas ligados a elas continuam fixos, e elas não podem ser apagadas nem mudar de endereço.' },
+      nota: 'Fazem parte da estrutura do site: você edita o cabeçalho e os textos. Formulários, galerias e listas ligados a elas continuam fixos. Elas podem ser tiradas do ar (o endereço deixa de abrir e o link some do menu), mas não apagadas nem mudar de endereço.' },
     { titulo: 'Criadas por você · menu A ACIDI', todas: todas.filter(p => !p.fixa && p.menu === 'acidi'), mover: true },
     { titulo: 'Criadas por você · menu Para seu negócio', todas: todas.filter(p => !p.fixa && p.menu === 'negocio'), mover: true },
     { titulo: 'Criadas por você · fora do menu', todas: todas.filter(p => !p.fixa && !p.menu), nota: 'Publicadas, continuam acessíveis pelo endereço, mas não aparecem no menu do site.' },
@@ -47,6 +47,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
   return (<>
     {cab}
     {q.ok && OKS[q.ok] && <Aviso tipo="ok">{OKS[q.ok]}</Aviso>}
+    {q.ok === 'erro' && <Aviso tipo="erro">Não foi possível concluir a ação. Tente de novo.</Aviso>}
     {home && <Card className="mb-4 flex-row flex-wrap items-center gap-x-4 gap-y-3 px-5 py-3.5">
       <span aria-hidden="true" className="grid size-9 flex-none place-items-center rounded-md bg-accent text-accent-foreground"><Home className="size-[18px]" /></span>
       <div className="min-w-0 flex-[1_1_220px]"><h2 className="font-display text-[1.0625rem] leading-tight font-bold">Página inicial</h2>
@@ -73,12 +74,16 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ o
           const i = g.todas.indexOf(p);
           return <Mover id={p.id} nome={p.nome} acao={moverPaginaAcao} primeiro={i === 0} ultimo={i === g.todas.length - 1} />;
         } }] : []),
-        { titulo: 'Ações', classe: 'col-acoes', largura: 'md:w-36', celula: p => <AcoesLinha nome={p.nome} links={[
-          { href: `/admin/paginas/${p.id}`, rotulo: 'Editar', icone: 'edit', onde: 'texto' },
+        { titulo: 'Ações', classe: 'col-acoes', largura: 'md:w-20', celula: p => <MenuLinha nome={p.nome} links={[
+          { href: `/admin/paginas/${p.id}`, rotulo: 'Editar', icone: 'edit' },
           // publicada abre no site; rascunho criado por você abre a prévia (a prévia só existe para páginas dinâmicas)
           ...(p.situacao === 'publicada' ? [{ href: '/' + p.slug, rotulo: 'Ver no site', icone: 'ext' as const, novaAba: true }]
             : !p.fixa ? [{ href: `/admin/previa/pagina/${p.id}`, rotulo: 'Prévia', icone: 'eye' as const, novaAba: true }] : []),
-        ]} /> },
+        ]}
+          acoes={{ acao: paginaLinha, id: p.id, volta: CAMINHO, itens: [p.situacao === 'publicada'
+            ? { valor: 'tirar', rotulo: 'Tirar do ar', confirma: `Tirar "${p.nome}" do ar? O endereço /${p.slug} deixa de abrir no site. O conteúdo fica guardado e você pode colocar de volta.` }
+            : { valor: 'publicar', rotulo: 'Colocar no ar' }] }}
+          apagar={p.fixa ? undefined : { acao: paginaLinha, id: p.id, nome: p.nome, volta: CAMINHO }} /> },
       ];
       return (<CartaoLista key={g.titulo} titulo={g.titulo} total={linhas.length} nota={g.nota}>
         <Tabela<LinhaPagina> colunas={colunas} linhas={linhas} chave={p => p.id} rotulo={p => p.nome}

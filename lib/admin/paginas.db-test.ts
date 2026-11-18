@@ -87,9 +87,19 @@ test('mover a terceira para cima troca com a segunda, só dentro do menu', async
   assert.deepEqual(l.valor.filter(p => p.menu === 'acidi').map(p => p.id), [a, c, b]);
 });
 
-test('página fixa não sai do ar, não é apagada e mantém o endereço', async () => {
+test('página fixa sai do ar e volta, mas não é apagada; a inicial fica sempre no ar', async () => {
+  const n = await P.obterPaginaFixa(db, adm, 'nucleos'); assert.ok(n.ok);
+  assert.ok((await P.tirarDoAr(db, adm, n.valor.id)).ok);
+  let d = await P.obterPaginaFixa(db, adm, 'nucleos'); assert.ok(d.ok && d.valor.situacao === 'rascunho');
+  assert.ok((await P.publicarPagina(db, adm, n.valor.id)).ok);
+  d = await P.obterPaginaFixa(db, adm, 'nucleos'); assert.ok(d.ok && d.valor.situacao === 'publicada');
+  const ap = await P.apagarPagina(db, adm, n.valor.id); assert.ok(!ap.ok && ap.erro === 'invalida');
+  const home = await P.obterPaginaFixa(db, adm, 'home'); assert.ok(home.ok);
+  const t = await P.tirarDoAr(db, adm, home.valor.id); assert.ok(!t.ok && t.erro === 'invalida');
+});
+
+test('página fixa mantém o endereço', async () => {
   const f = await P.obterPaginaFixa(db, adm, 'historico'); assert.ok(f.ok);
-  for (const r of [await P.tirarDoAr(db, adm, f.valor.id), await P.apagarPagina(db, adm, f.valor.id)]) assert.ok(!r.ok && r.erro === 'invalida');
   const s = await P.salvarPagina(db, adm, f.valor.id, form({ slug: 'outro', menu: 'acidi', nome: 'Histórico 2' }), f.valor.atualizadaEm.toISOString());
   assert.ok(s.ok && s.valor.slug === 'historico');
   const depois = await P.obterPaginaFixa(db, adm, 'historico'); assert.ok(depois.ok);

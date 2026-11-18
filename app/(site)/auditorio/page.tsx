@@ -1,7 +1,8 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { Ico } from '@/components/Ico';
-import { getGaleriaAuditorio, getPaginaFixa } from '@/lib/content';
+import { getGaleriaAuditorio } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina } from '@/components/site/Molde';
 

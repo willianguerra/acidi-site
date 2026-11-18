@@ -1,7 +1,8 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { Ico } from '@/components/Ico';
-import { getBeneficios, getPaginaFixa } from '@/lib/content';
+import { getBeneficios } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina } from '@/components/site/Molde';
 

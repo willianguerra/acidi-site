@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getNoticias, getSlugsPaginasPublicadas } from '@/lib/content';
+import { getNoticias, getSlugsPaginasPublicadas, getFixasForaDoAr } from '@/lib/content';
 import { SITE } from '@/lib/meta';
 
 const PAGINAS = ['', '/para-seu-negocio', '/associe-se', '/noticias', '/agenda', '/auditorio', '/contato', '/historico',
@@ -9,9 +9,9 @@ const PAGINAS = ['', '/para-seu-negocio', '/associe-se', '/noticias', '/agenda',
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [noticias, novas] = await Promise.all([getNoticias(), getSlugsPaginasPublicadas()]);
+  const [noticias, novas, fora] = await Promise.all([getNoticias(), getSlugsPaginasPublicadas(), getFixasForaDoAr()]);
   return [
-    ...PAGINAS.map(p => ({ url: SITE + p })),
+    ...PAGINAS.filter(p => !fora.has(p)).map(p => ({ url: SITE + p })),
     ...novas.map(s => ({ url: `${SITE}/${s}` })),
     ...noticias.map(n => ({ url: `${SITE}/noticias/${n.slug}`, lastModified: n.data })),
   ];

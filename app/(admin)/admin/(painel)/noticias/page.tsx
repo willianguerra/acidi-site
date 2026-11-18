@@ -17,7 +17,7 @@ import { Tabela } from '@/components/admin/Tabela';
 import { Paginacao } from '@/components/admin/Paginacao';
 import { Aviso } from '@/components/admin/Aviso';
 import { BarraMassa } from '@/components/admin/BarraMassa';
-import { AcoesLinha } from '@/components/admin/AcoesLinha';
+import { MenuLinha } from '@/components/admin/MenuLinha';
 import { noticiasMassa } from './acoes';
 
 export const metadata = { title: 'Notícias' };
@@ -80,10 +80,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Q> 
           </div> },
           { titulo: 'Situação', celula: n => <Selo s={n.situacao}>{SITUACOES[n.situacao]}</Selo> },
           { titulo: 'Data', classe: 'num', celula: n => dshort(n.data) },
-          { titulo: 'Ações', classe: 'col-acoes', celula: n => <AcoesLinha nome={n.titulo}
-            links={[{ href: `/admin/noticias/${n.id}`, rotulo: 'Editar', icone: 'edit', onde: 'texto' },
+          { titulo: 'Ações', classe: 'col-acoes', celula: n => <MenuLinha nome={n.titulo}
+            links={[{ href: `/admin/noticias/${n.id}`, rotulo: 'Editar', icone: 'edit' },
               n.situacao === 'publicada' ? { href: `/noticias/${n.slug}`, rotulo: 'Ver no site', icone: 'ext', novaAba: true } : { href: `/admin/previa/${n.id}`, rotulo: 'Prévia', icone: 'eye', novaAba: true },
-              ...(n.situacao === 'publicada' ? [{ href: `/admin/previa/${n.id}`, rotulo: 'Prévia', icone: 'eye' as const, novaAba: true, onde: 'menu' as const }] : [])]}
+              ...(n.situacao === 'publicada' ? [{ href: `/admin/previa/${n.id}`, rotulo: 'Prévia', icone: 'eye' as const, novaAba: true }] : [])]}
             apagar={pode(u, 'noticia.apagar', { autorId: n.autorId, situacao: n.situacao }) ? { acao: noticiasMassa, id: n.id, nome: n.titulo, volta: aqui } : undefined} /> },
         ]} />
       <Paginacao caminho={CAMINHO} params={params} pagina={pagina} total={total} nome="notícias" />

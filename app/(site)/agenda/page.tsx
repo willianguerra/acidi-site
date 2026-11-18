@@ -1,7 +1,8 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { EventItem } from '@/components/site/blocos';
-import { getEventos, getPaginaFixa } from '@/lib/content';
+import { getEventos } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { evId, hojeIso, separarEventos } from '@/lib/datas';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina } from '@/components/site/Molde';

@@ -2,7 +2,8 @@ import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { Crumbs, JoinBox } from '@/components/site/blocos';
 import { Ico, Ext } from '@/components/Ico';
-import { getServicos, getPaginaFixa } from '@/lib/content';
+import { getServicos } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina } from '@/components/site/Molde';
 

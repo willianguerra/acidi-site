@@ -9,7 +9,7 @@ import { Cabecalho } from '@/components/admin/Cabecalho';
 import { CartaoLista } from '@/components/admin/CartaoLista';
 import { Filtros } from '@/components/admin/Filtros';
 import { Abas } from '@/components/admin/Abas';
-import { AcoesLinha } from '@/components/admin/AcoesLinha';
+import { MenuLinha } from '@/components/admin/MenuLinha';
 import { Tabela } from '@/components/admin/Tabela';
 import { Paginacao } from '@/components/admin/Paginacao';
 import { Aviso } from '@/components/admin/Aviso';
@@ -61,8 +61,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
         </div> },
         { titulo: 'Formulário', celula: c => FORMULARIOS[c.formulario].titulo },
         { titulo: 'Recebida', classe: 'num', celula: c => quando(c.criadaEm) },
-        { titulo: 'Ações', classe: 'col-acoes', celula: c => <AcoesLinha nome={`mensagem de ${c.nome}`}
-          links={[{ href: `/admin/contatos/${c.id}`, rotulo: 'Abrir', icone: 'eye', onde: 'texto' }, { href: `mailto:${c.email}`, rotulo: 'Responder por e-mail', icone: 'mail' }]}
+        { titulo: 'Ações', classe: 'col-acoes', celula: c => <MenuLinha nome={`mensagem de ${c.nome}`}
+          links={[{ href: `/admin/contatos/${c.id}`, rotulo: 'Abrir', icone: 'eye' }, { href: `mailto:${c.email}`, rotulo: 'Responder por e-mail', icone: 'mail' }]}
           apagar={{ acao: contatosMassa, id: c.id, nome: `mensagem de ${c.nome}`, volta: aqui }} /> },
       ]} />
     <Paginacao caminho={CAMINHO} params={params} pagina={pagina} total={total} nome="mensagens" />

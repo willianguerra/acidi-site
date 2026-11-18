@@ -9,7 +9,7 @@ import type { ConteudoPagina, Fixa } from '@/lib/types';
 
 export const metadata = { title: 'Editar página' };
 
-const OKS: Record<string, string> = { criada: 'Página criada como rascunho.', salva: 'Alterações salvas.', publicada: 'Publicada: já está no site.', tirada: 'Tirada do ar; voltou a rascunho.' };
+const OKS: Record<string, string> = { criada: 'Página criada como rascunho.', salva: 'Alterações salvas.', publicada: 'Publicada: já está no site.', tirada: 'Tirada do ar: o endereço não abre mais no site. O conteúdo continua guardado aqui.' };
 
 export default async function Page({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ ok?: string }> }) {
   const u = await exigirUsuario();

@@ -1,6 +1,7 @@
 // Única porta de entrada do conteúdo para as páginas. Notícias, agenda, diretoria e ex-presidentes vêm do banco;
 // o resto continua em content/*.ts até a Fase 3.
-import { asc, desc, eq, and, isNotNull, isNull } from 'drizzle-orm';
+import { asc, desc, eq, and, isNotNull, isNull, ne } from 'drizzle-orm';
+
 import type { Servico, Evento, Noticia, Diretoria, ExPresidente, Foto, Beneficio, Assunto, Fixa, Pagina, ConteudoHome } from './types.ts';
 import { db } from './db/index.ts';
 import { noticias, eventos, diretoria, exPresidentes, paginas } from './db/schema.ts';
@@ -53,13 +54,21 @@ export async function getAssuntosContato(): Promise<Assunto[]> { return ASSUNTOS
 const campos = { slug: paginas.slug, nome: paginas.nome, descricao: paginas.descricao, menu: paginas.menu, conteudo: paginas.conteudo };
 
 async function fixa(f: Fixa) {
-  const [p] = await db.select(campos).from(paginas).where(eq(paginas.fixa, f));
+  const [p] = await db.select({ ...campos, situacao: paginas.situacao }).from(paginas).where(eq(paginas.fixa, f));
   if (!p) throw new Error(`página ${f} sem conteúdo no banco: rode npm run db:carga`);
   return p;
 }
 
-export async function getPaginaFixa(f: Fixa): Promise<Pagina> {
-  return (await fixa(f)) as Pagina;
+// undefined = tirada do ar no admin. As rotas usam getPaginaFixa de lib/pagina-fixa.ts, que responde 404.
+export async function lerPaginaFixa(f: Fixa): Promise<Pagina | undefined> {
+  const p = await fixa(f);
+  return p.situacao === 'publicada' ? (p as Pagina) : undefined;
+}
+
+// Endereços ("/slug") das páginas fixas tiradas do ar: menu, rodapé e sitemap escondem os links.
+export async function getFixasForaDoAr(): Promise<Set<string>> {
+  const l = await db.select({ slug: paginas.slug }).from(paginas).where(and(isNotNull(paginas.fixa), ne(paginas.situacao, 'publicada')));
+  return new Set(l.map(p => '/' + p.slug));
 }
 
 export async function getHome(): Promise<ConteudoHome> {

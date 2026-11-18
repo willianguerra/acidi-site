@@ -55,7 +55,7 @@ export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados:
   const atual = id ? await obterPagina(db, u, id) : null;
   if (atual && !atual.ok) return atual;
   const p = atual?.valor;
-  if (p?.fixa && publicar) return falha('invalida', { erros: { situacao: 'Páginas fixas ficam sempre no ar.' } });
+  if (p?.fixa === 'home' && publicar) return falha('invalida', { erros: { situacao: 'A página inicial fica sempre no ar.' } });
   if (p && lidaEm !== undefined && mudouDesde(p.atualizadaEm, lidaEm)) {
     const [quem] = p.atualizadaPorId ? await db.select({ nome: user.name }).from(user).where(eq(user.id, p.atualizadaPorId)) : [];
     return falha('conflito', { quem: quem?.nome ?? 'outra pessoa' });
@@ -73,9 +73,9 @@ export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados:
   const v = validar(esquemaPagina, p && dados && typeof dados === 'object' ? { ...dados, slug: undefined } : dados);
   if (!v.ok) return falha('invalida', { erros: v.erros });
   const { nome, descricao, conteudo } = v.valor;
-  if (p?.fixa) { // fixa: endereço, menu e situação não mudam
-    await db.update(paginas).set({ nome, descricao, conteudo, ...auditoria }).where(eq(paginas.id, p.id));
-    return ok({ id: p.id, slug: p.slug, publicada: true });
+  if (p?.fixa) { // fixa: endereço e menu não mudam
+    await db.update(paginas).set({ nome, descricao, conteudo, situacao: publicar ? 'publicada' : undefined, ...auditoria }).where(eq(paginas.id, p.id));
+    return ok({ id: p.id, slug: p.slug, publicada: publicar || p.situacao === 'publicada' });
   }
 
   const { menu, menuTexto } = v.valor;
@@ -99,7 +99,7 @@ export async function salvarPagina(db: Db, u: Usuario, id: string | null, dados:
 async function mudarSituacao(db: Db, u: Usuario, id: string, situacao: LinhaPagina['situacao']): Promise<Resultado<null>> {
   const p = await obterPagina(db, u, id);
   if (!p.ok) return p;
-  if (p.valor.fixa) return falha('invalida', { erros: { situacao: 'Páginas fixas ficam sempre no ar.' } });
+  if (p.valor.fixa === 'home') return falha('invalida', { erros: { situacao: 'A página inicial fica sempre no ar.' } });
   await db.update(paginas).set({ situacao, atualizadaEm: new Date(), atualizadaPorId: u.id }).where(eq(paginas.id, id));
   return ok(null);
 }
@@ -110,7 +110,7 @@ export const tirarDoAr = (db: Db, u: Usuario, id: string) => mudarSituacao(db, u
 export async function apagarPagina(db: Db, u: Usuario, id: string): Promise<Resultado<null>> {
   const p = await obterPagina(db, u, id);
   if (!p.ok) return p;
-  if (p.valor.fixa) return falha('invalida', { erros: { fixa: 'Páginas fixas não podem ser apagadas.' } });
+  if (p.valor.fixa) return falha('invalida', { erros: { fixa: 'Páginas fixas não podem ser apagadas, só tiradas do ar.' } });
   await db.delete(paginas).where(eq(paginas.id, id));
   return ok(null);
 }

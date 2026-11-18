@@ -1,6 +1,6 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
-import { getPaginaFixa } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina, SecaoTexto } from '@/components/site/Molde';
 

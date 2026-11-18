@@ -18,7 +18,8 @@ export function EventItem({ e, home = false, hoje }: { e: Evento; home?: boolean
   return (
     <li className="ev" id={evId(e)} data-date={e.data} hidden={home && !!hoje && e.data < hoje}>
       <div className="d" aria-hidden="true"><b>{+d}</b><span>{MESES[+m - 1]} {y}</span></div>
-      <div><h3>{e.titulo}</h3><p className="muted">{e.descricao}</p><dl>{info.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
+      <div><h3>{e.titulo}</h3><p className="muted" id={home ? evId(e) + '-desc' : undefined}>{e.descricao}</p>
+        {home && <button type="button" className="tlink ev-mais" aria-expanded="false" aria-controls={evId(e) + '-desc'} hidden>Ler mais</button>}<dl>{info.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl></div>
     </li>
   );
 }

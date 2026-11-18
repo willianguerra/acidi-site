@@ -46,13 +46,13 @@ test('notícia que não está publicada não chega ao site', async () => {
 });
 
 test('páginas fixas: carga completa, edição no banco sobrevive a nova carga', async () => {
-  const h = await c.getPaginaFixa('historico');
+  const h = (await c.lerPaginaFixa('historico'))!;
   assert.equal(h.conteudo.cabecalho.destaque, 'para Indaial');
   assert.equal(h.slug, 'historico');
   assert.equal((await c.getHome()).destaque.linha1, 'Juntos por uma');
   await db.update(paginas).set({ conteudo: { ...h.conteudo, cabecalho: { ...h.conteudo.cabecalho, destaque: 'editado' } } }).where(eq(paginas.fixa, 'historico'));
   await carregar(db);
-  assert.equal((await c.getPaginaFixa('historico')).conteudo.cabecalho.destaque, 'editado');
+  assert.equal((await c.lerPaginaFixa('historico'))?.conteudo.cabecalho.destaque, 'editado');
 });
 
 test('só páginas publicadas e não fixas chegam ao site; o menu vem por ordem', async () => {
@@ -72,7 +72,15 @@ test('só páginas publicadas e não fixas chegam ao site; o menu vem por ordem'
   ]);
 });
 
+test('página fixa fora do ar: não chega às rotas e o endereço entra na lista dos escondidos', async () => {
+  assert.deepEqual([...await c.getFixasForaDoAr()], []);
+  await db.update(paginas).set({ situacao: 'rascunho' }).where(eq(paginas.fixa, 'nucleos'));
+  assert.equal(await c.lerPaginaFixa('nucleos'), undefined);
+  assert.deepEqual([...await c.getFixasForaDoAr()], ['/nucleos']);
+  assert.equal((await c.lerPaginaFixa('historico'))?.slug, 'historico');
+});
+
 test('página fixa sem linha no banco: erro manda rodar a carga', async () => {
   await db.delete(paginas).where(eq(paginas.fixa, 'nucleos'));
-  await assert.rejects(c.getPaginaFixa('nucleos'), /npm run db:carga/);
+  await assert.rejects(c.lerPaginaFixa('nucleos'), /npm run db:carga/);
 });

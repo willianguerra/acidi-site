@@ -1,7 +1,8 @@
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { Crumbs } from '@/components/site/blocos';
-import { getDiretoria, getPaginaFixa } from '@/lib/content';
+import { getDiretoria } from '@/lib/content';
+import { getPaginaFixa } from '@/lib/pagina-fixa';
 import { Fmt } from '@/components/site/Fmt';
 import { pagina } from '@/lib/meta';
 import { CabecalhoPagina } from '@/components/site/Molde';

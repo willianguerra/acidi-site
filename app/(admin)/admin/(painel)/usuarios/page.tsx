@@ -10,7 +10,7 @@ import { FormNovoUsuario } from '@/components/admin/FormsUsuarios';
 import { Cabecalho } from '@/components/admin/Cabecalho';
 import { Tabela } from '@/components/admin/Tabela';
 import { CartaoLista } from '@/components/admin/CartaoLista';
-import { AcoesLinha } from '@/components/admin/AcoesLinha';
+import { MenuLinha } from '@/components/admin/MenuLinha';
 import { Paginacao } from '@/components/admin/Paginacao';
 
 export const metadata = { title: 'Usuários' };
@@ -38,7 +38,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
         </div> },
         { titulo: 'Perfil', celula: u => <Selo>{PAPEIS[u.papel]}</Selo> },
         { titulo: 'Situação', celula: u => !u.ativo ? <Selo s="devolvida">Desativada</Selo> : u.trocarSenha ? <Selo s="revisao">Ainda não trocou a senha</Selo> : <Selo s="publicada">Ativa</Selo> },
-        { titulo: 'Ações', classe: 'col-acoes', celula: u => <AcoesLinha nome={u.nome} links={[{ href: `/admin/usuarios/${u.id}`, rotulo: 'Editar', icone: 'edit', onde: 'texto' }]} /> },
+        { titulo: 'Ações', classe: 'col-acoes', celula: u => <MenuLinha nome={u.nome} links={[{ href: `/admin/usuarios/${u.id}`, rotulo: 'Editar', icone: 'edit' }]} /> },
       ]} />
     <Paginacao caminho={CAMINHO} params={{ pagina: q.pagina }} pagina={p.pagina} total={p.total} nome="contas" />
     </CartaoLista>

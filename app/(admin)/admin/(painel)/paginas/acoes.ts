@@ -68,6 +68,20 @@ export async function salvarHome(_: Estado, f: FormData): Promise<Estado> {
   redirect('/admin/paginas/home?ok=salva');
 }
 
+// Menu "mais ações" da lista: mesmo FormData das ações em massa (acao + ids), uma página por vez.
+export async function paginaLinha(f: FormData): Promise<void> {
+  const u = await exigirUsuario();
+  const acao = String(f.get('acao')) as Acao;
+  const fn = acao === 'apagar' ? P.apagarPagina : acao === 'tirar' ? P.tirarDoAr : acao === 'publicar' ? P.publicarPagina : null;
+  let ok = 'erro';
+  try {
+    if (fn && (await fn(db, u, String(f.get('ids') ?? ''))).ok) { revalidarSite(); ok = OK[acao]; }
+  } catch (e) {
+    console.error('paginaLinha', e);
+  }
+  redirect('/admin/paginas?ok=' + ok);
+}
+
 export async function moverPaginaAcao(f: FormData): Promise<void> {
   const r = await P.moverPagina(db, await exigirUsuario(), String(f.get('id')), f.get('direcao') === 'cima' ? 'cima' : 'baixo');
   if (r.ok) revalidarSite();
